@@ -6,6 +6,8 @@ import '@css/button.scss';
  *
  * @param children - The content to be displayed inside the button.
  * @param type - **@Default="button"** - The type of the button.
+ * @param props- Additional properties to be passed to the button element.
+ * It can include event handlers, styles, and other attributes.
  */
 export function Button<T>({
     children,
