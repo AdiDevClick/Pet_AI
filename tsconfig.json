@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+      /* Strictness */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+      "composite": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true,
+      "target": "ES2022",
+      "module": "ES2022",
+      "jsx": "react-jsx",
+      "moduleResolution": "bundler",
+      "moduleDetection": "force",
+      "resolveJsonModule": true,
+      "useUnknownInCatchVariables": true,
+      "allowImportingTsExtensions": true,
+      "noEmit": true,
+      "baseUrl": ".",
+      "allowJs": true,
+      "checkJs": true,
+      "paths": {
+        "@/*": ["src/*"],
+        "@assets/*": ["src/assets/*"],
+        "@css/*": ["src/assets/css/*"],
+        "@images/*": ["src/assets/images/*"],
+        "@icons/*": ["src/assets/icons/*"],
+        "@data/*": ["src/data/*"],
+        "@utils/*": ["src/utils/*"],
+        "@hooks/*": ["src/hooks/*"]
+      },
+      "types": ["react", "react-dom"],
+      "lib": ["DOM", "ES2022", "DOM.Iterable"],
+  },
+  "references": [
+    // { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ],
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"] 
+}
+
