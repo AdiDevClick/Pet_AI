@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classificateur d'Images IA - Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        .task-description {
+            background-color: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 5px solid #2196f3;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-primary {
+            background-color: #2196f3;
+            color: white;
+        }
+
+        .btn-success {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .status {
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .image-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .image-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .image-card.selected-correct {
+            border-color: #4caf50;
+            background-color: #f1f8e9;
+        }
+
+        .image-card.selected-incorrect {
+            border-color: #f44336;
+            background-color: #fce4ec;
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .image-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .feedback {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .prediction-result {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+        .instructions {
+            background-color: white;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #ff9800;
+            margin-top: 30px;
+        }
+
+        .instructions h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2196f3;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>🤖 Classificateur d'Images IA</h1>
+        <p>Système d'entraînement interactif similaire aux captchas Google</p>
+    </div>
+
+    <div class="task-description">
+        <h3>📋 Tâche actuelle</h3>
+        <p id="current-task">Sélectionnez toutes les images qui contiennent des <strong>chats</strong></p>
+    </div>
+
+    <div class="controls">
+        <button class="btn btn-primary" onclick="loadNewImages()">🔄 Nouvelles Images</button>
+        <button class="btn btn-danger" onclick="resetSystem()">🗑️ Réinitialiser</button>
+        <button class="btn btn-success" onclick="predictAllImages()">🔮 Prédire Tout</button>
+        <button class="btn btn-primary" onclick="saveModel()">💾 Sauvegarder</button>
+        <button class="btn btn-primary" onclick="loadModel()">📂 Charger</button>
+    </div>
+
+    <div class="status">
+        <div id="micro-out-div">Initialisation...</div>
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value" id="training-count">0</div>
+                <div class="stat-label">Échantillons</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="accuracy">0%</div>
+                <div class="stat-label">Précision</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="predictions-count">0</div>
+                <div class="stat-label">Prédictions</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="images-grid" id="images-container">
+        <!-- Les images seront chargées dynamiquement -->
+    </div>
+
+    <div class="instructions">
+        <h3>📖 Instructions d'utilisation</h3>
+        <ul>
+            <li><strong>Étape 1:</strong> Regardez chaque image et décidez si elle correspond à la tâche demandée</li>
+            <li><strong>Étape 2:</strong> Cliquez sur "✓ Correct" si l'image correspond, ou "✗ Incorrect" sinon</li>
+            <li><strong>Étape 3:</strong> Le système apprend automatiquement de vos choix</li>
+            <li><strong>Étape 4:</strong> Testez les prédictions du modèle avec de nouvelles images</li>
+            <li><strong>Astuce:</strong> Plus vous donnez d'exemples, plus le modèle devient précis!</li>
+        </ul>
+    </div>
+
+    <script src="./src/TensorScripts/script.js"></script>
+    <script>
+        // Images d'exemple avec des chats et autres animaux
+        const sampleImages = [
+            { id: '1', url: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300&h=300&fit=crop', isCorrect: true, description: 'Chat blanc et gris' },
+            { id: '2', url: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=300&h=300&fit=crop', isCorrect: false, description: 'Chien' },
+            { id: '3', url: 'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=300&h=300&fit=crop', isCorrect: true, description: 'Chat orange' },
+            { id: '4', url: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=300&h=300&fit=crop', isCorrect: false, description: 'Chien' },
+            { id: '5', url: 'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=300&h=300&fit=crop', isCorrect: true, description: 'Chat noir et blanc' },
+            { id: '6', url: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop', isCorrect: false, description: 'Lapin' },
+            { id: '7', url: 'https://images.unsplash.com/photo-1519052537078-e6302a4968d4?w=300&h=300&fit=crop', isCorrect: true, description: 'Chat gris' },
+            { id: '8', url: 'https://images.unsplash.com/photo-1544568100-847a948585b9?w=300&h=300&fit=crop', isCorrect: false, description: 'Chien' }
+        ];
+
+        let currentImages = [];
+        let userSelections = {};
+        let predictionsCount = 0;
+
+        // Charger et afficher les images
+        function loadImages(images) {
+            const container = document.getElementById('images-container');
+            container.innerHTML = '';
+            currentImages = images;
+            userSelections = {};
+
+            images.forEach(imageData => {
+                const imageCard = createImageCard(imageData);
+                container.appendChild(imageCard);
+            });
+        }
+
+        // Créer une carte d'image
+        function createImageCard(imageData) {
+            const card = document.createElement('div');
+            card.className = 'image-card';
+            card.id = `card-${imageData.id}`;
+
+            card.innerHTML = `
+                <img src="${imageData.url}" alt="Image ${imageData.id}" crossorigin="anonymous" 
+                     onload="this.style.opacity = 1" style="opacity: 0; transition: opacity 0.3s;">
+                <div class="image-actions">
+                    <button class="btn btn-success" onclick="handleSelection('${imageData.id}', true)">
+                        ✓ Correct
+                    </button>
+                    <button class="btn btn-danger" onclick="handleSelection('${imageData.id}', false)">
+                        ✗ Incorrect
+                    </button>
+                </div>
+                <div class="feedback" id="feedback-${imageData.id}"></div>
+                <div class="prediction-result" id="prediction-${imageData.id}" style="display: none;"></div>
+            `;
+
+            return card;
+        }
+
+        // Gérer la sélection utilisateur
+        async function handleSelection(imageId, isCorrect) {
+            userSelections[imageId] = isCorrect;
+
+            // Mettre à jour l'apparence de la carte
+            const card = document.getElementById(`card-${imageId}`);
+            card.className = `image-card ${isCorrect ? 'selected-correct' : 'selected-incorrect'}`;
+
+            // Afficher le feedback
+            const imageData = currentImages.find(img => img.id === imageId);
+            const isActuallyCorrect = imageData?.isCorrect;
+            const feedbackElement = document.getElementById(`feedback-${imageId}`);
+
+            if (isActuallyCorrect !== undefined) {
+                const isRight = isCorrect === isActuallyCorrect;
+                feedbackElement.innerHTML = `
+                    ${isRight ? '✅ Bonne réponse!' : '❌ Mauvaise réponse'}
+                    <br><small>Réalité: ${isActuallyCorrect ? 'Chat' : 'Autre animal'}</small>
+                `;
+                feedbackElement.style.color = isRight ? '#4caf50' : '#f44336';
+            }
+
+            // Ajouter aux données d'entraînement
+            const img = card.querySelector('img');
+            if (img.complete && window.imageClassifier) {
+                await window.imageClassifier.addTrainingData(img, isCorrect);
+                updateStats();
+            }
+        }
+
+        // Prédire toutes les images
+        async function predictAllImages() {
+            if (!window.imageClassifier || !window.imageClassifier.model) {
+                alert('⚠️ Le modèle n\'est pas encore prêt!');
+                return;
+            }
+
+            const images = document.querySelectorAll('.image-card img');
+            predictionsCount = 0;
+
+            for (let img of images) {
+                if (img.complete) {
+                    const prediction = await window.imageClassifier.predict(img);
+                    if (prediction) {
+                        const imageId = img.closest('.image-card').id.replace('card-', '');
+                        const predictionElement = document.getElementById(`prediction-${imageId}`);
+
+                        predictionElement.innerHTML = `
+                            <strong>🔮 Prédiction IA:</strong><br>
+                            ${prediction.prediction === 'correct' ? '✅ Chat détecté' : '❌ Pas un chat'}<br>
+                            <small>Confiance: ${(prediction.confidence * 100).toFixed(1)}%</small>
+                        `;
+                        predictionElement.style.display = 'block';
+                        predictionsCount++;
+                    }
+                }
+            }
+
+            updateStats();
+        }
+
+        // Charger de nouvelles images
+        function loadNewImages() {
+            // Mélanger et sélectionner 8 images aléatoires
+            const shuffled = [...sampleImages].sort(() => 0.5 - Math.random());
+            loadImages(shuffled.slice(0, 8));
+
+            // Réinitialiser les prédictions
+            document.querySelectorAll('.prediction-result').forEach(el => {
+                el.style.display = 'none';
+            });
+            predictionsCount = 0;
+            updateStats();
+        }
+
+        // Réinitialiser le système
+        async function resetSystem() {
+            if (window.imageClassifier) {
+                await window.imageClassifier.reset();
+            }
+            userSelections = {};
+            predictionsCount = 0;
+            loadNewImages();
+            updateStats();
+
+            document.getElementById('micro-out-div').innerHTML = `
+                <strong>🔄 Système réinitialisé</strong><br>
+                <small>Prêt pour un nouvel entraînement</small>
+            `;
+        }
+
+        // Sauvegarder le modèle
+        async function saveModel() {
+            if (window.imageClassifier) {
+                await window.imageClassifier.saveModel('chat-classifier-demo');
+                alert('💾 Modèle sauvegardé avec succès!');
+            }
+        }
+
+        // Charger le modèle
+        async function loadModel() {
+            if (window.imageClassifier) {
+                const success = await window.imageClassifier.loadModel('chat-classifier-demo');
+                if (success) {
+                    alert('📂 Modèle chargé avec succès!');
+                    updateStats();
+                } else {
+                    alert('⚠️ Aucun modèle sauvegardé trouvé');
+                }
+            }
+        }
+
+        // Mettre à jour les statistiques
+        function updateStats() {
+            const trainingCount = window.imageClassifier ? window.imageClassifier.trainingData.length : 0;
+            document.getElementById('training-count').textContent = trainingCount;
+            document.getElementById('predictions-count').textContent = predictionsCount;
+        }
+
+        // Initialisation au chargement de la page
+        window.addEventListener('load', () => {
+            loadNewImages();
+
+            // Attendre que le classificateur soit prêt
+            const checkReady = setInterval(() => {
+                if (window.imageClassifier && window.imageClassifier.model) {
+                    updateStats();
+                    clearInterval(checkReady);
+                }
+            }, 500);
+        });
+
+        // Mise à jour périodique des statistiques
+        setInterval(updateStats, 2000);
+    </script>
+</body>
+
+</html>
