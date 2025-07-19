@@ -1,0 +1,30 @@
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+
+    &.primary {
+        background-color: #2196f3;
+        color: white;
+    }
+
+    &.success {
+        background-color: #4caf50;
+        color: white;
+    }
+
+    &.danger {
+        background-color: #f44336;
+        color: white;
+    }
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+}
