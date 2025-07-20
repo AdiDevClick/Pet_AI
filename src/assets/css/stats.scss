@@ -1,0 +1,27 @@
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+
+    &__item {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        border: 1px solid #e2e8f0;
+    }
+
+    &__value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2196f3;
+    }
+
+    &__label {
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        color: #718096;
+        margin-top: 10px;
+    }
+}
