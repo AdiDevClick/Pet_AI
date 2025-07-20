@@ -14,6 +14,7 @@ import {
     resetSystem,
     saveModel,
 } from '@/components/Controls/controlsFunctions.ts';
+import { ComparePets } from '@/components/PetsCompare/ComparePets.tsx';
 const images = [
     {
         id: '1',
@@ -105,6 +106,50 @@ export function App() {
     const [accuracy, setAccuracy] = useState(0);
     const [showClassifier, setShowClassifier] = useState(true);
 
+    // useEffect(() => {
+    //     // Initialiser le classificateur d'images
+    //     if (window.imageClassifier) {
+    //         window.imageClassifier.createModel().then((success) => {
+    //             if (success) {
+    //                 setShowClassifier(true);
+    //             } else {
+    //                 console.error('Échec de la création du modèle');
+    //             }
+    //         });
+    //     } else {
+    //         console.error('Le classificateur d\'images n\'est pas disponible');
+    //     }
+    // }, []);
+
+    useEffect(() => {
+        if (resetSystem) {
+            setOnLoad(true);
+            setCount(0);
+            setPredictionsCount(0);
+            setTrainingCount(0);
+            setAccuracy(0);
+            setShowClassifier(false);
+
+            const timer = setTimeout(() => {
+                setResetSystem(false);
+            }, 2000);
+            return () => clearTimeout(timer);
+            // } else {
+            //     setOnLoad(true);
+        }
+    }, [resetSystem]);
+
+    // useEffect(() => {
+    //     if (resetSystem) {
+    //         const timer = setTimeout(() => {
+    //             setResetSystem(false);
+    //         }, 2000);
+    //         return () => clearTimeout(timer);
+    //     }
+    // }, [resetSystem]);
+
+    const animalName = 'Chat';
+
     functionProps = {
         ...functionProps,
         onLoad,
@@ -121,15 +166,6 @@ export function App() {
     //     return <ImageClassifier />;
     // }
 
-    useEffect(() => {
-        if (resetSystem) {
-            const timer = setTimeout(() => {
-                setResetSystem(false);
-            }, 2000);
-            return () => clearTimeout(timer);
-        }
-    }, [resetSystem]);
-
     const shuffledImages = [...images].sort(() => 0.5 - Math.random());
 
     return (
@@ -138,15 +174,20 @@ export function App() {
             <Tasks>chats</Tasks>
             <Controls buttons={buttons} />
             <Status
-                trainingCount={trainingCount}
+                // trainingCount={trainingCount}
                 accuracy={accuracy}
                 predictionsCount={predictionsCount}
                 resetSystem={resetSystem}
                 setResetSystem={setResetSystem}
             />
             {(onLoad || count > 0) && (
-                <CardsGrid key={count} images={shuffledImages} />
+                <CardsGrid
+                    key={count}
+                    images={shuffledImages}
+                    animalName={animalName}
+                />
             )}
+            <ComparePets />
             <Instructions />
         </>
     );
