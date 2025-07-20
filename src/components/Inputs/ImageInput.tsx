@@ -8,7 +8,7 @@ import {
     MAX_FILE_SIZE,
 } from '@/configs/file.config.ts';
 
-export function ImageInput({ ...props }) {
+export function ImageInput({ setInputImages, ...props }) {
     const [errors, setErrors] = useState(new Map());
     const imagePreviewRef = useRef<HTMLDivElement>(null!);
     const inputRef = useRef<HTMLInputElement>(null!);
@@ -19,20 +19,26 @@ export function ImageInput({ ...props }) {
 
         if (file) {
             if (file.size > MAX_FILE_SIZE) {
-                setErrors((prev) =>
+                return setErrors((prev) =>
                     prev.set(FILE_SIZE_LIMIT_EXCEEDED_ERROR, false)
                 );
             }
             if (!ACCEPTED_FILE_MIME_TYPES.includes(file.type)) {
-                setErrors((prev) =>
+                return setErrors((prev) =>
                     prev.set(FILE_MIME_NOT_ACCEPTED_ERROR, false)
                 );
             }
 
             // Add image preview to the card
-            const image = URL.createObjectURL(file);
+            const image = new Image();
+            image.src = URL.createObjectURL(file);
+
             target.classList.add('filled');
-            imagePreviewRef.current.style.backgroundImage = `url(${image})`;
+            imagePreviewRef.current.style.backgroundImage = `url(${image.src})`;
+            setInputImages((prev) => ({
+                ...prev,
+                [props.previewId]: image,
+            }));
         }
     };
 
