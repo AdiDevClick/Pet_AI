@@ -1,5 +1,8 @@
 import { Button } from '@/components/Buttons/Button.tsx';
+import { CardFeedback } from '@/components/Cards/CardFeedback.tsx';
+import { CardPrediction } from '@/components/Cards/CardPrediction.tsx';
 import { GenericCard } from '@/components/Cards/GenericCard.tsx';
+import { GenericFigure } from '@/components/Images/GenericFigure.tsx';
 import { useTensorFlowScript } from '@/hooks/useTensorFlowScript';
 import { MouseEvent, useState } from 'react';
 
@@ -10,9 +13,9 @@ export function TrainingCard({
     image: { id: string; url: string; description: string };
     animalName: string;
 }) {
-    const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+    const [isCorrect, setIsCorrect] = useState<boolean>(null!);
     const [showPrediction, setShowPrediction] = useState(false);
-    const [prediction, setPrediction] = useState<any>(null);
+    const [prediction, setPrediction] = useState<any>(null!);
     const { addTrainingData, predict } = useTensorFlowScript();
 
     let className = '';
@@ -63,16 +66,7 @@ export function TrainingCard({
 
     return (
         <GenericCard className={className} id={`card-${image.id}`}>
-            <figure>
-                <img
-                    src={image.url}
-                    alt={`Image ${image.description}`}
-                    crossOrigin={'anonymous'}
-                />
-                <figcaption className="card__description">
-                    {image.description}
-                </figcaption>
-            </figure>
+            <GenericFigure image={image} className="card__description" />
             <div className="card__actions">
                 <Button
                     className="success"
@@ -90,35 +84,17 @@ export function TrainingCard({
                     🔮 Prédire
                 </Button>
             </div>
-            {isCorrect !== null && (
-                <div
-                    className="card__feedback"
-                    id={`feedback-${image.id}`}
-                    style={{ color: isCorrect ? 'green' : 'red' }}
-                >
-                    {isCorrect ? '✅ Bonne réponse!' : '❌ Mauvaise réponse'}
-                    <br />
-                    <small>
-                        Réalité: {isCorrect ? animalName : 'Autre animal'}
-                    </small>
-                </div>
-            )}
-            {showPrediction && prediction && (
-                <div
-                    className="prediction-result"
-                    id={`prediction-${image.id}`}
-                >
-                    <strong>🔮 Prédiction IA:</strong>
-                    <br />
-                    {prediction.prediction === 'correct'
-                        ? `✅ ${animalName} détecté`
-                        : `❌ Pas ${animalName}`}
-                    <br />
-                    <small>
-                        Confiance: {(prediction.confidence * 100).toFixed(1)}%
-                    </small>
-                </div>
-            )}
+            <CardFeedback
+                isCorrect={isCorrect}
+                animalName={animalName}
+                image={image}
+            />
+            <CardPrediction
+                showPrediction={showPrediction}
+                prediction={prediction}
+                animalName={animalName}
+                image={image}
+            />
         </GenericCard>
     );
 }
