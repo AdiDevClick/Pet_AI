@@ -1,8 +1,9 @@
+import { GenericTitle } from '@/components/Texts/GenericTitle.tsx';
 import '@css/instructions.scss';
 export function Instructions() {
     return (
         <div className="instructions">
-            <h3>📖 Instructions d'utilisation</h3>
+            <GenericTitle>📖 Instructions d'utilisation</GenericTitle>
             <ul>
                 <li>
                     <strong>Étape 1:</strong> Regardez chaque image et décidez
