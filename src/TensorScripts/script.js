@@ -20,10 +20,13 @@
 // Permet l'entraînement interactif similaire aux captchas de Google
 
 class ImageClassifierTF {
-    constructor() {
+    constructor(taskName = 'general-classifier') {
+        this.taskName = taskName;
         this.model = null;
         this.isTraining = false;
         this.trainingData = [];
+        this.finalAccuracy = 0;
+        this.predictionCount = 0;
         this.classes = ['incorrect', 'correct'];
         this.imageSize = 224;
     }
@@ -77,10 +80,10 @@ class ImageClassifierTF {
                     }),
                     tf.layers.dropout({ rate: 0.3 }),
 
-                    // Couche de sortie
+                    // Couche de sortie - pour classification binaire
                     tf.layers.dense({
-                        units: this.classes.length,
-                        activation: 'softmax',
+                        units: 1, // Changé de 2 à 1 pour classification binaire
+                        activation: 'sigmoid', // Changé de softmax à sigmoid
                     }),
                 ],
             });
@@ -88,7 +91,7 @@ class ImageClassifierTF {
             // Compiler le modèle
             this.model.compile({
                 optimizer: tf.train.adam(0.001),
-                loss: 'sparseCategoricalCrossentropy',
+                loss: 'binaryCrossentropy', // Changé pour classification binaire
                 metrics: ['accuracy'],
             });
 
@@ -168,7 +171,8 @@ class ImageClassifierTF {
             const labels = this.trainingData.map((item) => item.label);
 
             const xs = tf.concat(images);
-            const ys = tf.tensor1d(labels, 'int32');
+            // Convertir les labels en float32 pour éviter l'erreur
+            const ys = tf.tensor1d(labels, 'float32');
 
             // Entraîner le modèle
             const history = await this.model.fit(xs, ys, {
@@ -184,6 +188,9 @@ class ImageClassifierTF {
                                 4
                             )}, accuracy=${logs.acc.toFixed(4)}`
                         );
+
+                        // Stocker la dernière accuracy
+                        this.finalAccuracy = (logs.acc * 100).toFixed(1);
 
                         // Mettre à jour l'affichage si l'élément existe
                         const outputDiv =
@@ -206,14 +213,8 @@ class ImageClassifierTF {
                         if (outputDiv) {
                             outputDiv.innerHTML = `
                                 <strong>✅ Entraînement terminé!</strong><br>
-                                Précision finale: ${(
-                                    history.history.acc[
-                                        history.history.acc.length - 1
-                                    ] * 100
-                                ).toFixed(1)}%<br>
-                                Données utilisées: ${
-                                    this.trainingData.length
-                                } échantillons
+                                Précision finale: ${this.finalAccuracy}%<br>
+                                Données utilisées: ${this.trainingData.length} échantillons
                             `;
                         }
                     },
@@ -249,11 +250,17 @@ class ImageClassifierTF {
             preprocessed.dispose();
             prediction.dispose();
 
+            // Pour classification binaire avec sigmoid
+            const correctProbability = probabilities[0];
+            const incorrectProbability = 1 - correctProbability;
+
+            this.predictionCount++;
+
             return {
-                incorrect: probabilities[0],
-                correct: probabilities[1],
-                prediction: probabilities[1] > 0.5 ? 'correct' : 'incorrect',
-                confidence: Math.max(probabilities[0], probabilities[1]),
+                incorrect: incorrectProbability,
+                correct: correctProbability,
+                prediction: correctProbability > 0.5 ? 'correct' : 'incorrect',
+                confidence: Math.max(correctProbability, incorrectProbability),
             };
         } catch (error) {
             console.error('❌ Erreur lors de la prédiction:', error);
@@ -279,41 +286,44 @@ class ImageClassifierTF {
     }
 
     // Sauvegarder le modèle
-    async saveModel(name = 'image-classifier') {
+    async saveModel(name = null) {
         if (!this.model) {
             console.log('⚠️ Aucun modèle à sauvegarder');
             return;
         }
 
+        const modelName = name || `image-classifier-${this.taskName}`;
+
         try {
-            // await this.model.save(`localstorage://${name}`);
-            window.localStorage.setItem(name, JSON.stringify(this.model));
-            console.log(`💾 Modèle sauvegardé: ${name}`);
+            await this.model.save(`localstorage://${modelName}`);
+            console.log(`💾 Modèle sauvegardé: ${modelName}`);
         } catch (error) {
             console.error('❌ Erreur lors de la sauvegarde:', error);
         }
     }
 
     // Charger un modèle sauvegardé
-    async loadModel(name = 'image-classifier') {
+    async loadModel(name = null) {
+        const modelName = name || `image-classifier-${this.taskName}`;
+
         try {
-            const modelJSON = window.localStorage.getItem(name);
-            if (modelJSON) {
-                this.model = await tf.loadLayersModel(
-                    tf.io.fromMemory(JSON.parse(modelJSON))
-                );
-                console.log(`📂 Modèle chargé: ${name}`);
-                return true;
-            }
+            this.model = await tf.loadLayersModel(`localstorage://${modelName}`);
+            console.log(`📂 Modèle chargé: ${modelName}`);
+            return true;
         } catch (error) {
-            console.log(`⚠️ Impossible de charger le modèle: ${name}`);
+            console.log(`⚠️ Impossible de charger le modèle: ${modelName}`);
             return false;
         }
     }
 }
 
-// Initialiser le classificateur global
-window.imageClassifier = new ImageClassifierTF();
+// Initialiser le classificateur global (approche flexible)
+window.imageClassifier = new ImageClassifierTF('general');
+
+// Exemple d'utilisation avec plusieurs classificateurs spécialisés :
+// window.carClassifier = new ImageClassifierTF('cars-detection');
+// window.animalClassifier = new ImageClassifierTF('animals-cats-dogs');
+// window.trafficClassifier = new ImageClassifierTF('traffic-lights');
 
 // Fonction principale d'exécution
 async function run() {
