@@ -1,0 +1,53 @@
+.image-preview-container {
+    .image-preview {
+        position: relative;
+        display: grid;
+        grid-template-rows: auto 1fr;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+        border-radius: 10px;
+        aspect-ratio: 16 / 9;
+        transition: background 0.3s ease;
+
+        &::before {
+            content: url("../icons/picture.svg");
+            transition: scale 0.3s ease;
+        }
+
+        &__title {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        &__input {
+            cursor: pointer;
+            position: absolute;
+            opacity: 0;
+            inset: 0;
+            z-index: 1;
+        }
+
+        &__info {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        button {
+            place-self: center;
+            max-width: fit-content;
+        }
+
+        &:has(input[type="file"].filled) {
+
+            &::before,
+            button,
+            p,
+            label {
+                opacity: 0;
+            }
+        }
+    }
+}
