@@ -4,6 +4,8 @@ import '@css/button.scss';
 /**
  * Generic Button Component that renders a styled button element.
  *
+ * @description Default className : "btn"
+ *
  * @param children - The content to be displayed inside the button.
  * @param type - **@Default="button"** - The type of the button.
  * @param props- Additional properties to be passed to the button element.
@@ -15,7 +17,11 @@ export function Button<T>({
     ...props
 }: ButtonProps<T>) {
     return (
-        <button className={`btn ${props.className}`} type={type} {...props}>
+        <button
+            {...props}
+            className={`btn ${props.className ? props.className : ''}`}
+            type={type}
+        >
             {children}
         </button>
     );
