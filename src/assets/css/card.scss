@@ -1,0 +1,76 @@
+.card {
+    background-color: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+    height: fit-content;
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    &.selected-correct {
+        border-color: #4caf50;
+        background-color: #f1f8e9;
+    }
+
+    &.selected-incorrect {
+        border-color: #f44336;
+        background-color: #fce4ec;
+    }
+
+    & img {
+        width: 100%;
+        object-fit: cover;
+        border-radius: 10px;
+        transition: opacity 0.3s ease;
+        opacity: 1;
+
+        @starting-style {
+            opacity: 0;
+        }
+    }
+
+    &__description {
+        margin: 10px;
+        font-size: 14px;
+        color: #333;
+        text-align: center;
+    }
+
+    &__actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    &__feedback {
+        text-align: center;
+        margin-top: 10px;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    &:has(input[type="file"]:hover) {
+        box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+    }
+
+    &:has(input[type="file"].filled) {
+        padding: unset;
+    }
+}
+
+
+
+
+
+
+.prediction-result {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    font-size: 12px;
+}
