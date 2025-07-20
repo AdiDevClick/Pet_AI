@@ -1,0 +1,30 @@
+.generic-layout {
+    display: grid;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background: #fffaf0;
+    gap: 30px;
+    // border-color: #d69e2e;
+
+    &__title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #333;
+        margin: 20px 0;
+    }
+
+    &__description {
+        font-size: 1rem;
+        color: #666;
+        text-align: left;
+    }
+
+    &__alert {
+        padding: 20px;
+        background: #edf2f7;
+        border-radius: 10px;
+        font-family: monospace;
+    }
+}
