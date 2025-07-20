@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Identification d'Animaux</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px dashed #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .comparison-area {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .image-upload {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .image-preview {
+            width: 200px;
+            height: 200px;
+            border: 3px solid #e2e8f0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+            background: #f7fafc;
+            overflow: hidden;
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+
+        .training-section {
+            background: #f0fff4;
+            border-color: #38a169;
+        }
+
+        .comparison-section {
+            background: #f0f8ff;
+            border-color: #3182ce;
+        }
+
+        .results-section {
+            background: #fffaf0;
+            border-color: #d69e2e;
+        }
+
+        input[type="file"] {
+            margin: 10px 0;
+            padding: 8px;
+            border: 1px solid #cbd5e0;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .same-animal {
+            background: linear-gradient(45deg, #48bb78, #38a169);
+        }
+
+        .different-animal {
+            background: linear-gradient(45deg, #f56565, #e53e3e);
+        }
+
+        .compare-btn {
+            background: linear-gradient(45deg, #4299e1, #3182ce);
+        }
+
+        #results {
+            margin-top: 20px;
+            padding: 20px;
+            background: #edf2f7;
+            border-radius: 10px;
+            font-family: monospace;
+        }
+
+        .status {
+            text-align: center;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .status.success {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+        }
+
+        .status.warning {
+            background: #fefcbf;
+            color: #744210;
+            border: 1px solid #f6e05e;
+        }
+
+        .status.error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #fc8181;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #4a5568;
+        }
+
+        .stat-label {
+            color: #718096;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🐾 Test - Identification d'Animaux</h1>
+
+        <div id="status" class="status warning">
+            Initialisation en cours...
+        </div>
+
+        <div class="section training-section">
+            <h3>🏋️ Entraînement du Modèle</h3>
+            <p>Ajoutez des paires d'images pour entraîner le modèle à reconnaître si deux photos montrent le même
+                animal.</p>
+
+            <div class="comparison-area">
+                <div class="image-upload">
+                    <label>Image 1:</label>
+                    <input type="file" id="train-img1" accept="image/*">
+                    <div class="image-preview" id="train-preview1">
+                        <span>Sélectionnez une image</span>
+                    </div>
+                </div>
+
+                <div class="image-upload">
+                    <label>Image 2:</label>
+                    <input type="file" id="train-img2" accept="image/*">
+                    <div class="image-preview" id="train-preview2">
+                        <span>Sélectionnez une image</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="same-animal" onclick="addTrainingPair(true)">
+                    ✅ Même Animal
+                </button>
+                <button class="different-animal" onclick="addTrainingPair(false)">
+                    ❌ Animaux Différents
+                </button>
+                <button onclick="trainModel()">🏋️ Entraîner Maintenant</button>
+                <button onclick="resetModel()">🔄 Réinitialiser</button>
+            </div>
+        </div>
+
+        <div class="section comparison-section">
+            <h3>🔍 Comparaison d'Images</h3>
+            <p>Comparez deux nouvelles images pour voir si elles montrent le même animal.</p>
+
+            <div class="comparison-area">
+                <div class="image-upload">
+                    <label>Image à comparer 1:</label>
+                    <input type="file" id="compare-img1" accept="image/*">
+                    <div class="image-preview" id="compare-preview1">
+                        <span>Sélectionnez une image</span>
+                    </div>
+                </div>
+
+                <div class="image-upload">
+                    <label>Image à comparer 2:</label>
+                    <input type="file" id="compare-img2" accept="image/*">
+                    <div class="image-preview" id="compare-preview2">
+                        <span>Sélectionnez une image</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="compare-btn" onclick="compareImages()">
+                    🔮 Comparer les Images
+                </button>
+            </div>
+        </div>
+
+        <div class="section results-section">
+            <h3>📊 Résultats et Statistiques</h3>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="training-pairs">0</div>
+                    <div class="stat-label">Paires d'entraînement</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="comparisons">0</div>
+                    <div class="stat-label">Comparaisons effectuées</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="accuracy">0%</div>
+                    <div class="stat-label">Précision du modèle</div>
+                </div>
+            </div>
+
+            <div id="results">
+                <strong>Aucune comparaison effectuée</strong>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>💾 Gestion du Modèle</h3>
+            <button onclick="saveModel()">💾 Sauvegarder le Modèle</button>
+            <button onclick="loadModel()">📂 Charger le Modèle</button>
+        </div>
+    </div>
+
+    <!-- Inclure TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <!-- Inclure notre script d'identification -->
+    <script src="/src/TensorScripts/animalIdentification.js"></script>
+
+    <script>
+        let trainImg1 = null;
+        let trainImg2 = null;
+        let compareImg1 = null;
+        let compareImg2 = null;
+
+        // Initialiser le système au chargement
+        window.addEventListener('load', async () => {
+            try {
+                await initAnimalIdentification();
+                updateStatus('✅ Système d\'identification prêt!', 'success');
+                updateStats();
+            } catch (error) {
+                console.error('Erreur d\'initialisation:', error);
+                updateStatus('❌ Erreur d\'initialisation', 'error');
+            }
+        });
+
+        // Gestion des uploads d'images d'entraînement
+        document.getElementById('train-img1').addEventListener('change', (e) => {
+            handleImageUpload(e, 'train-preview1', (img) => trainImg1 = img);
+        });
+
+        document.getElementById('train-img2').addEventListener('change', (e) => {
+            handleImageUpload(e, 'train-preview2', (img) => trainImg2 = img);
+        });
+
+        // Gestion des uploads d'images de comparaison
+        document.getElementById('compare-img1').addEventListener('change', (e) => {
+            handleImageUpload(e, 'compare-preview1', (img) => compareImg1 = img);
+        });
+
+        document.getElementById('compare-img2').addEventListener('change', (e) => {
+            handleImageUpload(e, 'compare-preview2', (img) => compareImg2 = img);
+        });
+
+        function handleImageUpload(event, previewId, callback) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const preview = document.getElementById(previewId);
+                        preview.innerHTML = '';
+                        preview.appendChild(img);
+                        callback(img);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function addTrainingPair(isSameAnimal) {
+            if (!trainImg1 || !trainImg2) {
+                alert('Veuillez sélectionner les deux images d\'entraînement');
+                return;
+            }
+
+            try {
+                await window.animalIdentifier.addTrainingPair(trainImg1, trainImg2, isSameAnimal);
+                updateStats();
+                updateStatus(`✅ Paire ajoutée: ${isSameAnimal ? 'Même animal' : 'Animaux différents'}`, 'success');
+            } catch (error) {
+                console.error('Erreur lors de l\'ajout:', error);
+                updateStatus('❌ Erreur lors de l\'ajout de la paire', 'error');
+            }
+        }
+
+        async function trainModel() {
+            try {
+                updateStatus('🏋️ Entraînement en cours...', 'warning');
+                await window.animalIdentifier.trainModel();
+                updateStats();
+                updateStatus('✅ Entraînement terminé!', 'success');
+            } catch (error) {
+                console.error('Erreur d\'entraînement:', error);
+                updateStatus('❌ Erreur lors de l\'entraînement', 'error');
+            }
+        }
+
+        async function compareImages() {
+            if (!compareImg1 || !compareImg2) {
+                alert('Veuillez sélectionner les deux images à comparer');
+                return;
+            }
+
+            try {
+                updateStatus('🔍 Comparaison en cours...', 'warning');
+                const result = await window.animalIdentifier.compareAnimals(compareImg1, compareImg2);
+
+                if (result) {
+                    displayResults(result);
+                    updateStats();
+                    updateStatus('✅ Comparaison terminée!', 'success');
+                } else {
+                    updateStatus('❌ Erreur lors de la comparaison', 'error');
+                }
+            } catch (error) {
+                console.error('Erreur de comparaison:', error);
+                updateStatus('❌ Erreur lors de la comparaison', 'error');
+            }
+        }
+
+        function displayResults(result) {
+            const resultsDiv = document.getElementById('results');
+            const sameAnimal = result.sameAnimal;
+            const confidence = (result.confidence * 100).toFixed(1);
+
+            resultsDiv.innerHTML = `
+                <h4>🔍 Résultat de la Comparaison:</h4>
+                <p><strong>Verdict:</strong> ${sameAnimal ? '✅ Même animal' : '❌ Animaux différents'}</p>
+                <p><strong>Score de similarité:</strong> ${(result.similarity * 100).toFixed(1)}%</p>
+                <p><strong>Confiance:</strong> ${confidence}%</p>
+                <p><strong>Seuil utilisé:</strong> ${(result.details.threshold * 100).toFixed(0)}%</p>
+                <p><strong>Comparaison #:</strong> ${result.details.comparisonNumber}</p>
+                <div style="background: ${sameAnimal ? '#c6f6d5' : '#fed7d7'}; 
+                           color: ${sameAnimal ? '#22543d' : '#742a2a'}; 
+                           padding: 10px; border-radius: 5px; margin-top: 10px;">
+                    <strong>${sameAnimal ? '🐾 Ces images semblent montrer le même animal!' : '🔍 Ces images semblent montrer des animaux différents.'}</strong>
+                </div>
+            `;
+        }
+
+        async function resetModel() {
+            if (confirm('Êtes-vous sûr de vouloir réinitialiser le modèle? Toutes les données d\'entraînement seront perdues.')) {
+                try {
+                    await window.animalIdentifier.reset();
+                    updateStats();
+                    updateStatus('🔄 Modèle réinitialisé', 'success');
+                    document.getElementById('results').innerHTML = '<strong>Modèle réinitialisé</strong>';
+                } catch (error) {
+                    console.error('Erreur de réinitialisation:', error);
+                    updateStatus('❌ Erreur lors de la réinitialisation', 'error');
+                }
+            }
+        }
+
+        async function saveModel() {
+            try {
+                await window.animalIdentifier.saveModel();
+                updateStatus('💾 Modèle sauvegardé!', 'success');
+            } catch (error) {
+                console.error('Erreur de sauvegarde:', error);
+                updateStatus('❌ Erreur lors de la sauvegarde', 'error');
+            }
+        }
+
+        async function loadModel() {
+            try {
+                const success = await window.animalIdentifier.loadModel();
+                if (success) {
+                    updateStats();
+                    updateStatus('📂 Modèle chargé!', 'success');
+                } else {
+                    updateStatus('⚠️ Aucun modèle sauvegardé trouvé', 'warning');
+                }
+            } catch (error) {
+                console.error('Erreur de chargement:', error);
+                updateStatus('❌ Erreur lors du chargement', 'error');
+            }
+        }
+
+        function updateStats() {
+            if (window.animalIdentifier) {
+                document.getElementById('training-pairs').textContent = window.animalIdentifier.trainingPairs.length;
+                document.getElementById('comparisons').textContent = window.animalIdentifier.comparisonCount;
+                document.getElementById('accuracy').textContent = window.animalIdentifier.finalAccuracy + '%';
+            }
+        }
+
+        function updateStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+        }
+    </script>
+</body>
+
+</html>
