@@ -22,9 +22,18 @@
     }
 
     &__alert {
+        display: grid;
+        gap: 5px;
         padding: 20px;
         background: #edf2f7;
         border-radius: 10px;
         font-family: monospace;
+        text-align: left;
+
+        h3 {
+            padding: 5px 0;
+            font-size: 1.2rem;
+            color: #2d3748;
+        }
     }
 }
