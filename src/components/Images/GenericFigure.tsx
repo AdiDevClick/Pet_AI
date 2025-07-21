@@ -1,18 +1,25 @@
-import { HTMLAttributes } from 'react';
+import { HTMLAttributes, Ref, useId } from 'react';
 
 export function GenericFigure<T extends HTMLAttributes<HTMLDivElement>>({
     image,
+    ref,
     ...props
 }: {
     image: {
         url: string;
         description: string;
+        id: string;
     };
+    ref?: Ref<HTMLImageElement>;
 } & T) {
+    const id = useId();
+
     return (
         <figure {...props} className={'generic-layout-figure'}>
             <img
-                src={image.url}
+                ref={ref}
+                id={`figure-${id}`}
+                src={image.image}
                 alt={`Image ${image.description}`}
                 crossOrigin={'anonymous'}
                 className={'figure__image'}
