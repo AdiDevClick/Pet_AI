@@ -24,13 +24,11 @@ export function ComparePets() {
         message: '',
         className: '',
     });
-    const [inputImages, setInputImages] = useState({
-        preview1: null,
-        preview2: null,
-    });
+    const [inputImages, setInputImages] = useState([]);
     const [result, setResult] = useState(null);
+
     const compareImages = async () => {
-        if (!inputImages.preview1 || !inputImages.preview2) {
+        if (inputImages.length < 2) {
             alert('Veuillez sélectionner les deux images à comparer');
             return;
         }
@@ -41,8 +39,7 @@ export function ComparePets() {
                 className: 'warning',
             });
             const response = await window.animalIdentifier.compareAnimals(
-                inputImages.preview1,
-                inputImages.preview2
+                inputImages
             );
 
             if (!response) {
@@ -51,13 +48,11 @@ export function ComparePets() {
                     className: 'error',
                 });
             }
-            setResult(response);
-            // displayResults(result);
-            // updateStats();
             setStatusMessage({
                 message: '✅ Comparaison terminée!',
                 className: 'success',
             });
+            setResult(response);
         } catch (error) {
             console.error('Erreur de comparaison:', error);
             setStatusMessage({
@@ -95,11 +90,19 @@ export function ComparePets() {
             <Button
                 className="comparison__btn "
                 onClick={compareImages}
-                disabled={!inputImages.preview1 || !inputImages.preview2}
+                disabled={inputImages.length < 2}
+                // disabled={!inputImages.preview1 || !inputImages.preview2}
             >
-                🔮 Comparer les Images
+                Comparer les Images
             </Button>
             <div className="generic-layout__alert">
+                {statusMessage.message && (
+                    <p
+                        className={`generic-layout__alert ${statusMessage.className}`}
+                    >
+                        {statusMessage.message}
+                    </p>
+                )}
                 {result && (
                     <>
                         <h3>Résultat de la Comparaison:</h3>
@@ -147,6 +150,7 @@ export function ComparePets() {
                         </div>
                     </>
                 )}
+
                 {!result && 'Aucune comparaison effectuée'}
             </div>
         </section>
