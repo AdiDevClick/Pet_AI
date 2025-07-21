@@ -352,7 +352,7 @@
             }
 
             try {
-                await window.animalIdentifier.addTrainingPair(trainImg1, trainImg2, isSameAnimal);
+                await window.animalIdentifier.addTrainingPair([trainImg1, trainImg2], isSameAnimal);
                 updateStats();
                 updateStatus(`✅ Paire ajoutée: ${isSameAnimal ? 'Même animal' : 'Animaux différents'}`, 'success');
             } catch (error) {
