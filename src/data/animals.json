@@ -1,18 +1,20 @@
 [
     {
+        "id": "1",
         "name": "Léa",
         "species": "dog",
         "age": 12,
         "breed": "Golden Retriever",
-        "image": ["/lea/lea.jpg", "/lea/lea2.jpg", "/lea/lea3.jpg"],
+        "images": ["/lea/lea.jpg", "/lea/lea2.jpg", "/lea/lea3.jpg"],
         "description": "Léa is a friendly and loyal Golden Retriever who loves to play fetch and go for long walks. She enjoys being around people and is great with children."
     },
     {
+        "id": "2",
         "name": "Samy",
         "species": "dog",
         "age": 5,
         "breed": "Siamese",
-        "image": [
+        "images": [
             "/samy/samy.jpg",
             "/samy/samy2.jpg",
             "/samy/samy3.jpg",
@@ -21,49 +23,272 @@
         "description": "Samy is a curious Siamese dog who loves to explore her surroundings. She is playful and enjoys chasing after toys."
     },
     {
+        "id": "3",
         "name": "Vivi",
         "species": "dog",
         "age": 5,
         "breed": "Siamese",
-        "image": ["/vivi/vivi.jpg", "/vivi/vivi2.jpg", "/vivi/vivi3.jpg"],
+        "images": [
+            "/vivi/vivi.jpg",
+            "/vivi/vivi2.jpg",
+            "/vivi/vivi3.jpg",
+            "/vivi/vivi4.jpg",
+            "/vivi/vivi5.jpg",
+            "/vivi/vivi6.jpg",
+            "/vivi/vivi7.jpg",
+            "/vivi/vivi8.jpg",
+            "/vivi/vivi9.jpg",
+            "/vivi/vivi10.jpg"
+        ],
         "description": "Vivi is a curious Siamese dog who loves to explore her surroundings. She is playful and enjoys chasing after toys."
     },
     {
+        "id": "4",
         "name": "Misti",
         "species": "cat",
         "age": 3,
         "breed": "Siamese",
-        "image": ["/misti/misti.jpg", "/misti/misti2.jpg", "/misti/misti3.jpg"],
+        "images": ["/misti/misti.jpg"],
         "description": "Misti is a playful Siamese cat who loves to chase after toys and cuddle with her humans. She has a sweet personality and enjoys being around other animals."
     },
     {
+        "id": "5",
         "name": "Poppy",
         "species": "dog",
         "age": 4,
         "breed": "Siamese",
-        "image": [
+        "images": [
             "/poppy/poppy.jpg",
             "/poppy/poppy2.jpg",
             "/poppy/poppy3.jpg",
             "/poppy/poppy4.jpg",
             "/poppy/poppy5.jpg",
             "/poppy/poppy6.jpg",
-            "/poppy/poppy7.jpg",
-            "/poppy/poppy8.jpg",
-            "/poppy/poppy9.jpg"
+            "/poppy/poppy7.jpg"
         ],
         "description": "Poppy is a gentle Siamese dog who enjoys lounging in the sun and playing with her toys. She is affectionate and loves to be petted."
     },
     {
+        "id": "6",
         "name": "Others",
         "species": "others",
         "age": 2,
         "breed": "Siamese",
-        "image": [
+        "images": [
             "/others/other.jpg",
             "/others/other2.jpg",
             "/others/other3.jpg"
         ],
         "description": "Others is a playful Siamese cat who loves to chase after toys and cuddle with her humans. She has a sweet personality and enjoys being around other animals."
+    },
+    {
+        "id": "7",
+        "images": [
+            "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300&h=300&fit=crop"
+        ],
+        "description": "Chat blanc et gris",
+        "name": "Whiskers",
+        "breed": "Siamese"
+    },
+    {
+        "id": "8",
+        "images": [
+            "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=300&h=300&fit=crop"
+        ],
+        "description": "Chien",
+        "name": "Fido",
+        "breed": "Siamese"
+    },
+    {
+        "id": "9",
+        "images": [
+            "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=300&h=300&fit=crop"
+        ],
+        "description": "Chat orange",
+        "name": "Meow",
+        "breed": "Siamese"
+    },
+    {
+        "id": "10",
+        "images": [
+            "https://images.unsplash.com/photo-1552053831-71594a27632d?w=300&h=300&fit=crop"
+        ],
+        "description": "Chien",
+        "name": "Rex",
+        "breed": "Siamese"
+    },
+    {
+        "id": "11",
+        "images": [
+            "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=300&h=300&fit=crop"
+        ],
+        "description": "Chat noir et blanc",
+        "name": "Mimi",
+        "breed": "Siamese"
+    },
+    {
+        "id": "12",
+        "images": [
+            "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop"
+        ],
+        "description": "Lapin",
+        "name": "Doudou",
+        "breed": "Siamese"
+    },
+    {
+        "id": "13",
+        "images": [
+            "https://images.unsplash.com/photo-1519052537078-e6302a4968d4?w=300&h=300&fit=crop"
+        ],
+        "description": "Chat gris",
+        "name": "Tommy",
+        "breed": "Siamese"
+    },
+    {
+        "id": "14",
+        "images": [
+            "https://images.unsplash.com/photo-1544568100-847a948585b9?w=300&h=300&fit=crop"
+        ],
+        "name": "Tom",
+        "description": "Chien",
+        "breed": "Siamese"
+    },
+    {
+        "id": "15",
+        "images": [
+            "/tiger/tiger.jpg",
+            "/tiger/tiger2.jpg",
+            "/tiger/tiger3.jpg",
+            "/tiger/tiger4.jpg",
+            "/tiger/tiger5.jpg",
+            "/tiger/tiger6.jpg",
+            "/tiger/tiger7.jpg",
+            "/tiger/tiger8.jpg"
+        ],
+        "name": "Tiger",
+        "description": "Cat",
+        "breed": "Siamese"
+    },
+    {
+        "id": "16",
+        "name": "Friend",
+        "species": "Cat",
+        "age": 5,
+        "breed": "Siamese",
+        "images": [
+            "/friend/friend.jpg",
+            "/friend/friend2.jpg",
+            "/friend/friend3.jpg",
+            "/friend/friend4.jpg",
+            "/friend/friend5.jpg",
+            "/friend/friend6.jpg",
+            "/friend/friend7.jpg",
+            "/friend/friend8.jpg",
+            "/friend/friend9.jpg",
+            "/friend/friend10.jpg"
+        ],
+        "description": "Friend is a curious Siamese cat who loves to explore her surroundings. She is playful and enjoys chasing after toys."
+    },
+    {
+        "id": "17",
+        "name": "Rico",
+        "species": "Dog",
+        "age": 4,
+        "breed": "Labrador Retriever ",
+        "images": ["/rico/rico.jpg", "/rico/rico2.jpg", "/rico/rico3.jpg"],
+        "description": "Rico is a friendly Labrador Retriever who loves to play fetch and go for long walks. He is very loyal and enjoys spending time with his family."
+    },
+    {
+        "id": "18",
+        "name": "Jesse",
+        "species": "Dog",
+        "age": 4,
+        "breed": "Labrador Retriever",
+        "images": [
+            "/jesse/jesse.jpg",
+            "/jesse/jesse2.jpg",
+            "/jesse/jesse3.jpg",
+            "/jesse/jesse4.jpg"
+        ],
+        "description": "Jesse is a playful Labrador Retriever who loves to fetch balls and go for long walks. He is very friendly and enjoys the company of other dogs."
+    },
+    {
+        "id": "19",
+        "name": "Rory",
+        "species": "Dog",
+        "age": 3,
+        "breed": "Chihuahua",
+        "images": [
+            "/rory/rory.jpg",
+            "/rory/rory2.jpg",
+            "/rory/rory3.jpg",
+            "/rory/rory4.jpg"
+        ],
+        "description": "Jesse is a playful Labrador Retriever who loves to fetch balls and go for long walks. He is very friendly and enjoys the company of other dogs."
+    },
+    {
+        "id": "20",
+        "name": "Remi",
+        "species": "Dog",
+        "age": 3,
+        "breed": "Miniature Schnauzer",
+        "images": ["/remi/remi.jpg", "/remi/remi2.jpg"],
+        "description": "Remi is a playful Miniature Schnauzer who loves to fetch balls and go for long walks. He is very friendly and enjoys the company of other dogs."
+    },
+    {
+        "id": "21",
+        "name": "Boomer",
+        "species": "Dog",
+        "age": 1,
+        "breed": "Pit Bull Terrier",
+        "images": [
+            "/boomer/boomer.jpg",
+            "/boomer/boomer2.jpg",
+            "/boomer/boomer3.jpg",
+            "/boomer/boomer4.jpg"
+        ],
+        "description": "Boomer is a playful Miniature Schnauzer who loves to fetch balls and go for long walks. He is very friendly and enjoys the company of other dogs."
+    },
+    {
+        "id": "22",
+        "name": "Maui",
+        "species": "Dog",
+        "age": 1,
+        "breed": "Pit Bull Terrier",
+        "images": [
+            "/maui/maui.jpg",
+            "/maui/maui2.jpg",
+            "/maui/maui3.jpg",
+            "/maui/maui4.jpg"
+        ],
+        "description": "Maui is a playful Pit Bull Terrier who loves to fetch balls and go for long walks. He is very friendly and enjoys the company of other dogs."
+    },
+    {
+        "id": "23",
+        "name": "Oreo",
+        "species": "Dog",
+        "age": 1,
+        "breed": "Pit Bull Terrier",
+        "images": [
+            "/oreo/oreo.jpg",
+            "/oreo/oreo2.jpg",
+            "/oreo/oreo3.jpg",
+            "/oreo/oreo4.jpg"
+        ],
+        "description": "Oreo is a playful Pit Bull Terrier who loves to fetch balls and go for long walks. He is very friendly and enjoys the company of other dogs."
+    },
+    {
+        "id": "234",
+        "name": "Ellen",
+        "species": "Dog",
+        "age": 7,
+        "breed": "Pit Bull Terrier",
+        "images": [
+            "/ellen/ellen.jpg",
+            "/ellen/ellen2.jpg",
+            "/ellen/ellen3.jpg",
+            "/ellen/ellen4.jpg"
+        ],
+        "description": "Ellen is a playful Pit Bull Terrier who loves to fetch balls and go for long walks. She is very friendly and enjoys the company of other dogs."
     }
 ]
