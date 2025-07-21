@@ -19,8 +19,7 @@ export function Status({
     const [resultsMessage, setResultsMessage] = useState<ReactNode>(
         'Aucune comparaison effectuée'
     );
-    const { isReady, trainingCount, accuracy, predictionCount } =
-        useTensorFlowScript();
+    const { trainingCount, accuracy, predictionCount } = useTensorFlowScript();
     const {
         isInitialized,
         isTraining,
