@@ -4,7 +4,8 @@ import { CardPrediction } from '@/components/Cards/CardPrediction.tsx';
 import { GenericCard } from '@/components/Cards/GenericCard.tsx';
 import { GenericFigure } from '@/components/Images/GenericFigure.tsx';
 import { useTensorFlowScript } from '@/hooks/useTensorFlowScript';
-import { MouseEvent, useState } from 'react';
+import { MouseEvent, useRef, useState } from 'react';
+import '@css/card.scss';
 
 export function TrainingCard({
     image,
@@ -15,8 +16,10 @@ export function TrainingCard({
 }) {
     const [isCorrect, setIsCorrect] = useState<boolean>(null!);
     const [showPrediction, setShowPrediction] = useState(false);
-    const [prediction, setPrediction] = useState<any>(null!);
+    const [prediction, setPrediction] = useState(null!);
     const { addTrainingData, predict } = useTensorFlowScript();
+
+    const imageRef = useRef<HTMLImageElement>(null!);
 
     let className = '';
 
@@ -34,13 +37,7 @@ export function TrainingCard({
         e.preventDefault();
         setIsCorrect(selectedCorrect);
 
-        const img = document
-            .getElementById(`card-${image.id}`)
-            ?.querySelector('img');
-        // const img = cardElement?.querySelector('img');
-        // const img = e.target
-        //     .closest('.images-grid__card')
-        //     ?.querySelector('img');
+        const img = imageRef.current;
 
         if (img && img.complete) {
             await addTrainingData(img, selectedCorrect);
@@ -50,13 +47,11 @@ export function TrainingCard({
     const handlePredict = async (e: MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
 
-        const img = document
-            .getElementById(`card-${image.id}`)
-            ?.querySelector('img');
-        // const img = cardElement?.querySelector('img');
+        const img = imageRef.current;
 
         if (img && img.complete) {
             const result = await predict(img);
+
             if (result) {
                 setPrediction(result);
                 setShowPrediction(true);
@@ -66,7 +61,11 @@ export function TrainingCard({
 
     return (
         <GenericCard className={className} id={`card-${image.id}`}>
-            <GenericFigure image={image} className="card__description" />
+            <GenericFigure
+                ref={imageRef}
+                image={image}
+                className="card__description"
+            />
             <div className="card__actions">
                 <Button
                     className="success"
