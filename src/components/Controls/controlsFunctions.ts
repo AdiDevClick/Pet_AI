@@ -64,24 +64,33 @@ export function loadNewImages({
 
 export async function saveModel({ e, data }) {
     e.preventDefault();
-    if (data) {
-        window.localStorage.setItem('chat-classifier', JSON.stringify(data));
+
+    try {
+        await window.animalIdentifier.saveModel();
         alert('💾 Modèle sauvegardé avec succès!');
+        // if (data) {
+        //     window.localStorage.setItem('chat-classifier', JSON.stringify(data));
+        //     alert('💾 Modèle sauvegardé avec succès!');
+        // }
+    } catch (error) {
+        console.error('Erreur de sauvegarde:', error);
+        alert('❌ Erreur lors de la sauvegarde du modèle');
     }
 }
 
 export async function loadModel({ e }) {
     e.preventDefault();
-    const storageData = window.localStorage.getItem('chat-classifier');
-    if (!storageData) {
+    const success = await window.animalIdentifier.loadModel();
+    // const storageData = window.localStorage.getItem('chat-classifier');
+    if (!success) {
         alert('⚠️ Aucun modèle sauvegardé trouvé');
         return;
     }
-    const data = JSON.parse(storageData);
-    if (!data) {
-        alert('⚠️ Modèle invalide ou corrompu');
-        return;
-    }
+    // const data = JSON.parse(success);
+    // if (!data) {
+    //     alert('⚠️ Modèle invalide ou corrompu');
+    //     return;
+    // }
     alert('📂 Modèle chargé avec succès!');
     // updateStats();
 }
@@ -149,6 +158,19 @@ export async function predictAllImages({
     }
 
     // updateStats();
+}
+
+export async function trainModel({ e, ...functionProps }) {
+    e.preventDefault();
+    try {
+        // updateStatus('🏋️ Entraînement en cours...', 'warning');
+        await window.animalIdentifier.trainModel();
+        // updateStats();
+        // updateStatus('✅ Entraînement terminé!', 'success');
+    } catch (error) {
+        console.error("Erreur d'entraînement:", error);
+        // updateStatus("❌ Erreur lors de l'entraînement", 'error');
+    }
 }
 
 // export async function handleSelection(imageId, isCorrect, setIsCorrect) {
