@@ -5,7 +5,6 @@ import { Header } from './components/Header/Header.tsx';
 import { Tasks } from '@/components/Tasks/Tasks.tsx';
 import { Controls } from '@/components/Controls/Controls.tsx';
 import { Status } from '@/components/Status/Status.tsx';
-import { CardsGrid } from '@/components/Cards/CardsGrid.tsx';
 import { Instructions } from '@/components/Instructions/Instructions.tsx';
 import {
     loadModel,
@@ -13,58 +12,111 @@ import {
     predictAllImages,
     resetSystem,
     saveModel,
+    trainModel,
 } from '@/components/Controls/controlsFunctions.ts';
 import { ComparePets } from '@/components/PetsCompare/ComparePets.tsx';
-const images = [
-    {
-        id: '1',
-        url: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300&h=300&fit=crop',
-        isCorrect: true,
-        description: 'Chat blanc et gris',
-    },
-    {
-        id: '2',
-        url: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=300&h=300&fit=crop',
-        isCorrect: false,
-        description: 'Chien',
-    },
-    {
-        id: '3',
-        url: 'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=300&h=300&fit=crop',
-        isCorrect: true,
-        description: 'Chat orange',
-    },
-    {
-        id: '4',
-        url: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=300&h=300&fit=crop',
-        isCorrect: false,
-        description: 'Chien',
-    },
-    {
-        id: '5',
-        url: 'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=300&h=300&fit=crop',
-        isCorrect: true,
-        description: 'Chat noir et blanc',
-    },
-    {
-        id: '6',
-        url: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop',
-        isCorrect: false,
-        description: 'Lapin',
-    },
-    {
-        id: '7',
-        url: 'https://images.unsplash.com/photo-1519052537078-e6302a4968d4?w=300&h=300&fit=crop',
-        isCorrect: true,
-        description: 'Chat gris',
-    },
-    {
-        id: '8',
-        url: 'https://images.unsplash.com/photo-1544568100-847a948585b9?w=300&h=300&fit=crop',
-        isCorrect: false,
-        description: 'Chien',
-    },
-];
+import { TrainingTwoCards } from '@/components/Cards/TrainingTwoCards.tsx';
+import animals from '@/data/animals.json';
+import { ScrollTop } from '@/components/Buttons/ScrollTop.tsx';
+
+// const images = [
+//     {
+//         id: '7',
+//         images: [
+//             'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300&h=300&fit=crop',
+//         ],
+//         isCorrect: true,
+//         description: 'Chat blanc et gris',
+//         name: 'Whiskers',
+//     },
+//     {
+//         id: '8',
+//         images: [
+//             'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=300&h=300&fit=crop',
+//         ],
+//         isCorrect: false,
+//         description: 'Chien',
+//         name: 'Fido',
+//     },
+//     {
+//         id: '9',
+//         images: [
+//             'https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=300&h=300&fit=crop',
+//         ],
+//         isCorrect: true,
+//         description: 'Chat orange',
+//         name: 'Meow',
+//     },
+//     {
+//         id: '10',
+//         images: [
+//             'https://images.unsplash.com/photo-1552053831-71594a27632d?w=300&h=300&fit=crop',
+//         ],
+//         isCorrect: false,
+//         description: 'Chien',
+//         name: 'Rex',
+//     },
+//     {
+//         id: '11',
+//         images: [
+//             'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=300&h=300&fit=crop',
+//         ],
+//         isCorrect: true,
+//         description: 'Chat noir et blanc',
+//         name: 'Mimi',
+//     },
+//     {
+//         id: '12',
+//         images: [
+//             'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop',
+//         ],
+//         isCorrect: false,
+//         description: 'Lapin',
+//         name: 'Doudou',
+//     },
+//     {
+//         id: '13',
+//         images: [
+//             'https://images.unsplash.com/photo-1519052537078-e6302a4968d4?w=300&h=300&fit=crop',
+//         ],
+//         isCorrect: true,
+//         description: 'Chat gris',
+//         name: 'Tommy',
+//     },
+//     {
+//         id: '14',
+//         images: [
+//             'https://images.unsplash.com/photo-1544568100-847a948585b9?w=300&h=300&fit=crop',
+//         ],
+//         isCorrect: false,
+//         name: 'Tom',
+//         description: 'Chien',
+//     },
+// ];
+animals.forEach((animalData) => {
+    let count = animals.length;
+    if (animalData.images && animalData.images.length > 1) {
+        animalData.images.forEach((image, index) => {
+            if (index === 0) return;
+            count += 1;
+            animals.push(
+                createImageCard(count, {
+                    ...animalData,
+                    images: [image],
+                })
+            );
+        });
+    }
+});
+
+Object.freeze(animals);
+
+function createImageCard(lastId, animalData) {
+    return {
+        ...animalData,
+        id: lastId,
+    };
+}
 
 let functionProps = {};
 const buttons = [
@@ -83,6 +135,13 @@ const buttons = [
         className: 'success',
         functions: {
             onClick: (e) => predictAllImages({ e, ...functionProps }),
+        },
+    },
+    {
+        label: '🔧 Entraîner le Modèle',
+        className: 'success',
+        functions: {
+            onClick: (e) => trainModel({ e, ...functionProps }),
         },
     },
     {
@@ -166,8 +225,8 @@ export function App() {
     //     return <ImageClassifier />;
     // }
 
-    const shuffledImages = [...images].sort(() => 0.5 - Math.random());
-
+    const shuffledAnimals = [...animals].sort(() => 0.5 - Math.random());
+    // console.log(shuffledAnimals);
     return (
         <>
             <Header />
@@ -181,14 +240,36 @@ export function App() {
                 setResetSystem={setResetSystem}
             />
             {(onLoad || count > 0) && (
-                <CardsGrid
-                    key={count}
-                    images={shuffledImages}
-                    animalName={animalName}
-                />
+                <>
+                    {shuffledAnimals.map((animal, index) => {
+                        let nextIndex = index + 1;
+                        if (nextIndex >= shuffledAnimals.length)
+                            nextIndex = index - 10;
+                        return (
+                            <TrainingTwoCards
+                                key={(count + index) * Math.random()}
+                                animals={[
+                                    { ...animal, image: animal.images[0] },
+                                    {
+                                        ...shuffledAnimals[nextIndex],
+                                        image: shuffledAnimals[nextIndex]
+                                            ?.images[0],
+                                    },
+                                ]}
+                                animalName={animalName}
+                            />
+                        );
+                    })}
+                    {/* <CardsGrid
+                        key={count}
+                        images={shuffledAnimals}
+                        animalName={animalName}
+                    /> */}
+                </>
             )}
             <ComparePets />
             <Instructions />
+            <ScrollTop />
         </>
     );
 }
