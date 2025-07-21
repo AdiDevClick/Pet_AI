@@ -259,7 +259,7 @@ class ImageClassifierTF {
             return {
                 incorrect: incorrectProbability,
                 correct: correctProbability,
-                prediction: correctProbability > 0.5 ? 'correct' : 'incorrect',
+                prediction: correctProbability > 0.5,
                 confidence: Math.max(correctProbability, incorrectProbability),
             };
         } catch (error) {
@@ -307,7 +307,9 @@ class ImageClassifierTF {
         const modelName = name || `image-classifier-${this.taskName}`;
 
         try {
-            this.model = await tf.loadLayersModel(`localstorage://${modelName}`);
+            this.model = await tf.loadLayersModel(
+                `localstorage://${modelName}`
+            );
             console.log(`📂 Modèle chargé: ${modelName}`);
             return true;
         } catch (error) {
