@@ -1,7 +1,7 @@
 import { TrainingCard } from '@/components/Cards/TrainingCard';
 import { GenericGrid } from '@/components/Grid/GenericGrid.tsx';
-import '@css/card.scss';
-import '@css/generic-grid.scss';
+// import '@css/generic-grid.scss';
+// import '@css/card.scss';
 
 export function CardsGrid({
     images,
