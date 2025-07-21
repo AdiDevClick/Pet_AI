@@ -4,6 +4,7 @@
  */
 
 class AnimalIdentificationTF {
+    #localStorageKey = 'pair-array';
     constructor(taskName = 'animal-identification') {
         this.taskName = taskName;
         this.featureExtractor = null;
@@ -266,10 +267,10 @@ class AnimalIdentificationTF {
     }
 
     // Ajouter une paire d'images pour l'entraînement
-    async addTrainingPair(image1Element, image2Element, isSameAnimal) {
+    async addTrainingPair(imagesArray, isSameAnimal) {
         try {
-            const img1 = this.preprocessImage(image1Element, false);
-            const img2 = this.preprocessImage(image2Element, false);
+            const img1 = this.preprocessImage(imagesArray[0], false);
+            const img2 = this.preprocessImage(imagesArray[1], false);
             const label = isSameAnimal ? 1 : 0;
 
             this.trainingPairs.push({
@@ -320,6 +321,17 @@ class AnimalIdentificationTF {
                 console.error("❌ Échec de l'initialisation des modèles");
                 return;
             }
+        }
+
+        const balance = this.getDataBalance();
+        if (
+            balance.positive > balance.negative * 1.2 ||
+            balance.negative > balance.positive * 1.2
+        ) {
+            console.log(
+                `⚠️ Déséquilibre des données: ${balance.positive} positives, ${balance.negative} négatives`
+            );
+            return;
         }
 
         this.isTraining = true;
@@ -374,7 +386,8 @@ class AnimalIdentificationTF {
     }
 
     // Comparer deux images
-    async compareAnimals(image1Element, image2Element) {
+    async compareAnimals(imageArray) {
+        // async compareAnimals(image1Element, image2Element) {
         if (!this.siameseModel || !this.isInitialized) {
             console.log('⚠️ Modèle siamois non initialisé, initialisation...');
             const initSuccess = await this.initializeModels();
@@ -385,8 +398,8 @@ class AnimalIdentificationTF {
         }
 
         try {
-            const img1 = this.preprocessImage(image1Element, false);
-            const img2 = this.preprocessImage(image2Element, false);
+            const img1 = this.preprocessImage(imageArray[0], false);
+            const img2 = this.preprocessImage(imageArray[1], false);
 
             const prediction = this.siameseModel.predict([img1, img2]);
             const similarity = await prediction.data();
@@ -491,6 +504,12 @@ class AnimalIdentificationTF {
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+
+            // Save the model to local storage for quick access
+            localStorage.setItem(
+                this.#localStorageKey,
+                JSON.stringify(this.trainingPairs)
+            );
 
             console.log(`💾 Modèle sauvegardé: ${modelName}.json`);
             console.log(
@@ -629,8 +648,25 @@ class AnimalIdentificationTF {
             this.siameseModel = await tf.loadLayersModel(siameseHandler);
             console.log('✅ Modèle siamois chargé');
 
+            this.siameseModel.compile({
+                optimizer: tf.train.adam(0.0001),
+                loss: 'binaryCrossentropy',
+                metrics: ['accuracy'],
+            });
+
             this.isInitialized = true;
             const modelName = modelData.metadata?.name || 'modèle-chargé';
+            const trainingPairs = JSON.parse(
+                localStorage.getItem(this.#localStorageKey)
+            );
+            if (trainingPairs) {
+                this.trainingPairs = trainingPairs;
+                console.log(
+                    `📊 Paires d'entraînement restaurées: ${this.trainingPairs.length}`
+                );
+            } else {
+                console.log("📊 Aucune paire d'entraînement restaurée");
+            }
             console.log(`📂 Modèle chargé avec succès: ${modelName}`);
             return true;
         } catch (error) {
