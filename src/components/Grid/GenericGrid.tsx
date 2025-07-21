@@ -1,4 +1,5 @@
 import { HTMLAttributes, ReactNode } from 'react';
+import '@css/generic-grid.scss';
 
 export function GenericGrid<T extends HTMLAttributes<HTMLDivElement>>({
     children,
