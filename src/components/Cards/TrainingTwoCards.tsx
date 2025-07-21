@@ -4,20 +4,28 @@ import { CardPrediction } from '@/components/Cards/CardPrediction.tsx';
 import { GenericCard } from '@/components/Cards/GenericCard.tsx';
 import { GenericFigure } from '@/components/Images/GenericFigure.tsx';
 import { useTensorFlowScript } from '@/hooks/useTensorFlowScript.ts';
-import { HTMLAttributes, MouseEvent, ReactNode, useState } from 'react';
+import {
+    HTMLAttributes,
+    MouseEvent,
+    ReactNode,
+    useCallback,
+    useState,
+} from 'react';
+import '@css/card.scss';
 
 export function TrainingTwoCards<T extends HTMLAttributes<HTMLDivElement>>({
     children,
-    images,
+    animals,
     animalName,
 }: {
     children: ReactNode;
 } & T) {
+    const [previewImages, setPreviewImages] = useState(new Map());
     const [isCorrect, setIsCorrect] = useState<boolean>(null!);
     const [showPrediction, setShowPrediction] = useState(false);
-    const [prediction, setPrediction] = useState<any>(null!);
+    const [prediction, setPrediction] = useState(null!);
 
-    const { addTrainingData, predict } = useTensorFlowScript();
+    // const { addTrainingData, predict } = useTensorFlowScript();
 
     let className = '';
 
@@ -35,41 +43,46 @@ export function TrainingTwoCards<T extends HTMLAttributes<HTMLDivElement>>({
         e.preventDefault();
         setIsCorrect(selectedCorrect);
 
-        const img = document
-            .getElementById(`card-${image.id}`)
-            ?.querySelector('img');
-        // const img = cardElement?.querySelector('img');
-        // const img = e.target
-        //     .closest('.images-grid__card')
-        //     ?.querySelector('img');
+        if (previewImages.size === 2) {
+            const entries = Array.from(previewImages.values());
 
-        if (img && img.complete) {
-            await addTrainingData(img, selectedCorrect);
+            await window.animalIdentifier.addTrainingPair(
+                entries,
+                selectedCorrect
+            );
         }
     };
 
     const handlePredict = async (e: MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
+        if (previewImages.size === 2) {
+            const entries = Array.from(previewImages.values());
 
-        const img = document
-            .getElementById(`card-${image.id}`)
-            ?.querySelector('img');
-        // const img = cardElement?.querySelector('img');
-
-        if (img && img.complete) {
-            const result = await predict(img);
+            const result = await window.animalIdentifier.compareAnimals(
+                entries
+            );
             if (result) {
                 setPrediction(result);
                 setShowPrediction(true);
             }
         }
     };
+
+    const onImageRef = useCallback((element: HTMLImageElement) => {
+        if (element) {
+            setPreviewImages((prev) => prev.set(element.id, element));
+        }
+    }, []);
+
     return (
-        <GenericCard className={className} id={`card-${images.id}`}>
+        <GenericCard className={className}>
+            {/* <GenericCard className={className} id={`card-${images.id}`}> */}
             <div className="card__image-choice">
-                {images.map((image) => (
+                {animals.map((animal) => (
                     <GenericFigure
-                        image={image}
+                        ref={onImageRef}
+                        key={animal.id}
+                        image={animal}
                         className="card__description"
                     />
                 ))}
@@ -91,16 +104,11 @@ export function TrainingTwoCards<T extends HTMLAttributes<HTMLDivElement>>({
                     🔮 Prédire
                 </Button>
             </div>
-            <CardFeedback
-                isCorrect={isCorrect}
-                animalName={animalName}
-                image={images}
-            />
+            <CardFeedback isCorrect={isCorrect} image={animals} />
             <CardPrediction
                 showPrediction={showPrediction}
                 prediction={prediction}
-                animalName={animalName}
-                image={images}
+                image={animals}
             />
         </GenericCard>
     );
