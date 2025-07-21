@@ -8,7 +8,7 @@ import {
     MAX_FILE_SIZE,
 } from '@/configs/file.config.ts';
 
-export function ImageInput({ setInputImages, ...props }) {
+export function ImageInput({ setInputImages, previewId, ...props }) {
     const [errors, setErrors] = useState(new Map());
     const imagePreviewRef = useRef<HTMLDivElement>(null!);
     const inputRef = useRef<HTMLInputElement>(null!);
@@ -35,10 +35,7 @@ export function ImageInput({ setInputImages, ...props }) {
 
             target.classList.add('filled');
             imagePreviewRef.current.style.backgroundImage = `url(${image.src})`;
-            setInputImages((prev) => ({
-                ...prev,
-                [props.previewId]: image,
-            }));
+            setInputImages((prev) => [...prev, image]);
         }
     };
 
@@ -46,7 +43,7 @@ export function ImageInput({ setInputImages, ...props }) {
         <div ref={imagePreviewRef} className="image-preview" {...props}>
             <label
                 className="image-preview__title"
-                htmlFor={`image-upload-${props.previewId}`}
+                htmlFor={`image-upload-${previewId}`}
             >
                 {props.label}
             </label>
@@ -56,7 +53,7 @@ export function ImageInput({ setInputImages, ...props }) {
                 type="file"
                 accept="image/*"
                 onChange={handleFileChange}
-                id={`image-upload-${props.previewId}`}
+                id={`image-upload-${previewId}`}
             />
             <Button>Sélectionner une image</Button>
             <p className="image-preview__info">jpg, png : 10mo max</p>
