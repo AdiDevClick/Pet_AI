@@ -1,12 +1,15 @@
-import { HTMLAttributes, ReactNode } from 'react';
+import { HTMLAttributes } from 'react';
 
 export function CardPrediction<T extends HTMLAttributes<HTMLDivElement>>({
     showPrediction,
     prediction,
-    animalName,
+    animalName = 'les mêmes animaux',
     image,
 }: {
-    children: ReactNode;
+    animalName?: string;
+    showPrediction: boolean;
+    prediction: { prediction: boolean; confidence: number } | null;
+    image: { id: string; url: string; description: string };
 } & T) {
     return (
         <>
@@ -17,7 +20,7 @@ export function CardPrediction<T extends HTMLAttributes<HTMLDivElement>>({
                 >
                     <strong>🔮 Prédiction IA:</strong>
                     <br />
-                    {prediction.prediction === 'correct'
+                    {prediction.prediction
                         ? `✅ ${animalName} détecté`
                         : `❌ Pas ${animalName}`}
                     <br />
