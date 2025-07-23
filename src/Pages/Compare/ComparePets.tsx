@@ -4,7 +4,7 @@ import { GenericGrid } from '@/components/Grid/GenericGrid.tsx';
 import { ImageInput } from '@/components/Inputs/ImageInput.tsx';
 import { GenericDescription } from '@/components/Texts/GenericDescription.tsx';
 import { GenericTitle } from '@/components/Texts/GenericTitle.tsx';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 const inputs = [
     {
@@ -24,7 +24,8 @@ export function ComparePets() {
         message: '',
         className: '',
     });
-    const [inputImages, setInputImages] = useState([]);
+    const [inputImages, setInputImages] = useState({});
+    const inputsIdsRef = useRef(new Set<string>());
     const [result, setResult] = useState(null);
 
     const compareImages = async () => {
@@ -38,9 +39,13 @@ export function ComparePets() {
                 message: '🔍 Comparaison en cours...',
                 className: 'warning',
             });
-            const response = await window.animalIdentifier.compareAnimals(
-                inputImages
-            );
+
+            const inputsIds = Array.from(inputsIdsRef.current.values());
+
+            const response = await window.animalIdentifier.compareAnimals([
+                inputImages[inputsIds[0]],
+                inputImages[inputsIds[1]],
+            ]);
 
             if (!response) {
                 return setStatusMessage({
@@ -61,6 +66,7 @@ export function ComparePets() {
             });
         }
     };
+    console.log('ComparePets component rendered');
 
     return (
         <section className="generic-layout compare-pets">
@@ -71,20 +77,23 @@ export function ComparePets() {
             </GenericDescription>
 
             <GenericGrid className="comparison-container">
-                {inputs.map((input) => (
-                    <GenericCard
-                        key={input.id}
-                        id={`card-${input.id}`}
-                        className="image-preview-container"
-                    >
-                        <ImageInput
-                            id={input.id}
-                            label={input.label}
-                            previewId={input.previewId}
-                            setInputImages={setInputImages}
-                        />
-                    </GenericCard>
-                ))}
+                {inputs.map((input) => {
+                    inputsIdsRef.current.add(input.previewId);
+                    return (
+                        <GenericCard
+                            key={input.id}
+                            id={`card-${input.id}`}
+                            className="image-preview-container"
+                        >
+                            <ImageInput
+                                id={input.id}
+                                label={input.label}
+                                previewId={input.previewId}
+                                setInputImages={setInputImages}
+                            />
+                        </GenericCard>
+                    );
+                })}
             </GenericGrid>
 
             <Button
