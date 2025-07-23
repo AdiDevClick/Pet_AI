@@ -1,0 +1,1882 @@
+[
+    {
+        "image1Url": "http://localhost:5173/samy/samy.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/samy/samy.jpg",
+        "image2Url": "http://localhost:5173/samy/samy2.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/samy/samy.jpg",
+        "image2Url": "http://localhost:5173/samy/samy3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/samy/samy.jpg",
+        "image2Url": "http://localhost:5173/samy/samy4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/samy/samy.jpg",
+        "image2Url": "http://localhost:5173/rico/rico.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/samy/samy2.jpg",
+        "image2Url": "http://localhost:5173/rory/rory2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/samy/samy2.jpg",
+        "image2Url": "http://localhost:5173/boomer/boomer4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/samy/samy2.jpg",
+        "image2Url": "http://localhost:5173/samy/samy4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/samy/samy2.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/samy/samy2.jpg",
+        "image2Url": "http://localhost:5173/samy/samy3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/lea/lea2.jpg",
+        "image2Url": "http://localhost:5173/lea/lea.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/lea/lea2.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi6.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/lea/lea2.jpg",
+        "image2Url": "http://localhost:5173/lea/lea3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/lea/lea2.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi5.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi3.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi9.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi3.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi7.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi3.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi10.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi3.jpg",
+        "image2Url": "http://localhost:5173/rico/rico3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi3.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi3.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi3.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi5.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi3.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi6.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi3.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi8.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi2.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi2.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi5.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi2.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi10.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi2.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi6.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi2.jpg",
+        "image2Url": "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=300&h=300&fit=crop",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi2.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi2.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi8.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi2.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi9.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi2.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi2.jpg",
+        "image2Url": "http://localhost:5173/maui/maui4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi2.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi7.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/lea/lea3.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/lea/lea3.jpg",
+        "image2Url": "http://localhost:5173/lea/lea.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/samy/samy3.jpg",
+        "image2Url": "http://localhost:5173/oreo/oreo4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/samy/samy3.jpg",
+        "image2Url": "http://localhost:5173/friend/friend9.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/samy/samy3.jpg",
+        "image2Url": "http://localhost:5173/lea/lea3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/samy/samy3.jpg",
+        "image2Url": "http://localhost:5173/samy/samy4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy7.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi6.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi7.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi.jpg",
+        "image2Url": "http://localhost:5173/remi/remi.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi5.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi9.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi.jpg",
+        "image2Url": "http://localhost:5173/rico/rico.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi8.jpg",
+        "image2Url": "http://localhost:5173/oreo/oreo.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi8.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi7.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi8.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi8.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi5.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi8.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi10.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi8.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi8.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi9.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi8.jpg",
+        "image2Url": "http://localhost:5173/others/other.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi8.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi6.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi8.jpg",
+        "image2Url": "http://localhost:5173/remi/remi.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi10.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi9.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi10.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi7.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi10.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi6.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi10.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi10.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi5.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi10.jpg",
+        "image2Url": "http://localhost:5173/rory/rory.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi10.jpg",
+        "image2Url": "http://localhost:5173/friend/friend2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi10.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300&h=300&fit=crop",
+        "image2Url": "http://localhost:5173/poppy/poppy.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300&h=300&fit=crop",
+        "image2Url": "http://localhost:5173/tiger/tiger.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi5.jpg",
+        "image2Url": "http://localhost:5173/boomer/boomer.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi5.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi6.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi5.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi5.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi7.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi5.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi9.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi5.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=300&h=300&fit=crop",
+        "image2Url": "http://localhost:5173/rory/rory4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=300&h=300&fit=crop",
+        "image2Url": "http://localhost:5173/rory/rory3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=300&h=300&fit=crop",
+        "image2Url": "http://localhost:5173/remi/remi2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=300&h=300&fit=crop",
+        "image2Url": "http://localhost:5173/lea/lea.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "https://images.unsplash.com/photo-1544568100-847a948585b9?w=300&h=300&fit=crop",
+        "image2Url": "http://localhost:5173/vivi/vivi2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "https://images.unsplash.com/photo-1544568100-847a948585b9?w=300&h=300&fit=crop",
+        "image2Url": "http://localhost:5173/tiger/tiger2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "https://images.unsplash.com/photo-1519052537078-e6302a4968d4?w=300&h=300&fit=crop",
+        "image2Url": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "https://images.unsplash.com/photo-1519052537078-e6302a4968d4?w=300&h=300&fit=crop",
+        "image2Url": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "https://images.unsplash.com/photo-1519052537078-e6302a4968d4?w=300&h=300&fit=crop",
+        "image2Url": "http://localhost:5173/boomer/boomer3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop",
+        "image2Url": "http://localhost:5173/tiger/tiger4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop",
+        "image2Url": "http://localhost:5173/vivi/vivi10.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "https://images.unsplash.com/photo-1552053831-71594a27632d?w=300&h=300&fit=crop",
+        "image2Url": "http://localhost:5173/vivi/vivi3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "https://images.unsplash.com/photo-1552053831-71594a27632d?w=300&h=300&fit=crop",
+        "image2Url": "http://localhost:5173/oreo/oreo.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi7.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi9.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi7.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi7.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi6.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi7.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger6.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi7.jpg",
+        "image2Url": "http://localhost:5173/samy/samy2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=300&h=300&fit=crop",
+        "image2Url": "http://localhost:5173/vivi/vivi8.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=300&h=300&fit=crop",
+        "image2Url": "http://localhost:5173/poppy/poppy5.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=300&h=300&fit=crop",
+        "image2Url": "http://localhost:5173/tiger/tiger3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi9.jpg",
+        "image2Url": "http://localhost:5173/samy/samy4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi9.jpg",
+        "image2Url": "http://localhost:5173/rico/rico3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi9.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi6.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi9.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy2.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy7.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy2.jpg",
+        "image2Url": "http://localhost:5173/samy/samy4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy2.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy2.jpg",
+        "image2Url": "https://images.unsplash.com/photo-1544568100-847a948585b9?w=300&h=300&fit=crop",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy2.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy5.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy2.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy6.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy2.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy2.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy5.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy6.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi5.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy7.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy6.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy5.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy6.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy6.jpg",
+        "image2Url": "http://localhost:5173/samy/samy.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy6.jpg",
+        "image2Url": "http://localhost:5173/friend/friend8.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy6.jpg",
+        "image2Url": "http://localhost:5173/ellen/ellen4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy6.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy3.jpg",
+        "image2Url": "http://localhost:5173/jesse/jesse2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy3.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy3.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy5.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy3.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger5.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy5.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy5.jpg",
+        "image2Url": "http://localhost:5173/friend/friend3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy5.jpg",
+        "image2Url": "http://localhost:5173/friend/friend.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi6.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi6.jpg",
+        "image2Url": "http://localhost:5173/boomer/boomer.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy7.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy6.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy7.jpg",
+        "image2Url": "http://localhost:5173/rory/rory2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy7.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy5.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy7.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy7.jpg",
+        "image2Url": "http://localhost:5173/lea/lea2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy7.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger.jpg",
+        "image2Url": "http://localhost:5173/friend/friend4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger6.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger5.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger8.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger7.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi10.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger2.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger6.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger7.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger6.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger8.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger6.jpg",
+        "image2Url": "http://localhost:5173/rico/rico2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger6.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger6.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger5.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger6.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger6.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger2.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger2.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger2.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger8.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger2.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger2.jpg",
+        "image2Url": "http://localhost:5173/lea/lea.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger2.jpg",
+        "image2Url": "http://localhost:5173/ellen/ellen3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger2.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger5.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger7.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger5.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger7.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger7.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger8.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger7.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger7.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger2.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger7.jpg",
+        "image2Url": "http://localhost:5173/remi/remi2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger7.jpg",
+        "image2Url": "http://localhost:5173/jesse/jesse4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger4.jpg",
+        "image2Url": "http://localhost:5173/samy/samy3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger4.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger4.jpg",
+        "image2Url": "http://localhost:5173/lea/lea3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger4.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger5.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend3.jpg",
+        "image2Url": "http://localhost:5173/others/other2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend3.jpg",
+        "image2Url": "http://localhost:5173/friend/friend10.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend3.jpg",
+        "image2Url": "http://localhost:5173/friend/friend2.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend3.jpg",
+        "image2Url": "http://localhost:5173/friend/friend.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend3.jpg",
+        "image2Url": "http://localhost:5173/friend/friend9.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend3.jpg",
+        "image2Url": "http://localhost:5173/friend/friend7.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend3.jpg",
+        "image2Url": "http://localhost:5173/friend/friend8.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend3.jpg",
+        "image2Url": "http://localhost:5173/friend/friend4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend3.jpg",
+        "image2Url": "http://localhost:5173/friend/friend5.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend3.jpg",
+        "image2Url": "http://localhost:5173/friend/friend6.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend3.jpg",
+        "image2Url": "https://images.unsplash.com/photo-1552053831-71594a27632d?w=300&h=300&fit=crop",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend8.jpg",
+        "image2Url": "http://localhost:5173/friend/friend5.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend8.jpg",
+        "image2Url": "http://localhost:5173/friend/friend7.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend8.jpg",
+        "image2Url": "http://localhost:5173/friend/friend4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend8.jpg",
+        "image2Url": "http://localhost:5173/friend/friend.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend8.jpg",
+        "image2Url": "http://localhost:5173/friend/friend6.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend8.jpg",
+        "image2Url": "http://localhost:5173/friend/friend10.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend8.jpg",
+        "image2Url": "http://localhost:5173/friend/friend2.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend8.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend8.jpg",
+        "image2Url": "http://localhost:5173/maui/maui.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend8.jpg",
+        "image2Url": "http://localhost:5173/friend/friend9.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend7.jpg",
+        "image2Url": "http://localhost:5173/friend/friend4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend7.jpg",
+        "image2Url": "http://localhost:5173/friend/friend9.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend7.jpg",
+        "image2Url": "http://localhost:5173/friend/friend6.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend7.jpg",
+        "image2Url": "http://localhost:5173/friend/friend.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend7.jpg",
+        "image2Url": "http://localhost:5173/friend/friend5.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend7.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi9.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend7.jpg",
+        "image2Url": "http://localhost:5173/friend/friend2.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend7.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend7.jpg",
+        "image2Url": "http://localhost:5173/samy/samy3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend7.jpg",
+        "image2Url": "http://localhost:5173/friend/friend10.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger8.jpg",
+        "image2Url": "http://localhost:5173/jesse/jesse4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger8.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger5.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger8.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger8.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger8.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi7.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend9.jpg",
+        "image2Url": "http://localhost:5173/friend/friend5.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend9.jpg",
+        "image2Url": "http://localhost:5173/friend/friend2.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend9.jpg",
+        "image2Url": "http://localhost:5173/friend/friend4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend9.jpg",
+        "image2Url": "http://localhost:5173/friend/friend.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend9.jpg",
+        "image2Url": "http://localhost:5173/friend/friend10.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend9.jpg",
+        "image2Url": "http://localhost:5173/friend/friend6.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend9.jpg",
+        "image2Url": "http://localhost:5173/others/other.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend9.jpg",
+        "image2Url": "http://localhost:5173/jesse/jesse.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend4.jpg",
+        "image2Url": "http://localhost:5173/friend/friend5.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend4.jpg",
+        "image2Url": "http://localhost:5173/friend/friend2.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend4.jpg",
+        "image2Url": "http://localhost:5173/friend/friend10.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend4.jpg",
+        "image2Url": "http://localhost:5173/friend/friend.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend4.jpg",
+        "image2Url": "http://localhost:5173/friend/friend6.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend4.jpg",
+        "image2Url": "http://localhost:5173/jesse/jesse3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend4.jpg",
+        "image2Url": "http://localhost:5173/maui/maui4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend.jpg",
+        "image2Url": "http://localhost:5173/remi/remi.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend.jpg",
+        "image2Url": "http://localhost:5173/friend/friend10.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend.jpg",
+        "image2Url": "http://localhost:5173/friend/friend5.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend.jpg",
+        "image2Url": "http://localhost:5173/friend/friend2.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend.jpg",
+        "image2Url": "http://localhost:5173/friend/friend6.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend.jpg",
+        "image2Url": "http://localhost:5173/rico/rico.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend5.jpg",
+        "image2Url": "http://localhost:5173/maui/maui.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend5.jpg",
+        "image2Url": "http://localhost:5173/friend/friend2.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend5.jpg",
+        "image2Url": "http://localhost:5173/friend/friend6.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend5.jpg",
+        "image2Url": "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=300&h=300&fit=crop",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend5.jpg",
+        "image2Url": "http://localhost:5173/rory/rory.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend5.jpg",
+        "image2Url": "http://localhost:5173/friend/friend10.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend2.jpg",
+        "image2Url": "http://localhost:5173/friend/friend10.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend2.jpg",
+        "image2Url": "https://images.unsplash.com/photo-1552053831-71594a27632d?w=300&h=300&fit=crop",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend2.jpg",
+        "image2Url": "http://localhost:5173/friend/friend6.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend2.jpg",
+        "image2Url": "http://localhost:5173/jesse/jesse.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger3.jpg",
+        "image2Url": "http://localhost:5173/friend/friend7.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger3.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger3.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger5.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger3.jpg",
+        "image2Url": "http://localhost:5173/oreo/oreo4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/rico/rico.jpg",
+        "image2Url": "http://localhost:5173/maui/maui3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/rico/rico.jpg",
+        "image2Url": "http://localhost:5173/rico/rico3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/rico/rico.jpg",
+        "image2Url": "http://localhost:5173/rico/rico2.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/rico/rico.jpg",
+        "image2Url": "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=300&h=300&fit=crop",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/jesse/jesse.jpg",
+        "image2Url": "http://localhost:5173/jesse/jesse2.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/jesse/jesse.jpg",
+        "image2Url": "http://localhost:5173/ellen/ellen3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/jesse/jesse.jpg",
+        "image2Url": "http://localhost:5173/jesse/jesse4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/jesse/jesse.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/jesse/jesse.jpg",
+        "image2Url": "http://localhost:5173/jesse/jesse3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/jesse/jesse2.jpg",
+        "image2Url": "http://localhost:5173/lea/lea2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/jesse/jesse2.jpg",
+        "image2Url": "http://localhost:5173/jesse/jesse3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/jesse/jesse2.jpg",
+        "image2Url": "http://localhost:5173/jesse/jesse4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/jesse/jesse2.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger7.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/rory/rory.jpg",
+        "image2Url": "http://localhost:5173/friend/friend.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/rory/rory.jpg",
+        "image2Url": "http://localhost:5173/friend/friend10.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/rory/rory.jpg",
+        "image2Url": "http://localhost:5173/friend/friend2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/rory/rory.jpg",
+        "image2Url": "http://localhost:5173/rory/rory4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/rory/rory.jpg",
+        "image2Url": "http://localhost:5173/rory/rory3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/rory/rory.jpg",
+        "image2Url": "http://localhost:5173/rory/rory2.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/rory/rory2.jpg",
+        "image2Url": "http://localhost:5173/rory/rory4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/rory/rory2.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi7.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/rory/rory2.jpg",
+        "image2Url": "http://localhost:5173/rory/rory3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/rory/rory2.jpg",
+        "image2Url": "http://localhost:5173/others/other3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/boomer/boomer.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/boomer/boomer.jpg",
+        "image2Url": "http://localhost:5173/boomer/boomer3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/boomer/boomer.jpg",
+        "image2Url": "http://localhost:5173/boomer/boomer2.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/boomer/boomer.jpg",
+        "image2Url": "http://localhost:5173/boomer/boomer4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/boomer/boomer.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi8.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/boomer/boomer2.jpg",
+        "image2Url": "http://localhost:5173/boomer/boomer3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/boomer/boomer2.jpg",
+        "image2Url": "http://localhost:5173/boomer/boomer4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/boomer/boomer2.jpg",
+        "image2Url": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=300&h=300&fit=crop",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/boomer/boomer2.jpg",
+        "image2Url": "http://localhost:5173/boomer/boomer4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend6.jpg",
+        "image2Url": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300&h=300&fit=crop",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend6.jpg",
+        "image2Url": "http://localhost:5173/friend/friend10.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend6.jpg",
+        "image2Url": "http://localhost:5173/samy/samy.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/maui/maui.jpg",
+        "image2Url": "http://localhost:5173/maui/maui2.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/maui/maui.jpg",
+        "image2Url": "http://localhost:5173/oreo/oreo3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/maui/maui.jpg",
+        "image2Url": "https://images.unsplash.com/photo-1544568100-847a948585b9?w=300&h=300&fit=crop",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/maui/maui.jpg",
+        "image2Url": "http://localhost:5173/maui/maui3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/maui/maui.jpg",
+        "image2Url": "http://localhost:5173/maui/maui4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/maui/maui4.jpg",
+        "image2Url": "http://localhost:5173/others/other2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/maui/maui4.jpg",
+        "image2Url": "http://localhost:5173/ellen/ellen4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/maui/maui4.jpg",
+        "image2Url": "http://localhost:5173/maui/maui2.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/maui/maui4.jpg",
+        "image2Url": "http://localhost:5173/maui/maui3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/oreo/oreo.jpg",
+        "image2Url": "http://localhost:5173/oreo/oreo3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/oreo/oreo.jpg",
+        "image2Url": "http://localhost:5173/oreo/oreo2.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/oreo/oreo.jpg",
+        "image2Url": "http://localhost:5173/rory/rory3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/oreo/oreo.jpg",
+        "image2Url": "http://localhost:5173/jesse/jesse3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/oreo/oreo.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi9.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/oreo/oreo.jpg",
+        "image2Url": "http://localhost:5173/oreo/oreo4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/oreo/oreo2.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger7.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/oreo/oreo2.jpg",
+        "image2Url": "http://localhost:5173/oreo/oreo4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/oreo/oreo2.jpg",
+        "image2Url": "http://localhost:5173/oreo/oreo3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/oreo/oreo2.jpg",
+        "image2Url": "http://localhost:5173/maui/maui3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/ellen/ellen.jpg",
+        "image2Url": "http://localhost:5173/ellen/ellen3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/ellen/ellen.jpg",
+        "image2Url": "http://localhost:5173/ellen/ellen2.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/ellen/ellen.jpg",
+        "image2Url": "http://localhost:5173/ellen/ellen4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/ellen/ellen.jpg",
+        "image2Url": "http://localhost:5173/samy/samy3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/ellen/ellen.jpg",
+        "image2Url": "http://localhost:5173/friend/friend9.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/ellen/ellen2.jpg",
+        "image2Url": "http://localhost:5173/oreo/oreo4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/ellen/ellen2.jpg",
+        "image2Url": "http://localhost:5173/rory/rory.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/ellen/ellen2.jpg",
+        "image2Url": "http://localhost:5173/ellen/ellen4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/ellen/ellen2.jpg",
+        "image2Url": "http://localhost:5173/ellen/ellen3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/ellen/ellen2.jpg",
+        "image2Url": "http://localhost:5173/maui/maui3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/rory/rory4.jpg",
+        "image2Url": "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?w=300&h=300&fit=crop",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/rory/rory4.jpg",
+        "image2Url": "http://localhost:5173/friend/friend10.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/rory/rory4.jpg",
+        "image2Url": "http://localhost:5173/rory/rory3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/jesse/jesse3.jpg",
+        "image2Url": "http://localhost:5173/maui/maui2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/jesse/jesse3.jpg",
+        "image2Url": "http://localhost:5173/jesse/jesse4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/jesse/jesse3.jpg",
+        "image2Url": "http://localhost:5173/rory/rory4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/rico/rico2.jpg",
+        "image2Url": "http://localhost:5173/boomer/boomer2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/rico/rico2.jpg",
+        "image2Url": "http://localhost:5173/rico/rico3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/rico/rico2.jpg",
+        "image2Url": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300&h=300&fit=crop",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/remi/remi.jpg",
+        "image2Url": "http://localhost:5173/friend/friend7.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/remi/remi.jpg",
+        "image2Url": "http://localhost:5173/remi/remi2.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/remi/remi.jpg",
+        "image2Url": "http://localhost:5173/ellen/ellen4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/boomer/boomer3.jpg",
+        "image2Url": "http://localhost:5173/friend/friend5.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/boomer/boomer3.jpg",
+        "image2Url": "http://localhost:5173/boomer/boomer4.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/boomer/boomer3.jpg",
+        "image2Url": "http://localhost:5173/friend/friend6.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/boomer/boomer3.jpg",
+        "image2Url": "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=300&h=300&fit=crop",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/maui/maui2.jpg",
+        "image2Url": "http://localhost:5173/maui/maui3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/maui/maui2.jpg",
+        "image2Url": "http://localhost:5173/others/other3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/maui/maui2.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/oreo/oreo4.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy5.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/oreo/oreo4.jpg",
+        "image2Url": "http://localhost:5173/ellen/ellen2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/oreo/oreo4.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy6.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/oreo/oreo4.jpg",
+        "image2Url": "http://localhost:5173/oreo/oreo3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/ellen/ellen4.jpg",
+        "image2Url": "http://localhost:5173/ellen/ellen3.jpg",
+        "isSameAnimal": true
+    },
+    {
+        "image1Url": "http://localhost:5173/ellen/ellen4.jpg",
+        "image2Url": "http://localhost:5173/friend/friend10.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/ellen/ellen4.jpg",
+        "image2Url": "http://localhost:5173/friend/friend5.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/misti/misti.jpg",
+        "image2Url": "http://localhost:5173/maui/maui2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/misti/misti.jpg",
+        "image2Url": "http://localhost:5173/boomer/boomer3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/others/other3.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy5.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/others/other3.jpg",
+        "image2Url": "https://images.unsplash.com/photo-1519052537078-e6302a4968d4?w=300&h=300&fit=crop",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/others/other2.jpg",
+        "image2Url": "http://localhost:5173/friend/friend6.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/others/other2.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi4.jpg",
+        "image2Url": "https://images.unsplash.com/photo-1519052537078-e6302a4968d4?w=300&h=300&fit=crop",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi4.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger8.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi4.jpg",
+        "image2Url": "http://localhost:5173/friend/friend7.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/jesse/jesse4.jpg",
+        "image2Url": "http://localhost:5173/boomer/boomer3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/jesse/jesse4.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy7.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/lea/lea.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger6.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/lea/lea.jpg",
+        "image2Url": "http://localhost:5173/jesse/jesse2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/ellen/ellen3.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger5.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/ellen/ellen3.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy6.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/maui/maui3.jpg",
+        "image2Url": "http://localhost:5173/friend/friend3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/maui/maui3.jpg",
+        "image2Url": "http://localhost:5173/ellen/ellen2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/maui/maui3.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/samy/samy4.jpg",
+        "image2Url": "http://localhost:5173/oreo/oreo2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/samy/samy4.jpg",
+        "image2Url": "http://localhost:5173/oreo/oreo.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/remi/remi2.jpg",
+        "image2Url": "http://localhost:5173/friend/friend4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/remi/remi2.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi8.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/remi/remi2.jpg",
+        "image2Url": "https://images.unsplash.com/photo-1519052537078-e6302a4968d4?w=300&h=300&fit=crop",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/rory/rory3.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/rory/rory3.jpg",
+        "image2Url": "http://localhost:5173/boomer/boomer2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy4.jpg",
+        "image2Url": "http://localhost:5173/oreo/oreo2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/poppy/poppy4.jpg",
+        "image2Url": "http://localhost:5173/friend/friend8.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/oreo/oreo3.jpg",
+        "image2Url": "http://localhost:5173/ellen/ellen.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/oreo/oreo3.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger5.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi9.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger5.jpg",
+        "image2Url": "http://localhost:5173/ellen/ellen.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/rico/rico3.jpg",
+        "image2Url": "http://localhost:5173/friend/friend5.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/rico/rico3.jpg",
+        "image2Url": "http://localhost:5173/poppy/poppy2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend10.jpg",
+        "image2Url": "http://localhost:5173/samy/samy2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend10.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger8.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend10.jpg",
+        "image2Url": "http://localhost:5173/oreo/oreo3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/boomer/boomer4.jpg",
+        "image2Url": "http://localhost:5173/friend/friend.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/boomer/boomer4.jpg",
+        "image2Url": "http://localhost:5173/misti/misti.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/others/other.jpg",
+        "image2Url": "http://localhost:5173/rico/rico3.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/others/other.jpg",
+        "image2Url": "http://localhost:5173/ellen/ellen2.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/ellen/ellen4.jpg",
+        "image2Url": "http://localhost:5173/tiger/tiger7.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/tiger/tiger7.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi5.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/vivi/vivi5.jpg",
+        "image2Url": "https://images.unsplash.com/photo-1552053831-71594a27632d?w=300&h=300&fit=crop",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/friend/friend.jpg",
+        "image2Url": "http://localhost:5173/oreo/oreo4.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/ellen/ellen2.jpg",
+        "image2Url": "http://localhost:5173/vivi/vivi7.jpg",
+        "isSameAnimal": false
+    },
+    {
+        "image1Url": "http://localhost:5173/samy/samy4.jpg",
+        "image2Url": "http://localhost:5173/ellen/ellen2.jpg",
+        "isSameAnimal": false
+    }
+]
