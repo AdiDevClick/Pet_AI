@@ -1,0 +1,18 @@
+.social {
+    display: flex;
+    gap: 12px;
+    justify-content: end;
+    padding: 0 10px;
+
+    &__link {
+        &:hover {
+            fill: red;
+            color: var(--color-text-hover);
+        }
+    }
+
+    &__icon {
+        width: 24px;
+        transition: background-color 0.3s ease;
+    }
+}
