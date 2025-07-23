@@ -187,6 +187,7 @@ export function Root(contentType: { contentType?: string }) {
         setCount,
         count,
         setResetSystem,
+        resetSystem,
     };
 
     return (
