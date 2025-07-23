@@ -3,7 +3,7 @@ import '@css/controls.scss';
 
 export function Controls({ buttons }) {
     return (
-        <div className="controls">
+        <section className="controls">
             {buttons.map((button, index) => (
                 <Button
                     key={index}
@@ -13,6 +13,6 @@ export function Controls({ buttons }) {
                     {button.label}
                 </Button>
             ))}
-        </div>
+        </section>
     );
 }
