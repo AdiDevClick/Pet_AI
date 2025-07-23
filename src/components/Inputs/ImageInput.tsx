@@ -12,7 +12,6 @@ export function ImageInput({ setInputImages, previewId, ...props }) {
     const [errors, setErrors] = useState(new Map());
     const imagePreviewRef = useRef<HTMLDivElement>(null!);
     const inputRef = useRef<HTMLInputElement>(null!);
-
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         const target = event.target;
         const file = target.files?.[0];
@@ -35,7 +34,10 @@ export function ImageInput({ setInputImages, previewId, ...props }) {
 
             target.classList.add('filled');
             imagePreviewRef.current.style.backgroundImage = `url(${image.src})`;
-            setInputImages((prev) => [...prev, image]);
+            setInputImages((prev) => ({ ...prev, [previewId]: image }));
+        } else {
+            target.classList.remove('filled');
+            imagePreviewRef.current.removeAttribute('style');
         }
     };
 
