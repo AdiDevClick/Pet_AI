@@ -278,7 +278,7 @@
         "description": "Oreo is a playful Pit Bull Terrier who loves to fetch balls and go for long walks. He is very friendly and enjoys the company of other dogs."
     },
     {
-        "id": "234",
+        "id": "24",
         "name": "Ellen",
         "species": "Dog",
         "age": 7,
@@ -290,5 +290,116 @@
             "/ellen/ellen4.jpg"
         ],
         "description": "Ellen is a playful Pit Bull Terrier who loves to fetch balls and go for long walks. She is very friendly and enjoys the company of other dogs."
+    },
+    {
+        "id": "25",
+        "name": "Puppy",
+        "species": "Dog",
+        "age": 7,
+        "breed": "Pit Bull Terrier",
+        "images": [
+            "/puppy/puppy.jpg",
+            "/puppy/puppy2.jpg",
+            "/puppy/puppy3.jpg",
+            "/puppy/puppy4.jpg"
+        ],
+        "description": "Puppy is a playful Pit Bull Terrier who loves to fetch balls and go for long walks. He is very friendly and enjoys the company of other dogs."
+    },
+    {
+        "id": "26",
+        "name": "Yorkie",
+        "species": "Dog",
+        "age": 7,
+        "breed": "Yorkshire Terrier",
+        "images": [
+            "/yorki/yorki.jpg",
+            "/yorki/yorki2.jpg",
+            "/yorki/yorki3.jpg",
+            "/yorki/yorki4.jpg",
+            "/yorki/yorki5.jpg"
+        ],
+        "description": "Yorkie is a playful Yorkshire Terrier who loves to fetch balls and go for long walks. He is very friendly and enjoys the company of other dogs."
+    },
+    {
+        "id": "27",
+        "name": "Vizsla",
+        "species": "Dog",
+        "age": 7,
+        "breed": "Vizsla",
+        "images": ["/vizsla/vizsla.jpg", "/vizsla/vizsla2.jpg"],
+        "description": "Vizsla is a playful Vizsla who loves to fetch balls and go for long walks. He is very friendly and enjoys the company of other dogs."
+    },
+    {
+        "id": "28",
+        "name": "Springer",
+        "species": "Dog",
+        "age": 7,
+        "breed": "Springer Spaniel",
+        "images": [
+            "/springer/springer.jpg",
+            "/springer/springer2.jpg",
+            "/springer/springer3.jpg"
+        ],
+        "description": "Springer is a playful Springer Spaniel who loves to fetch balls and go for long walks. He is very friendly and enjoys the company of other dogs."
+    },
+    {
+        "id": "29",
+        "name": "Petty",
+        "species": "Dog",
+        "age": 7,
+        "breed": "Springer Spaniel",
+        "images": [
+            "/petty/petty.jpg",
+            "/petty/petty2.jpg",
+            "/petty/petty3.jpg",
+            "/petty/petty4.jpg",
+            "/petty/petty5.jpg"
+        ],
+        "description": "Petty is a playful Springer Spaniel who loves to fetch balls and go for long walks. He is very friendly and enjoys the company of other dogs."
+    },
+    {
+        "id": "30",
+        "name": "Collie",
+        "species": "Dog",
+        "age": 7,
+        "breed": "Collie",
+        "images": ["/collie/collie.jpg", "/collie/collie2.jpg"],
+        "description": "Collie is a playful Collie who loves to fetch balls and go for long walks. He is very friendly and enjoys the company of other dogs."
+    },
+    {
+        "id": "31",
+        "name": "Cavapoo",
+        "species": "Dog",
+        "age": 7,
+        "breed": "Cavapoo",
+        "images": [
+            "/cavapoo/cavapoo.jpg",
+            "/cavapoo/cavapoo2.jpg",
+            "/cavapoo/cavapoo3.jpg",
+            "/cavapoo/cavapoo4.jpg"
+        ],
+        "description": "Cavapoo is a playful Cavapoo who loves to fetch balls and go for long walks. He is very friendly and enjoys the company of other dogs."
+    },
+    {
+        "id": "32",
+        "name": "Cavalier",
+        "species": "Dog",
+        "age": 7,
+        "breed": "Cavalier King Charles Spaniel",
+        "images": [
+            "/cavalier/cavalier.jpg",
+            "/cavalier/cavalier2.jpg",
+            "/cavalier/cavalier3.jpg"
+        ],
+        "description": "Cavalier is a playful Cavalier who loves to fetch balls and go for long walks. He is very friendly and enjoys the company of other dogs."
+    },
+    {
+        "id": "33",
+        "name": "BestDog",
+        "species": "Dog",
+        "age": 7,
+        "breed": "Cavalier King Charles Spaniel",
+        "images": ["/bestdog/bestdog.jpg", "/bestdog/bestdog2.jpg"],
+        "description": "BestDog is a playful BestDog who loves to fetch balls and go for long walks. He is very friendly and enjoys the company of other dogs."
     }
 ]
