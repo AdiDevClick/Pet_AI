@@ -64,14 +64,13 @@ Ouvrez le fichier `demo.html` dans votre navigateur pour tester directement le s
 
 ### Modèle CNN (Convolutional Neural Network)
 ```
-Entrée: Images 224x224x3
-├── Conv2D (32 filtres, 3x3) + ReLU + MaxPool
-├── Conv2D (64 filtres, 3x3) + ReLU + MaxPool  
-├── Conv2D (128 filtres, 3x3) + ReLU + MaxPool
-├── Flatten
-├── Dense (128 neurones) + ReLU + Dropout(0.5)
-├── Dense (64 neurones) + ReLU + Dropout(0.3)
-└── Dense (2 classes) + Softmax
+Entrée : Deux images 224x224x3
+├── Feature Extractor (Conv2D, MaxPool, Dropout, Dense, tanh)
+├── Concaténation des embeddings
+├── Dense (256) + ReLU + Dropout(0.3)
+├── Dense (128) + ReLU + Dropout(0.2)
+├── Dense (64) + ReLU
+└── Dense (1) + Sigmoid (similarité)
 ```
 
 ### Processus d'Entraînement
@@ -117,9 +116,6 @@ Entrée: Images 224x224x3
 
 ## 🔧 Configuration Avancée
 
-### Personnaliser les Images
-Modifiez la variable `sampleImages` dans `demo.html` ou ajustez le composant React pour utiliser vos propres images.
-
 ### Ajuster le Modèle
 Dans `src/TensorScripts/script.js`, vous pouvez modifier:
 - Nombre de couches convolutionnelles
@@ -129,10 +125,6 @@ Dans `src/TensorScripts/script.js`, vous pouvez modifier:
 
 ### Changer la Tâche de Classification
 Modifiez la variable `currentTask` pour adapter l'interface à votre cas d'usage.
-
-## 🎨 Personnalisation CSS
-
-Le fichier `src/components/ImageClassifier.css` contient tous les styles. Modifiez-le pour adapter l'apparence à vos besoins.
 
 ## 🔍 Cas d'Usage
 
@@ -166,10 +158,6 @@ Le fichier `src/components/ImageClassifier.css` contient tous les styles. Modifi
 ## 📄 Licence
 
 MIT License - Voir le fichier LICENSE pour plus de détails.
-
-## 🤝 Contribution
-
-Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou un pull request.
 
 ---
 
