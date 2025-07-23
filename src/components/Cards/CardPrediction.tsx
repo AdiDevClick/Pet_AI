@@ -20,7 +20,7 @@ export function CardPrediction<T extends HTMLAttributes<HTMLDivElement>>({
                 >
                     <strong>🔮 Prédiction IA:</strong>
                     <br />
-                    {prediction.prediction
+                    {prediction.sameAnimal
                         ? `✅ ${animalName} détecté`
                         : `❌ Pas ${animalName}`}
                     <br />
