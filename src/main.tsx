@@ -25,6 +25,8 @@ import {
     trainModel,
     validateAllImages,
 } from '@/components/Controls/controlsFunctions.ts';
+import { Home } from '@/Pages/Home/Home.tsx';
+import { Footer } from '@/components/Footer/Footer.tsx';
 
 const router = createBrowserRouter(
     [
@@ -33,7 +35,7 @@ const router = createBrowserRouter(
             element: <Root />,
             errorElement: <Root contentType={'error'} />,
             children: [
-                // { index: true, element: <Outlet /> },
+                { index: true, element: <Home /> },
                 {
                     path: 'compare',
                     element: <ComparePets />,
@@ -202,6 +204,7 @@ export function Root(contentType: { contentType?: string }) {
                 )}
             </App>
             <ScrollTop />
+            <Footer />
         </>
     );
 }
