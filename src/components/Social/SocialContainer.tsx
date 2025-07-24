@@ -23,7 +23,7 @@ export function SocialContainer({
 }: SocialContainerPropsTypes) {
     return (
         <div {...props} className={`social ${props.className}`}>
-            {icons.map((icon) => (
+            {icons.map((icon, index) => (
                 <a
                     key={icon.name}
                     href={icon.url}
@@ -31,7 +31,7 @@ export function SocialContainer({
                     target="_blank"
                     rel="noopener noreferrer"
                 >
-                    <Icon icon={icon} />
+                    <Icon key={icon.name + index} icon={icon} />
                 </a>
             ))}
         </div>
