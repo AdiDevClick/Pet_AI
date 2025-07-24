@@ -7,7 +7,7 @@ export function Icon({ icon, ...props }) {
         return <div>Can't load the icon {icon}</div>;
     }
     if (SvgIcon) {
-        return <SvgIcon {...props} />;
+        return <SvgIcon className="social__icon" {...props} />;
     }
     return <div>Loading icon...</div>;
 }
