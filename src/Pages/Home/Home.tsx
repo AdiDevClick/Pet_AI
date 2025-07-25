@@ -1,9 +1,10 @@
 import { GenericTitle } from '@/components/Texts/GenericTitle.tsx';
+import '@css/home.scss';
 
 export function Home() {
     return (
         <div className="home">
-            <h1>Bienvenue sur le Trainee Machine </h1>
+            <h1 className="home__title">Bienvenue sur le Trainee Machine </h1>
             <GenericTitle>
                 Entraînez un modèle d'IA pour reconnaître des images.
             </GenericTitle>
