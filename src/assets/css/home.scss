@@ -1,11 +1,14 @@
 .home {
-    &__title {
-        font-size: 2rem;
-        font-weight: bold;
+    display: grid;
+    gap: var(--grid-gap);
+    text-align: left;
+    max-width: calc(100% / 2);
+
+    &__call-to-action-button {
+        max-width: fit-content;
     }
 
     p {
         font-size: 1.2rem;
-        color: #333;
     }
 }
