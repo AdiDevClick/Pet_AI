@@ -59,5 +59,15 @@
         bottom: 20px;
         right: 20px;
         z-index: 1000;
+        opacity: 1;
+        transition: opacity 0.3s ease-in-out, transform 0.3s ease;
+
+        @starting-style {
+            opacity: 0;
+        }
+
+        &:hover {
+            transform: scale(1.01);
+        }
     }
 }
