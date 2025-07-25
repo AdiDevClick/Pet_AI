@@ -1,3 +1,4 @@
+import { Button } from '@/components/Buttons/Button.tsx';
 import { GenericTitle } from '@/components/Texts/GenericTitle.tsx';
 import '@css/home.scss';
 
@@ -11,18 +12,16 @@ export function Home() {
             <p>
                 Rapide et simple à utiliser, vous pourrez créer des modèles d'IA
                 pour vos applications, sites web ou projets personnels.
-            </p>
-            <p>
+                <br />
                 Charger des images et suivez les instructions pour entraîner
                 votre modèle.
-            </p>
-            <p>
+                <br />
                 Vous pourrez ensuite exporter votre modèle pour l'utiliser dans
                 vos projets.
             </p>
-            <p>
+            <Button className="home__call-to-action-button">
                 <strong>Prêt à commencer ?</strong>
-            </p>
+            </Button>
         </div>
     );
 }
