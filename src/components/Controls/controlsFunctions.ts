@@ -1,6 +1,3 @@
-let currentImages = [];
-let userSelections = {};
-
 export function loadNewImages({
     setPredictionsCount,
     onLoad,
@@ -14,53 +11,7 @@ export function loadNewImages({
     if (count > 10) setCount(1);
     setCount((prev) => prev + 1);
     setPredictionsCount(0);
-
-    // Mélanger et sélectionner 8 images aléatoires
-    // const shuffled = [...images].sort(() => 0.5 - Math.random());
-    // loadImages({ images: shuffled.slice(0, 8), e });
-
-    // Réinitialiser les prédictions
-    // document.querySelectorAll('.prediction-result').forEach((el) => {
-    //     el.style.display = 'none';
-    // });
-    // updateStats();
 }
-
-// export function loadImages({ images, e }) {
-//     e.preventDefault();
-//     const container = document.getElementById('images-container');
-//     container.innerHTML = '';
-//     currentImages = images;
-//     userSelections = {};
-
-//     images.forEach((imageData) => {
-//         const imageCard = createImageCard(imageData);
-//         container.appendChild(imageCard);
-//     });
-// }
-
-// export function createImageCard(imageData) {
-//     const card = document.createElement('div');
-//     card.className = 'image-card';
-//     card.id = `card-${imageData.id}`;
-
-//     card.innerHTML = `
-//                 <img src="${imageData.url}" alt="Image ${imageData.id}" crossorigin="anonymous"
-//                      onload="this.style.opacity = 1" style="opacity: 0; transition: opacity 0.3s;">
-//                 <div class="image-actions">
-//                     <button class="btn btn-success" onclick="handleSelection('${imageData.id}', true)">
-//                         ✓ Correct
-//                     </button>
-//                     <button class="btn btn-danger" onclick="handleSelection('${imageData.id}', false)">
-//                         ✗ Incorrect
-//                     </button>
-//                 </div>
-//                 <div class="feedback" id="feedback-${imageData.id}"></div>
-//                 <div class="prediction-result" id="prediction-${imageData.id}" style="display: none;"></div>
-//             `;
-
-//     return card;
-// }
 
 export async function saveModel({ e, data }) {
     e.preventDefault();
@@ -104,27 +55,12 @@ export async function loadDefaultDataArray({ e }) {
 export async function loadModel({ e }) {
     e.preventDefault();
     const success = await window.animalIdentifier.loadModel();
-    // const storageData = window.localStorage.getItem('chat-classifier');
     if (!success) {
         alert('⚠️ Aucun modèle sauvegardé trouvé');
         return;
     }
-    // const data = JSON.parse(success);
-    // if (!data) {
-    //     alert('⚠️ Modèle invalide ou corrompu');
-    //     return;
-    // }
     alert('📂 Modèle chargé avec succès!');
-    // updateStats();
 }
-
-// export function updateStats() {
-//     const trainingCount = window.imageClassifier
-//         ? window.imageClassifier.trainingData.length
-//         : 0;
-//     document.getElementById('training-count').textContent = trainingCount;
-//     document.getElementById('predictions-count').textContent = predictionsCount;
-// }
 
 export async function resetSystem({ e, ...functionProps }) {
     e.preventDefault();
@@ -255,36 +191,3 @@ export async function trainModel({ e, ...functionProps }) {
         // updateStatus("❌ Erreur lors de l'entraînement", 'error');
     }
 }
-
-// export async function handleSelection(imageId, isCorrect, setIsCorrect) {
-// userSelections[imageId] = isCorrect;
-// setIsCorrect(isCorrect);
-// Mettre à jour l'apparence de la carte
-// const card = document.getElementById(`card-${imageId}`);
-// card.className = `image-card ${
-//     isCorrect ? 'selected-correct' : 'selected-incorrect'
-// }`;
-
-// Afficher le feedback
-// const imageData = currentImages.find((img) => img.id === imageId);
-// const isActuallyCorrect = imageData?.isCorrect;
-// const feedbackElement = document.getElementById(`feedback-${imageId}`);
-
-// if (isActuallyCorrect !== undefined) {
-//     const isRight = isCorrect === isActuallyCorrect;
-//     feedbackElement.innerHTML = `
-//                 ${isRight ? '✅ Bonne réponse!' : '❌ Mauvaise réponse'}
-//                 <br><small>Réalité: ${
-//                     isActuallyCorrect ? 'Chat' : 'Autre animal'
-//                 }</small>
-//             `;
-//     feedbackElement.style.color = isRight ? '#4caf50' : '#f44336';
-// }
-
-// Ajouter aux données d'entraînement
-// const img = card.querySelector('img');
-// if (img.complete && window.imageClassifier) {
-//     await window.imageClassifier.addTrainingData(img, isCorrect);
-//     // updateStats();
-// }
-// }
