@@ -1,0 +1,24 @@
+.footer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    padding: 20px;
+    text-align: center;
+
+    &__note {
+        align-content: end;
+        color: #6c757d;
+        text-align: left;
+    }
+
+    &__social {
+        padding: 0;
+    }
+
+    &__rights {
+        display: grid;
+        align-items: end;
+        justify-items: end;
+        font-size: 0.9em;
+        color: #6c757d;
+    }
+}
