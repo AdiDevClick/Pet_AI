@@ -502,13 +502,13 @@ class AnimalIdentificationTF {
                 return;
             }
         }
-        if (imageArray.length !== 2) {
-            throw new Error(
-                '⚠️ Deux images sont nécessaires pour la comparaison'
-            );
-        }
-
         try {
+            if (imageArray.length !== 2) {
+                throw new Error(
+                    '⚠️ Deux images sont nécessaires pour la comparaison'
+                );
+            }
+
             const img1 = this.preprocessImage(imageArray[0], false);
             const img2 = this.preprocessImage(imageArray[1], false);
 
