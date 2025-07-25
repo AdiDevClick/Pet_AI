@@ -1,11 +1,18 @@
-import { useEffect, useState } from 'react';
+import { ComponentType, useEffect, useState } from 'react';
 
 const icons = import.meta.glob(`../assets/icons/*.svg`, {
     import: 'default',
 });
 
-export function useDynamicSVGImport(icon: { path: string }, options = {}) {
-    const [SvgIcon, setSvgIcon] = useState(null);
+/**
+ *
+ * @param icon
+ * @param options
+ */
+export function useDynamicSVGImport({ icon, options = {} }) {
+    const [SvgIcon, setSvgIcon] = useState<
+        ComponentType<React.SVGProps<SVGSVGElement>>
+    >(null!);
     const [error, setError] = useState('');
 
     useEffect(() => {
