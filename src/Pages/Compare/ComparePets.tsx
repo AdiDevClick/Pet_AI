@@ -19,6 +19,12 @@ const inputs = [
     },
 ];
 
+/**
+ * Compare two images of pets to see if they depict the same animal.
+ *
+ * @description This uses `inputs` variable just above to
+ * create image inputs for the user to upload images.
+ */
 export function ComparePets() {
     const [statusMessage, setStatusMessage] = useState({
         message: '',
@@ -66,7 +72,6 @@ export function ComparePets() {
             });
         }
     };
-    console.log('ComparePets component rendered');
 
     return (
         <section className="generic-layout compare-pets">
