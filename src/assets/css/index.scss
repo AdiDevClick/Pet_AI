@@ -17,8 +17,9 @@
   --grid-gap: 30px;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
+  // color: rgba(255, 255, 255, 0.87);
   /* color: var(--text-color); */
+  color: #6c757d;
 
   background-color: #242424;
 
@@ -33,6 +34,8 @@ body {
   margin: 0;
   padding: 0;
   scroll-behavior: smooth;
+  text-align: center;
+  line-height: 1.6rem;
 }
 
 #root {
@@ -82,8 +85,19 @@ a:hover {
 }
 
 h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+  font-size: 3.2rem;
+  font-weight: bold;
+  line-height: 3rem;
+
+}
+
+h2 {
+  font-size: 2rem;
+  line-height: 2.1rem;
+}
+
+h3 {
+  font-size: 1.2rem;
 }
 
 .card {
