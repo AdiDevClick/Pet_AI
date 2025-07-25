@@ -2,14 +2,11 @@ import { Icon } from '@/components/Icons/Icon.tsx';
 import { SocialContainerPropsTypes } from '@/components/Social/socialTypes.ts';
 import { svgs } from '@/configs/social.config.ts';
 import '@css/social.scss';
-import { Children, lazy, Suspense } from 'react';
 
-let icon = { path: 'github.svg' }; // Default icon for lazy loading
-// const SvgIcon = lazy(() => import(`src/assets/icons/${icon.path}`));
 /**
- * Renders a list of social icons with links.
+ * Renders a list of SVG icons with links.
  *
- * @description It uses default icons from the
+ * @description It uses default imported icons from the
  * `social.config.ts` file.
  * The icon is an <a/>, which will open the link in a new tab.
  *
@@ -37,14 +34,3 @@ export function SocialContainer({
         </div>
     );
 }
-
-// const SvgIcon = ({ icon }) => {
-//     const LazyIcon = lazy(async () => {
-//         return {
-//             default: await import(`src/assets/icons/${icon.path}`),
-//         };
-//     });
-//     console.log(LazyIcon.default);
-//     // console.log(`Loading icon: ${icon.name} from path: ${icon.path}`);
-//     return <LazyIcon />;
-// };
