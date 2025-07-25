@@ -647,65 +647,18 @@ class AnimalIdentificationTF {
         }
     }
 
-    // Charger un modèle depuis un fichier JSON
+    /**
+     * Load a model from a JSON file or data
+     *
+     * @description If jsonData is null, it will prompt the user to select a JSON
+     *
+     * @param jsonData - Optional JSON data to load the model from
+     * @returns {Promise<boolean>} - Returns true if the model was loaded successfully, false otherwise
+     */
     async loadModel(jsonData = null) {
         try {
             if (!jsonData) {
-                // Créer un input file pour sélectionner le fichier JSON
-                return new Promise((resolve, reject) => {
-                    const input = document.createElement('input');
-                    input.type = 'file';
-                    input.accept = '.json';
-                    input.onchange = async (event) => {
-                        const target = event.target;
-                        if (!target || !target.files) {
-                            reject(new Error('Aucun fichier sélectionné'));
-                            return;
-                        }
-
-                        const file = target.files[0];
-                        if (!file) {
-                            reject(new Error('Aucun fichier sélectionné'));
-                            return;
-                        }
-
-                        console.log(`📁 Chargement du fichier: ${file.name}`);
-
-                        const reader = new FileReader();
-                        reader.onload = async (e) => {
-                            try {
-                                const result = e.target?.result;
-                                if (typeof result !== 'string') {
-                                    throw new Error(
-                                        'Erreur de lecture du fichier'
-                                    );
-                                }
-
-                                console.log('🔄 Analyse du fichier JSON...');
-                                const data = JSON.parse(result);
-                                console.log(
-                                    '✅ JSON analysé, chargement du modèle...'
-                                );
-
-                                const success = await this.loadModelFromData(
-                                    data
-                                );
-                                resolve(success);
-                            } catch (error) {
-                                console.error(
-                                    "❌ Erreur lors de l'analyse JSON:",
-                                    error
-                                );
-                                reject(error);
-                            }
-                        };
-                        reader.onerror = () => {
-                            reject(new Error('Erreur de lecture du fichier'));
-                        };
-                        reader.readAsText(file);
-                    };
-                    input.click();
-                });
+                return await this.createFileHandler();
             } else {
                 return await this.loadModelFromData(jsonData);
             }
@@ -713,6 +666,69 @@ class AnimalIdentificationTF {
             console.error('❌ Erreur lors du chargement:', error);
             return false;
         }
+    }
+
+    async createFileHandler() {
+        return new Promise((resolve, reject) => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const target = e.target;
+                const file = target.files[0];
+
+                try {
+                    if (!target || !target.files) {
+                        throw new Error('Aucun fichier sélectionné');
+                    }
+
+                    if (!file) {
+                        throw new Error('Aucun fichier sélectionné');
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = async (e) => {
+                        const result = e.target?.result;
+                        try {
+                            if (!result || typeof result !== 'string') {
+                                throw new Error('Erreur de lecture du fichier');
+                            }
+                            const data = JSON.parse(result);
+                            const status = await this.loadModelFromData(data);
+                            if (status) {
+                                resolve({ status: true, error: null });
+                            } else {
+                                throw new Error(
+                                    'Échec du chargement du modèle'
+                                );
+                            }
+                        } catch (error) {
+                            reject({
+                                status: false,
+                                error:
+                                    "Erreur lors de l'analyse JSON: " +
+                                    error.message,
+                            });
+                        }
+                    };
+                    reader.onerror = () => {
+                        reject({
+                            status: false,
+                            error: 'Erreur de lecture du fichier',
+                        });
+                    };
+                    reader.readAsText(file);
+                } catch (error) {
+                    reject({
+                        status: false,
+                        error:
+                            '❌ Erreur dans le chargement de votre fichier JSON: ' +
+                            error.message,
+                    });
+                }
+            };
+            input.click();
+        });
     }
 
     // Charger un modèle depuis les données JSON
