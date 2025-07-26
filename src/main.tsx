@@ -19,6 +19,7 @@ import { ScrollTop } from '@/components/Buttons/ScrollTop.tsx';
 
 import { Home } from '@/Pages/Home/Home.tsx';
 import { Footer } from '@/components/Footer/Footer.tsx';
+import { Toaster } from '@/components/ui/sonner.tsx';
 
 const router = createBrowserRouter(
     [
@@ -143,6 +144,7 @@ export function Root(contentType: { contentType?: string }) {
                 )}
             </App>
             <ScrollTop />
+            <Toaster />
             <Footer />
         </>
     );
