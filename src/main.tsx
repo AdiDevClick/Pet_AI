@@ -20,6 +20,7 @@ import { ScrollTop } from '@/components/Buttons/ScrollTop.tsx';
 import { Home } from '@/Pages/Home/Home.tsx';
 import { Footer } from '@/components/Footer/Footer.tsx';
 import { Toaster } from '@/components/ui/sonner.tsx';
+import type { contextTypes } from '@/mainTypes.ts';
 
 const router = createBrowserRouter(
     [
@@ -71,8 +72,6 @@ createRoot(document.getElementById('root')!).render(
     </StrictMode>
 );
 
-let functionProps = {};
-
 export function Root(contentType: { contentType?: string }) {
     const errorContent = contentType.contentType === 'error';
 
@@ -83,21 +82,6 @@ export function Root(contentType: { contentType?: string }) {
     const [trainingCount, setTrainingCount] = useState(0);
     const [accuracy, setAccuracy] = useState(0);
     const [showClassifier, setShowClassifier] = useState(true);
-
-    // useEffect(() => {
-    //     // Initialiser le classificateur d'images
-    //     if (window.imageClassifier) {
-    //         window.imageClassifier.createModel().then((success) => {
-    //             if (success) {
-    //                 setShowClassifier(true);
-    //             } else {
-    //                 console.error('Échec de la création du modèle');
-    //             }
-    //         });
-    //     } else {
-    //         console.error('Le classificateur d\'images n\'est pas disponible');
-    //     }
-    // }, []);
 
     useEffect(() => {
         if (resetSystem) {
@@ -117,8 +101,7 @@ export function Root(contentType: { contentType?: string }) {
         }
     }, [resetSystem]);
 
-    functionProps = {
-        ...functionProps,
+    const functionProps: contextTypes = {
         accuracy,
         onLoad,
         setOnLoad,
@@ -135,7 +118,6 @@ export function Root(contentType: { contentType?: string }) {
     return (
         <>
             <Header />
-            {/* <Controls buttons={buttons}/> */}
             <App>
                 {errorContent ? (
                     <PageError />
