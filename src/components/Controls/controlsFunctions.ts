@@ -52,14 +52,10 @@ export async function loadDefaultDataArray({ e }) {
     }
 }
 
-export async function loadModel({ e }) {
+export async function loadModel({ e, setIsSuccess }) {
     e.preventDefault();
     const success = await window.animalIdentifier.loadModel();
-    if (!success) {
-        alert('⚠️ Aucun modèle sauvegardé trouvé');
-        return;
-    }
-    alert('📂 Modèle chargé avec succès!');
+    setIsSuccess({ ...success, id: e.target.id });
 }
 
 export async function resetSystem({ e, ...functionProps }) {
