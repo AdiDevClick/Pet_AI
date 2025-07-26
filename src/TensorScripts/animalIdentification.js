@@ -663,7 +663,6 @@ class AnimalIdentificationTF {
                 return await this.loadModelFromData(jsonData);
             }
         } catch (error) {
-            // console.error('❌ Erreur lors du chargement:', error);
             return error;
         }
     }
