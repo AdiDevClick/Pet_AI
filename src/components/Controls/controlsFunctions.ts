@@ -1,3 +1,6 @@
+import type { LoadModelTypes } from '@/components/Controls/controlsFunctionTypes.ts';
+import { toast } from 'sonner';
+
 export function loadNewImages({
     setPredictionsCount,
     onLoad,
@@ -52,10 +55,38 @@ export async function loadDefaultDataArray({ e }) {
     }
 }
 
-export async function loadModel({ e, setIsSuccess }) {
+/**
+ * Loads the AI model from a file.
+ * It will trigger a toaster notification on success or failure.
+ *
+ * @description This function reads a JSON file and loads the AI model from it.
+ * It expects the file to be a valid JSON containing the model data.
+ *
+ * @param e - The event object.
+ * @param setIsSuccess - Function to set the success state.
+ * @param isSuccess - The current success state.
+ *
+ * @trigger The `setIsSuccess` setter with error and button id.
+ */
+export async function loadModel({ e, setIsSuccess }: LoadModelTypes) {
     e.preventDefault();
+    const element = e.target as HTMLElement;
     const success = await window.animalIdentifier.loadModel();
-    setIsSuccess({ ...success, id: e.target.id });
+
+    if (!success.status) {
+        toast.error('Erreur de chargement du modèle', {
+            position: 'top-right',
+        });
+    } else {
+        toast.success('Modèle chargé avec succès!', {
+            position: 'top-right',
+        });
+    }
+
+    return setIsSuccess({
+        ...success,
+        id: element.id,
+    });
 }
 
 export async function resetSystem({ e, ...functionProps }) {
