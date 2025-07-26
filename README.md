@@ -56,10 +56,6 @@ Ouvrez le fichier `demo.html` dans votre navigateur pour tester directement le s
 - Ouvrez http://localhost:5173
 - Cliquez sur "Ouvrir le Classificateur d'Images IA"
 
-### 2. Démonstration HTML
-- Ouvrez `demo.html` dans votre navigateur
-- Testez immédiatement le système
-
 ## 🧠 Architecture du Modèle
 
 ### Modèle CNN (Convolutional Neural Network)
@@ -146,6 +142,9 @@ Modifiez la variable `currentTask` pour adapter l'interface à votre cas d'usage
 ### Performance lente
 - Réduisez la taille des images
 - Diminuez le nombre d'epochs d'entraînement
+
+### Configurations
+`controls.config.ts` permet de configurer les buttons à passer au composant <Controls/>
 
 ## 🚀 Développement Futur
 
