@@ -1,15 +1,20 @@
-import { ComponentType, useEffect, useState } from 'react';
+import type { UseDynamicSVGImportTypes } from '@/hooks/useDynamicSVGImportTypes.ts';
+import { useEffect, useState, type ComponentType } from 'react';
 
 const icons = import.meta.glob(`../assets/icons/*.svg`, {
     import: 'default',
 });
 
 /**
+ * Custom hook to dynamically import SVG icons.
  *
- * @param icon
- * @param options
+ * @param icon - The icon to import.
+ * @param options - Additional options for the import.
  */
-export function useDynamicSVGImport({ icon, options = {} }) {
+export function useDynamicSVGImport({
+    icon,
+    options = {},
+}: UseDynamicSVGImportTypes) {
     const [SvgIcon, setSvgIcon] = useState<
         ComponentType<React.SVGProps<SVGSVGElement>>
     >(null!);
@@ -23,10 +28,10 @@ export function useDynamicSVGImport({ icon, options = {} }) {
                     throw new Error(`Icon not found: ${key}`);
                 }
                 const path = key + '?react';
-                const module = await import(path);
+                const module = await import(/* @vite-ignore */ path);
                 setSvgIcon(() => module.default);
             } catch (error) {
-                setError(error);
+                setError((error as Error).message);
             }
         };
         importIcon();
