@@ -1,0 +1,15 @@
+@use './mixins' as *;
+
+
+.main-container {
+    $max-width-content: 1280px;
+    $width-crop: 45px;
+    $width-crop-tablet: 20px;
+
+    @include apply-width-crop($max-width-content, $width-crop);
+
+    margin-inline: auto;
+    display: grid;
+    grid-template-rows: max-content auto;
+    gap: var(--grid-gap);
+}

@@ -1,7 +1,8 @@
 import { StrictMode, Suspense, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from '@/App.tsx';
-import '@css/index.scss';
+import '@css/index-tailwind.css';
+import '@css/main.scss';
 
 import {
     createBrowserRouter,
