@@ -1,4 +1,4 @@
-import { HTMLAttributes, Ref, useId } from 'react';
+import { useId, type HTMLAttributes, type Ref } from 'react';
 
 export function GenericFigure<T extends HTMLAttributes<HTMLDivElement>>({
     image,
