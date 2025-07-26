@@ -1,4 +1,4 @@
-import type { LoadModelTypes } from '@/components/Controls/controlsFunctionTypes.ts';
+import type { LoadModelTypes } from '@/components/Controls/controlsTypes';
 import { toast } from 'sonner';
 
 export function loadNewImages({
@@ -16,7 +16,7 @@ export function loadNewImages({
     setPredictionsCount(0);
 }
 
-export async function saveModel({ e, data }) {
+export async function saveModel({ e }) {
     e.preventDefault();
 
     try {
@@ -91,13 +91,7 @@ export async function loadModel({ e, setIsSuccess }: LoadModelTypes) {
 
 export async function resetSystem({ e, ...functionProps }) {
     e.preventDefault();
-    // if (window.imageClassifier) {
-    //     await window.imageClassifier.reset();
-    // }
-    // userSelections = {};
-    // predictionsCount = 0;
     loadNewImages({ e, ...functionProps });
-    // updateStats();
     functionProps.setResetSystem(true);
 }
 
