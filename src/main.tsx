@@ -1,8 +1,9 @@
 import { StrictMode, Suspense, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from '@/App.tsx';
-import '@css/index-tailwind.css';
+// import '@css/_reset.css';
 import '@css/main.scss';
+import '@css/index-tailwind.css';
 
 import {
     createBrowserRouter,
@@ -15,18 +16,7 @@ import { ComparePets } from '@/Pages/Compare/ComparePets';
 import { Header } from '@/components/Header/Header.tsx';
 import { TrainModel } from '@/Pages/TrainModel/TrainModel.tsx';
 import { ScrollTop } from '@/components/Buttons/ScrollTop.tsx';
-import { Controls } from '@/components/Controls/Controls.tsx';
-import {
-    loadDefaultDataArray,
-    loadModel,
-    loadNewImages,
-    predictAllImages,
-    resetSystem,
-    saveData,
-    saveModel,
-    trainModel,
-    validateAllImages,
-} from '@/components/Controls/controlsFunctions.ts';
+
 import { Home } from '@/Pages/Home/Home.tsx';
 import { Footer } from '@/components/Footer/Footer.tsx';
 
@@ -81,59 +71,6 @@ createRoot(document.getElementById('root')!).render(
 );
 
 let functionProps = {};
-const buttons = [
-    {
-        label: '🔄 Nouvelles Images',
-        className: 'primary',
-        functions: { onClick: (e) => loadNewImages({ e, ...functionProps }) },
-    },
-    {
-        label: '🗑️ Réinitialiser',
-        className: 'danger',
-        functions: { onClick: (e) => resetSystem({ e, ...functionProps }) },
-    },
-    {
-        label: '✅ Valider toutes les Images',
-        className: 'success',
-        functions: {
-            onClick: (e) => validateAllImages({ e, ...functionProps }),
-        },
-    },
-    {
-        label: '🔮 Prédire Tout',
-        className: 'success',
-        functions: {
-            onClick: (e) => predictAllImages({ e, ...functionProps }),
-        },
-    },
-    {
-        label: '🔧 Entraîner le Modèle',
-        className: 'success',
-        functions: {
-            onClick: (e) => trainModel({ e, ...functionProps }),
-        },
-    },
-    {
-        label: '💾 Sauvegarder le modèle',
-        className: 'primary',
-        functions: { onClick: (e) => saveModel({ e, ...functionProps }) },
-    },
-    {
-        label: '📂 Charger le modèle',
-        className: 'primary',
-        functions: { onClick: (e) => loadModel({ e, ...functionProps }) },
-    },
-    {
-        label: '💾 Sauvegarder les données',
-        className: 'primary',
-        functions: { onClick: (e) => saveData({ e }) },
-    },
-    {
-        label: '📂 Charger les données de comparaison par défaut',
-        className: 'primary',
-        functions: { onClick: (e) => loadDefaultDataArray({ e }) },
-    },
-];
 
 export function Root(contentType: { contentType?: string }) {
     const errorContent = contentType.contentType === 'error';
@@ -197,7 +134,7 @@ export function Root(contentType: { contentType?: string }) {
     return (
         <>
             <Header />
-            <Controls buttons={buttons} />
+            {/* <Controls buttons={buttons}/> */}
             <App>
                 {errorContent ? (
                     <PageError />
