@@ -1,5 +1,6 @@
 import { Button } from '@/components/Buttons/Button.tsx';
 import { GenericCard } from '@/components/Cards/GenericCard.tsx';
+import { Controls } from '@/components/Controls/Controls.tsx';
 import { GenericGrid } from '@/components/Grid/GenericGrid.tsx';
 import { ImageInput } from '@/components/Inputs/ImageInput.tsx';
 import { GenericDescription } from '@/components/Texts/GenericDescription.tsx';
@@ -76,99 +77,106 @@ export function ComparePets() {
     };
 
     return (
-        <section className="generic-layout compare-pets">
-            <GenericTitle>🔍 Comparaison d'Images</GenericTitle>
-            <GenericDescription>
-                Comparez deux nouvelles images pour voir si elles montrent le
-                même animal.
-            </GenericDescription>
+        <>
+            <Controls />
+            <section className="generic-layout compare-pets">
+                <GenericTitle>🔍 Comparaison d'Images</GenericTitle>
+                <GenericDescription>
+                    Comparez deux nouvelles images pour voir si elles montrent
+                    le même animal.
+                </GenericDescription>
 
-            <GenericGrid className="comparison-container">
-                {inputs.map((input) => {
-                    inputsIdsRef.current.add(input.previewId);
-                    return (
-                        <GenericCard
-                            key={input.id}
-                            id={`card-${input.id}`}
-                            className="image-preview-container"
-                        >
-                            <ImageInput
-                                id={input.id}
-                                label={input.label}
-                                previewId={input.previewId}
-                                setInputImages={setInputImages}
-                            />
-                        </GenericCard>
-                    );
-                })}
-            </GenericGrid>
+                <GenericGrid className="comparison-container">
+                    {inputs.map((input) => {
+                        inputsIdsRef.current.add(input.previewId);
+                        return (
+                            <GenericCard
+                                key={input.id}
+                                id={`card-${input.id}`}
+                                className="image-preview-container"
+                            >
+                                <ImageInput
+                                    id={input.id}
+                                    label={input.label}
+                                    previewId={input.previewId}
+                                    setInputImages={setInputImages}
+                                />
+                            </GenericCard>
+                        );
+                    })}
+                </GenericGrid>
 
-            <Button
-                className="comparison__btn "
-                onClick={compareImages}
-                disabled={inputImages.length < 2}
-                // disabled={!inputImages.preview1 || !inputImages.preview2}
-            >
-                Comparer les Images
-            </Button>
-            <div className="generic-layout__alert">
-                {statusMessage.message && (
-                    <p
-                        className={`generic-layout__alert ${statusMessage.className}`}
-                    >
-                        {statusMessage.message}
-                    </p>
-                )}
-                {result && (
-                    <>
-                        <h3>Résultat de la Comparaison:</h3>
-                        <p>
-                            <strong>Verdict:</strong>
-                            {result.sameAnimal
-                                ? '✅ Même animal'
-                                : '❌ Animaux différents'}
-                        </p>
-                        <p>
-                            <strong>Score de similarité: </strong>
-                            {(result.similarity * 100).toFixed(1)}%
-                        </p>
-                        <p>
-                            <strong>Confiance: </strong>
-                            {(result.confidence * 100).toFixed(1)}%
-                        </p>
-                        <p>
-                            <strong>Seuil utilisé: </strong>
-                            {(result.details.threshold * 100).toFixed()}%
-                        </p>
-                        <p>
-                            <strong>Comparaison # : </strong>
-                            {result.details.comparisonNumber}
-                        </p>
-                        <div
-                            style={{
-                                textAlign: 'center',
-                                background: `${
-                                    result.sameAnimal ? '#c6f6d5' : '#fed7d7'
-                                }`,
-                                color: `${
-                                    result.sameAnimal ? '#22543d' : '#742a2a'
-                                }`,
-                                padding: '10px',
-                                borderRadius: '5px',
-                                marginTop: '10px',
-                            }}
+                <Button
+                    className="comparison__btn "
+                    onClick={compareImages}
+                    disabled={inputImages.length < 2}
+                    // disabled={!inputImages.preview1 || !inputImages.preview2}
+                >
+                    Comparer les Images
+                </Button>
+                <div className="generic-layout__alert">
+                    {statusMessage.message && (
+                        <p
+                            className={`generic-layout__alert ${statusMessage.className}`}
                         >
-                            <strong>
+                            {statusMessage.message}
+                        </p>
+                    )}
+                    {result && (
+                        <>
+                            <h3>Résultat de la Comparaison:</h3>
+                            <p>
+                                <strong>Verdict:</strong>
                                 {result.sameAnimal
-                                    ? '✅ Ces images semblent montrer le même animal!'
-                                    : '❌ Ces images semblent montrer des animaux différents.'}
-                            </strong>
-                        </div>
-                    </>
-                )}
+                                    ? '✅ Même animal'
+                                    : '❌ Animaux différents'}
+                            </p>
+                            <p>
+                                <strong>Score de similarité: </strong>
+                                {(result.similarity * 100).toFixed(1)}%
+                            </p>
+                            <p>
+                                <strong>Confiance: </strong>
+                                {(result.confidence * 100).toFixed(1)}%
+                            </p>
+                            <p>
+                                <strong>Seuil utilisé: </strong>
+                                {(result.details.threshold * 100).toFixed()}%
+                            </p>
+                            <p>
+                                <strong>Comparaison # : </strong>
+                                {result.details.comparisonNumber}
+                            </p>
+                            <div
+                                style={{
+                                    textAlign: 'center',
+                                    background: `${
+                                        result.sameAnimal
+                                            ? '#c6f6d5'
+                                            : '#fed7d7'
+                                    }`,
+                                    color: `${
+                                        result.sameAnimal
+                                            ? '#22543d'
+                                            : '#742a2a'
+                                    }`,
+                                    padding: '10px',
+                                    borderRadius: '5px',
+                                    marginTop: '10px',
+                                }}
+                            >
+                                <strong>
+                                    {result.sameAnimal
+                                        ? '✅ Ces images semblent montrer le même animal!'
+                                        : '❌ Ces images semblent montrer des animaux différents.'}
+                                </strong>
+                            </div>
+                        </>
+                    )}
 
-                {!result && 'Aucune comparaison effectuée'}
-            </div>
-        </section>
+                    {!result && 'Aucune comparaison effectuée'}
+                </div>
+            </section>
+        </>
     );
 }
