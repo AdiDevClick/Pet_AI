@@ -23,15 +23,21 @@ export function Controls({ buttons = clickableButtons }) {
         error: null,
     });
     Object.assign(functionProps, { ...context, setIsSuccess });
+
     return (
         <section className="controls">
             {buttons.map((button, index) => (
                 <AlertDialogButton
                     key={`alert-${index}`}
                     open={!isSuccess.status && isSuccess.id === button.id}
-                    onOpenChange={setIsSuccess}
+                    onOpenChange={(open) =>
+                        setIsSuccess((prev) => ({
+                            ...prev,
+                            status: !open,
+                        }))
+                    }
                     context={{
-                        ...(button.context?.error ?? {}),
+                        ...button.context?.error,
                         error: isSuccess.error,
                     }}
                 >

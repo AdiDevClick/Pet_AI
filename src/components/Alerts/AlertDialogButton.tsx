@@ -1,4 +1,4 @@
-import type { AlertDialogButtonProps } from '@/components/Alerts/altersTypes.ts';
+import type { AlertDialogButtonProps } from '@/components/Alerts/alertsTypes';
 import {
     AlertDialog,
     AlertDialogAction,
