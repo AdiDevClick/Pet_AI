@@ -1,4 +1,4 @@
-import { IconPropsTypes } from '@/components/Social/socialTypes.ts';
+import type { IconPropsTypes } from '@/components/Social/socialTypes.ts';
 import { useDynamicSVGImport } from '@/hooks/useDynamicSVGImport';
 
 /**
