@@ -22,14 +22,14 @@ export function AlertDialogButton({ children, context = {}, ...props }) {
                         {context.title || 'Titre par défaut'}
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        {context.message || 'Message par défaut'}
+                        {context.error || 'Message par défaut'}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     {context.cancelable && (
                         <>
                             <AlertDialogCancel {...context.functions}>
-                                {context.retryTitle}
+                                {context.retryButtonText}
                             </AlertDialogCancel>
                             <AlertDialogCancel>Annuler</AlertDialogCancel>
                         </>
