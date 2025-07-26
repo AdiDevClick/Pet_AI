@@ -4,6 +4,7 @@ import { Instructions } from '@/components/Instructions/Instructions.tsx';
 import { TrainingTwoCards } from '@/components/Cards/TrainingTwoCards.tsx';
 import originalAnimals from '@/data/animals.json';
 import { useOutletContext } from 'react-router-dom';
+import { Controls } from '@/components/Controls/Controls.tsx';
 
 const onlyPositive = false;
 const allShuffled = true;
@@ -59,7 +60,7 @@ export function TrainModel() {
     return (
         <>
             <Tasks>chats</Tasks>
-            {/* <Controls buttons={buttons} /> */}
+            <Controls />
             <Status
                 accuracy={accuracy}
                 predictionsCount={predictionsCount}
