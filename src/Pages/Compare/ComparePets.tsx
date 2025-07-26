@@ -31,6 +31,8 @@ export function ComparePets() {
         className: '',
     });
     const [inputImages, setInputImages] = useState({});
+    // Because we reset the inputImages on new set of images,
+    // we need to keep track of the input IDs to avoid duplicates.
     const inputsIdsRef = useRef(new Set<string>());
     const [result, setResult] = useState(null);
 
