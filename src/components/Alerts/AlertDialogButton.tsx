@@ -1,3 +1,4 @@
+import type { AlertDialogButtonProps } from '@/components/Alerts/altersTypes.ts';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -11,7 +12,20 @@ import {
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog.tsx';
 
-export function AlertDialogButton({ children, context = {}, ...props }) {
+/**
+ * Modal dialog button component.
+ *
+ * @description This component renders an alert dialog button
+ * that can be used to trigger actions with confirmation.
+ *
+ * @param children - The button or element that triggers the alert dialog.
+ * @param context - Optional context object containing properties like `title`, `error`, and `functions`.
+ * @param props - Additional properties for the AlertDialog component.
+ */
+export function AlertDialogButton({
+    children,
+    ...props
+}: AlertDialogButtonProps) {
     return (
         <AlertDialog {...props}>
             <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
@@ -19,17 +33,17 @@ export function AlertDialogButton({ children, context = {}, ...props }) {
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>
-                        {context.title || 'Titre par défaut'}
+                        {props.context?.title || 'Titre par défaut'}
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        {context.error || 'Message par défaut'}
+                        {props.context?.error || 'Message par défaut'}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    {context.cancelable && (
+                    {props.context?.cancelable && (
                         <>
-                            <AlertDialogCancel {...context.functions}>
-                                {context.retryButtonText}
+                            <AlertDialogCancel {...props.context.functions}>
+                                {props.context.retryButtonText}
                             </AlertDialogCancel>
                             <AlertDialogCancel>Annuler</AlertDialogCancel>
                         </>
