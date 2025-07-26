@@ -119,4 +119,4 @@ export const clickableButtons = [
                 loadDefaultDataArray({ e }),
         },
     },
-];
+] as const;
