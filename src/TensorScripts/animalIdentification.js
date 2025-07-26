@@ -663,8 +663,8 @@ class AnimalIdentificationTF {
                 return await this.loadModelFromData(jsonData);
             }
         } catch (error) {
-            console.error('❌ Erreur lors du chargement:', error);
-            return false;
+            // console.error('❌ Erreur lors du chargement:', error);
+            return error;
         }
     }
 
@@ -678,11 +678,7 @@ class AnimalIdentificationTF {
                 const file = target.files[0];
 
                 try {
-                    if (!target || !target.files) {
-                        throw new Error('Aucun fichier sélectionné');
-                    }
-
-                    if (!file) {
+                    if (!target || !target.files || !file) {
                         throw new Error('Aucun fichier sélectionné');
                     }
 
@@ -690,8 +686,14 @@ class AnimalIdentificationTF {
                     reader.onload = async (e) => {
                         const result = e.target?.result;
                         try {
-                            if (!result || typeof result !== 'string') {
-                                throw new Error('Erreur de lecture du fichier');
+                            if (
+                                !result ||
+                                typeof result !== 'string' ||
+                                file.type !== 'application/json'
+                            ) {
+                                throw new Error(
+                                    "Ce fichier n'est pas un compatible JSON"
+                                );
                             }
                             const data = JSON.parse(result);
                             const status = await this.loadModelFromData(data);
@@ -706,7 +708,7 @@ class AnimalIdentificationTF {
                             reject({
                                 status: false,
                                 error:
-                                    "Erreur lors de l'analyse JSON: " +
+                                    'Erreur lors de la lecture du fichier : ' +
                                     error.message,
                             });
                         }
