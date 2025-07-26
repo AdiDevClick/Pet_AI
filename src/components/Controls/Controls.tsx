@@ -67,16 +67,12 @@ const clickableButtons = [
         context: {
             error: {
                 cancelable: true,
-                retryTitle: 'Nouveau fichier',
+                retryButtonText: 'Nouveau fichier',
                 functions: {
                     onClick: (e) => loadModel({ e, ...functionProps }),
                 },
                 title: 'Erreur de chargement',
                 message: '⚠️ Aucun modèle sauvegardé trouvé',
-            },
-            success: {
-                title: 'Succès',
-                message: '📂 Modèle chargé avec succès!',
             },
         },
     },
@@ -97,19 +93,18 @@ const clickableButtons = [
 export function Controls({ buttons = clickableButtons }) {
     const { ...context } = useOutletContext();
     const [isSuccess, setIsSuccess] = useState({});
-    functionProps = { ...functionProps, context, setIsSuccess };
+    functionProps = { ...functionProps, ...context, setIsSuccess, isSuccess };
     return (
         <section className="controls">
             {buttons.map((button, index) => (
                 <AlertDialogButton
                     key={`alert-${index}`}
-                    open={isSuccess.id === button.id}
+                    open={!isSuccess.status && isSuccess.id === button.id}
                     onOpenChange={setIsSuccess}
-                    context={
-                        isSuccess.status
-                            ? button.context?.success
-                            : button.context?.error
-                    }
+                    context={{
+                        ...button.context?.error,
+                        error: isSuccess.error,
+                    }}
                 >
                     <Button
                         id={button.id}
