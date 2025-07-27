@@ -9,14 +9,6 @@ export type LoadModelTypes = {
 export type ControlsClickableButtonTypes<T> = {
     [key: string]: T;
 };
-// export type ControlsClickableButtonTypes = {
-//     id: string;
-//     label: string;
-//     className: string;
-//     functions: {
-//         onClick: (args: MouseEvent<HTMLButtonElement> & T) => void;
-//     };
-// };
 
 export interface ControlsFunctionPropsTypes extends contextTypes {
     setIsSuccess: Dispatch<SetStateAction<ControlsStateTypes>>;
