@@ -24,7 +24,7 @@ import type { MouseEvent } from 'react';
 export const functionProps = {} as ControlsFunctionPropsTypes;
 
 /**
- * Defatult array of clickable buttons for controls
+ * Default array of clickable buttons for controls
  */
 export const clickableButtons = [
     {
