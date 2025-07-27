@@ -1,4 +1,4 @@
-import { svgsType } from '@/configs/social.config.ts';
+import type { svgsType } from '@/configs/social.config.ts';
 
 export type SocialContainerPropsTypes = {
     className?: string;
