@@ -1,5 +1,5 @@
 import { Icon } from '@/components/Icons/Icon.tsx';
-import { SocialContainerPropsTypes } from '@/components/Social/socialTypes.ts';
+import type { SocialContainerPropsTypes } from '@/components/Social/socialTypes.ts';
 import { svgs } from '@/configs/social.config.ts';
 import '@css/social.scss';
 
@@ -27,6 +27,7 @@ export function SocialContainer({
                     className="social__link"
                     target="_blank"
                     rel="noopener noreferrer"
+                    title={icon.name}
                 >
                     <Icon key={icon.name + index} icon={icon} />
                 </a>
