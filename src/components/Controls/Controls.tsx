@@ -30,16 +30,22 @@ export function Controls({ buttons = clickableButtons }) {
                 <AlertDialogButton
                     key={`alert-${index}`}
                     open={!isSuccess.status && isSuccess.id === button.id}
-                    onOpenChange={(open) =>
+                    onOpenChange={() =>
                         setIsSuccess((prev) => ({
                             ...prev,
-                            status: !open,
+                            status: !prev.status,
                         }))
                     }
-                    context={{
-                        ...button.context?.error,
-                        error: isSuccess.error,
-                    }}
+                    context={
+                        'context' in button &&
+                        button.context &&
+                        button.context.error
+                            ? {
+                                  ...button.context.error,
+                                  error: isSuccess.error,
+                              }
+                            : { error: isSuccess.error }
+                    }
                 >
                     <Button
                         id={button.id}
