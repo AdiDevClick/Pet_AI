@@ -408,9 +408,16 @@ class AnimalIdentificationTF {
             //         )
             //     )
             //     .repeat(this.#params.epochs);
-            const images1 = this.trainingPairs.map((pair) => pair.image1);
-            const images2 = this.trainingPairs.map((pair) => pair.image2);
-            const labels = this.trainingPairs.map((pair) => pair.label);
+
+            const images1 = [];
+            const images2 = [];
+            const labels = [];
+
+            this.trainingPairs.forEach((pair) => {
+                images1.push(pair.image1);
+                images2.push(pair.image2);
+                labels.push(pair.label);
+            });
 
             const xs1 = tf.concat(images1);
             const xs2 = tf.concat(images2);
@@ -462,7 +469,7 @@ class AnimalIdentificationTF {
             console.log('✅ Entraînement terminé');
             return history;
         } catch (error) {
-            console.error("❌ Erreur lors de l'entraînement:", error);
+            console.error("❌ Erreur lors de l'entraînement:", error.message);
         } finally {
             this.isTraining = false;
         }
