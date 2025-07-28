@@ -5,53 +5,62 @@ export function useAnimalIdentification() {
     const [isInitialized, setIsInitialized] = useState(false);
     const [isTraining, setIsTraining] = useState(false);
     const [isComparing, setIsComparing] = useState(false);
-    const [stats, setStats] = useState({
+    const [status, setStatus] = useState({
         trainingPairs: 0,
         comparisons: 0,
         accuracy: 0,
     });
     const [lastResult, setLastResult] = useState(null);
 
-    // Initialiser le système d'identification
-    const initialize = useCallback(async () => {
-        try {
-            if (!window.animalIdentifier) {
-                console.error('AnimalIdentificationTF not loaded');
-                return false;
-            }
+    /**
+     * Initialize the animal identification model.
+     */
+    const initializeModel = useCallback(async () => {
+        if (!window.animalIdentifier) {
+            try {
+                // throw new Error('AnimalIdentificationTF not loaded', {
+                //     cause: { status: 404, message: 'Script not found' },
+                // });
 
-            const success = await window.animalIdentifier.initializeModels();
-            setIsInitialized(success);
+                const success =
+                    await window.animalIdentifier.initializeModels();
 
-            if (success) {
+                if (!success) {
+                    throw new Error(
+                        `❌ Échec de l'initialisation: ${success}`,
+                        {
+                            cause: {
+                                status: 500,
+                                message: 'Initialization failed',
+                            },
+                        }
+                    );
+                }
+                setIsInitialized(success);
                 updateStats();
+                return;
+            } catch (error) {
+                setStatus((prev) => ({ ...prev, error: error.message }));
             }
-
-            return success;
-        } catch (error) {
-            console.error(
-                "Erreur d'initialisation de l'identification:",
-                error
-            );
-            return false;
         }
+        setIsInitialized(true);
     }, []);
 
     // Mettre à jour les statistiques
     const updateStats = useCallback(() => {
-        if (window.animalIdentifier) {
-            setStats({
+        if (isInitialized) {
+            setStatus({
                 trainingPairs: window.animalIdentifier.trainingPairs.length,
                 comparisons: window.animalIdentifier.comparisonCount,
                 accuracy:
                     parseFloat(window.animalIdentifier.finalAccuracy) || 0,
             });
         }
-    }, []);
+    }, [isInitialized]);
 
     // Ajouter une paire d'entraînement
     const addTrainingPair = useCallback(
-        async (image1Element, image2Element, isSameAnimal) => {
+        async (imgPairArray, isSameAnimal) => {
             if (!isInitialized || !window.animalIdentifier) {
                 console.error("Système d'identification non initialisé");
                 return false;
@@ -238,7 +247,7 @@ export function useAnimalIdentification() {
             await waitForScript();
 
             if (window.animalIdentifier) {
-                await initialize();
+                await initializeModel();
             } else {
                 console.error(
                     "Impossible de charger le script d'identification"
@@ -247,18 +256,18 @@ export function useAnimalIdentification() {
         };
 
         initializeSystem();
-    }, [initialize]);
+    }, [initializeModel]);
 
     return {
-        // État
+        /** State */
         isInitialized,
         isTraining,
         isComparing,
-        stats,
+        status,
         lastResult,
 
-        // Actions
-        initialize,
+        /** Actions */
+        initializeModel,
         addTrainingPair,
         trainModel,
         compareAnimals,
