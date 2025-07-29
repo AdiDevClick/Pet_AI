@@ -21,6 +21,7 @@ import { Home } from '@/Pages/Home/Home.tsx';
 import { Footer } from '@/components/Footer/Footer.tsx';
 import { Toaster } from '@/components/ui/sonner.tsx';
 import type { contextTypes } from '@/mainTypes.ts';
+import { useAnimalIdentification } from '@/hooks/models/useAnimalIdentification.ts';
 
 const router = createBrowserRouter(
     [
@@ -74,6 +75,7 @@ createRoot(document.getElementById('root')!).render(
 
 export function Root(contentType: { contentType?: string }) {
     const errorContent = contentType.contentType === 'error';
+    const { ...context } = useAnimalIdentification();
 
     const [onLoad, setOnLoad] = useState(true);
     const [resetSystem, setResetSystem] = useState(false);
