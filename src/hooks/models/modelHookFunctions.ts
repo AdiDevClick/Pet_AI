@@ -3,7 +3,6 @@ export function getDataBalance({ trainingPairs, setStatus }) {
     const negative = trainingPairs.filter((pair) => pair.label === 0).length;
     const total = trainingPairs.length;
 
-    console.log(`📊 Balance: ${positive} positives, ${negative} négatives`);
     setStatus((prev) => ({
         ...prev,
         balance: { positive, negative, total },
@@ -12,9 +11,7 @@ export function getDataBalance({ trainingPairs, setStatus }) {
 
 export async function loadStorageData({
     setStatus,
-    setIsTraining,
     isInitialized,
-    status,
     config,
     trainingPairs = [],
 }) {
@@ -36,16 +33,13 @@ export async function loadStorageData({
                 const { image1Url, image2Url, isSameAnimal } = element;
                 const img1 = await loadImageElement(image1Url);
                 const img2 = await loadImageElement(image2Url);
-                // const img1 = await loadImageElement(image1Url);
-                // const img2 = await loadImageElement(image2Url);
+
                 addTrainingPairToModel({
                     imgPairArray: [img1, img2],
                     isSameAnimal,
                     setStatus,
                     isInitialized,
-                    setIsTraining,
                     config,
-                    status,
                 });
             })
         );
@@ -54,6 +48,7 @@ export async function loadStorageData({
             loadingState: {
                 message: 'Données image chargées',
                 isLoading: 'done',
+                type: 'storage',
             },
             localStorageDataLoaded: true,
         }));
@@ -84,22 +79,19 @@ export function addTrainingPairToModel({
     imgPairArray,
     isSameAnimal,
     setStatus,
-    setIsTraining,
     isInitialized,
-    status,
+    // status,
     config,
 }) {
     checkIfInitialized(isInitialized);
-
-    setIsTraining(true);
 
     try {
         const img1 = preprocessImage(imgPairArray[0], config);
         const img2 = preprocessImage(imgPairArray[1], config);
         const label = isSameAnimal ? 1 : 0;
-        console.log(
-            `📊 Paire ajoutée: ${status.trainingPairs.length} paires d'entraînement`
-        );
+        // console.log(
+        //     `📊 Paire ajoutée: ${status.trainingPairs.length} paires d'entraînement`
+        // );
         setStatus((prev) => ({
             ...prev,
             pairsArrayForSaving: [
@@ -115,7 +107,7 @@ export function addTrainingPairToModel({
                 { image1: img1, image2: img2, label: label },
             ],
         }));
-        setIsTraining(false);
+        // setIsTraining(false);
     } catch (error) {
         setStatus((prev) => ({
             ...prev,
@@ -124,7 +116,7 @@ export function addTrainingPairToModel({
                 status: error.cause.status || 500,
             },
         }));
-        setIsTraining(false);
+        // setIsTraining(false);
     }
 }
 
@@ -248,11 +240,8 @@ export function createFeatureExtractor({
             ],
         });
 
-        console.log('✅ Feature Extractor créé', featureExtractor);
-        // setFeatureExtractor(() => featureExtractor);
         return { extractor: featureExtractor, success: true };
     } catch (error) {
-        console.error('❌ Erreur création feature extractor:', error);
         return { success: false };
     }
 }
@@ -264,7 +253,7 @@ export function setupOptimalBackend() {
             // throw new Error('WebGL déjà actif');
         }
         tf.setBackend('webgl');
-        console.log('✅ Backend WebGL configuré');
+        // console.log('✅ Backend WebGL configuré');
     } catch (error) {
         tf.setBackend('cpu');
         console.log('✅ Fallback vers CPU');
@@ -360,10 +349,8 @@ export function createSiameseModel({
         //     ...prev,
         //     siameseModelInitialized: true,
         // }));
-        console.log('✅ Modèle siamois créé');
         return { siameseModel: siameseModel, success: true };
     } catch (error) {
-        console.error('❌ Erreur création modèle siamois:', error);
         return { success: false };
     }
 }
@@ -373,12 +360,13 @@ export function createSiameseModel({
  */
 export function initialize({
     isInitialized,
-    setIsInitialized,
+    // setIsInitialized,
     setStatus,
     config,
-    featureExtractor,
-    setFeatureExtractor,
-    setSiameseModel,
+    // featureExtractor,
+    // setFeatureExtractor,
+    // setSiameseModel,
+    setModel,
     status,
 }) {
     try {
@@ -395,7 +383,6 @@ export function initialize({
         // });
 
         tf.ready();
-        console.log(`Backend actif: ${tf.getBackend()}`);
 
         // Configuration backend avec gestion d'erreur
         setupOptimalBackend();
@@ -419,11 +406,9 @@ export function initialize({
         // if (!featureSuccess) return false;
 
         const siamese = createSiameseModel({
-            // setStatus,
             status,
             config,
             featureExtractor: feature.extractor,
-            // setSiameseModel,
         });
 
         if (!siamese.success) {
@@ -434,17 +419,23 @@ export function initialize({
                 },
             });
         }
-        setIsInitialized(siamese.success);
-        setFeatureExtractor(feature.extractor);
-        setSiameseModel(siamese.siameseModel);
         setStatus((prev) => ({
             ...prev,
-            loadingState: { message: 'Modèle initialisé', isLoading: 'done' },
+            loadingState: {
+                message: 'Modèle initialisé',
+                isLoading: 'done',
+                type: 'initializing',
+            },
             siameseModelInitialized: true,
             featureExtractorInitialized: true,
         }));
-        // updateStats();
-        return;
+        setModel((prev) => ({
+            ...prev,
+            siameseModel: siamese.siameseModel,
+            featureExtractor: feature.extractor,
+            isInitialized: siamese.success,
+        }));
+        console.log('modèle initialisé avec succès');
     } catch (error) {
         setStatus((prev) => ({
             ...prev,
@@ -456,23 +447,16 @@ export function initialize({
     }
 }
 
-export function trainModel({
+export async function trainModel({
     status,
-    siameseModel,
-    isInitialized,
-    isTraining,
+    model,
     config = {},
     setStatus,
-    // setIsInitialized,
-    // featureExtractor,
-    // setFeatureExtractor,
-    // setSiameseModel,
-    setIsTraining,
-    startModelTraining,
+    initializeModel,
 }) {
     try {
         if (status.trainingPairs.length < 4) {
-            throw new Error("⚠️ Pas assez de paires pour l'entraînement", {
+            throw new Error("Pas assez de paires pour l'entraînement", {
                 cause: {
                     status: 404,
                     message: 'Not Found',
@@ -480,7 +464,7 @@ export function trainModel({
             });
         }
 
-        if (isTraining) {
+        if (status.loadingState.isLoading === 'training') {
             throw new Error('⚠️ Entraînement déjà en cours', {
                 cause: {
                     status: 500,
@@ -490,20 +474,9 @@ export function trainModel({
         }
 
         // Initialiser les modèles s'ils ne sont pas créés
-        if (!siameseModel || !isInitialized) {
-            // initialize({
-            //     isInitialized,
-            //     setIsInitialized,
-            //     setStatus,
-            //     config,
-            //     featureExtractor,
-            //     setFeatureExtractor,
-            //     setSiameseModel,
-            //     status,
-            // });
-            startModelTraining();
-
-            checkIfInitialized(isInitialized);
+        if (!model.siameseModel || !model.isInitialized) {
+            initializeModel();
+            checkIfInitialized(model.isInitialized);
         }
 
         if (
@@ -521,8 +494,6 @@ export function trainModel({
             );
         }
 
-        setIsTraining(true);
-
         const images1 = [];
         const images2 = [];
         const labels = [];
@@ -535,11 +506,10 @@ export function trainModel({
 
         const xs1 = tf.concat(images1);
         const xs2 = tf.concat(images2);
+
         const ys = tf.tensor1d(labels, 'float32');
 
-        console.log('Training...', config);
-
-        const history = siameseModel.fit([xs1, xs2], ys, {
+        await model.siameseModel.fit([xs1, xs2], ys, {
             epochs: config.epochs,
             batchSize: config.batchSize,
             validationSplit: config.validationSplit,
@@ -566,49 +536,45 @@ export function trainModel({
         xs2.dispose();
         ys.dispose();
 
-        console.log('✅ Entraînement terminé');
-        setIsTraining(false);
-        return history;
+        setStatus((prev) => ({
+            ...prev,
+            loadingState: {
+                message: 'Entraînement du modèle terminé',
+                isLoading: 'done',
+                type: 'training',
+            },
+        }));
+        // return history;
     } catch (error) {
         setStatus((prev) => ({
             ...prev,
             error: {
-                message: "❌ Erreur lors de l'entraînement:" + error.message,
+                message: "Erreur lors de l'entraînement \n" + error.message,
                 status: error.cause?.status || 500,
+            },
+            loadingState: {
+                message: '',
+                isLoading: '',
+                type: '',
             },
         }));
     }
 }
 
-export function compareImages({
+export async function compareImages({
     imageArray,
     config,
-    siameseModel,
-    isInitialized,
-    // setIsInitialized,
+    model,
     setStatus,
     status,
-    // setSiameseModel,
-    // setFeatureExtractor,
-    // featureExtractor,
-    startModelTraining,
+    initializeModel,
 }) {
     try {
-        if (!siameseModel || !isInitialized) {
-            // initialize({
-            //     isInitialized,
-            //     setIsInitialized,
-            //     setStatus,
-            //     config,
-            //     featureExtractor,
-            //     setFeatureExtractor,
-            //     setSiameseModel,
-            //     status,
-            // });
-            startModelTraining();
-
-            checkIfInitialized(isInitialized);
+        if (!model.siameseModel || !model.isInitialized) {
+            initializeModel();
+            checkIfInitialized(model.isInitialized);
         }
+
         if (imageArray.length !== 2) {
             throw new Error(
                 '⚠️ Deux images sont nécessaires pour la comparaison',
@@ -624,8 +590,8 @@ export function compareImages({
         const img1 = preprocessImage(imageArray[0], config);
         const img2 = preprocessImage(imageArray[1], config);
 
-        const prediction = siameseModel.predict([img1, img2]);
-        const similarity = prediction.data();
+        const prediction = model.siameseModel.predict([img1, img2]);
+        const similarity = await prediction.data();
 
         img1.dispose();
         img2.dispose();
@@ -633,13 +599,16 @@ export function compareImages({
 
         const score = similarity[0];
 
-        console.log(
-            `🔍 Comparaison ${status.comparisons}: score=${score.toFixed(4)}`
-        );
+        // console.log(
+        //     `🔍 Comparaison ${status.comparisonsCount}: score=${score.toFixed(
+        //         4
+        //     )}`
+        // );
+
         setStatus((prev) => ({
             ...prev,
-            comparisons: parFprev.comparisons + 1,
-            similarity: score,
+            comparisonsCount: prev.comparisonsCount + 1,
+            similarityScore: score,
             sameAnimal: score > config.predictionThreshold,
             confidence: Math.abs(score - 0.5) * 2,
         }));
@@ -678,12 +647,13 @@ export async function save({
     name = null,
     status,
     setStatus,
-    featureExtractor,
-    siameseModel,
+    // featureExtractor,
+    // siameseModel,
+    model,
     config,
 }) {
     try {
-        if (!siameseModel || !featureExtractor) {
+        if (!model.siameseModel || !model.featureExtractor) {
             throw new Error('⚠️ Aucun modèle à sauvegarder', {
                 cause: {
                     status: 404,
@@ -701,8 +671,10 @@ export async function save({
             async (artifacts) => artifacts
         );
 
-        const siameseArtifacts = await siameseModel.save(siameseHandler);
-        const featureArtifacts = await featureExtractor.save(featureHandler);
+        const siameseArtifacts = await model.siameseModel.save(siameseHandler);
+        const featureArtifacts = await model.featureExtractor.save(
+            featureHandler
+        );
 
         // Créer l'objet de données complet
         const modelData = {
@@ -712,8 +684,8 @@ export async function save({
                 timestamp: new Date().toISOString(),
                 imageSize: config.imageSize,
                 featureSize: config.featureSize,
-                trainingPairsCount: config.trainingPairs.length,
-                comparisonCount: config.comparisons,
+                trainingPairsCount: status.trainingPairs.length,
+                comparisonCount: status.comparisonsCount,
             },
             siameseModel: {
                 modelTopology: siameseArtifacts.modelTopology,
@@ -801,9 +773,7 @@ export async function loadModelFromData({
     modelData,
     config,
     setStatus,
-    setFeatureExtractor,
-    setSiameseModel,
-    setIsInitialized,
+    setModel,
 }) {
     try {
         // Vérifier la structure des données
@@ -861,7 +831,8 @@ export async function loadModelFromData({
         };
 
         console.log('🔄 Chargement du feature extractor...');
-        setFeatureExtractor(await tf.loadLayersModel(featureHandler));
+
+        const featureExtractor = await tf.loadLayersModel(featureHandler);
         console.log('✅ Feature extractor chargé');
 
         console.log('🔄 Chargement du modèle siamois...');
@@ -873,8 +844,12 @@ export async function loadModelFromData({
             loss: config.loss || 'binaryCrossentropy',
             metrics: config.metrics || ['accuracy'],
         });
-        setSiameseModel(siameseModel);
-        setIsInitialized(true);
+        setModel(async (prev) => ({
+            ...prev,
+            siameseModel,
+            isInitialized: true,
+            featureExtractor,
+        }));
         const modelName = modelData.metadata?.name || 'modèle-chargé';
 
         // this.loadData();
