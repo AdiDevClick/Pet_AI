@@ -202,13 +202,5 @@ export async function validateAllImages({ e }) {
 
 export async function trainModel({ e, ...functionProps }) {
     e.preventDefault();
-    try {
-        // updateStatus('🏋️ Entraînement en cours...', 'warning');
-        await window.animalIdentifier.trainModel();
-        // updateStats();
-        // updateStatus('✅ Entraînement terminé!', 'success');
-    } catch (error) {
-        console.error("Erreur d'entraînement:", error);
-        // updateStatus("❌ Erreur lors de l'entraînement", 'error');
-    }
+    functionProps.startModelTraining();
 }
