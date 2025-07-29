@@ -1,10 +1,11 @@
+import { appContext } from '@/App.tsx';
 import { AlertDialogButton } from '@/components/Alerts/AlertDialogButton';
 import { Button } from '@/components/Buttons/Button';
 import type { ControlsStateTypes } from '@/components/Controls/controlsTypes.ts';
 import { clickableButtons, functionProps } from '@/configs/controls.config.ts';
 import type { contextTypes } from '@/mainTypes.ts';
 import '@css/controls.scss';
-import { useState } from 'react';
+import { memo, use, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 
 /**
@@ -15,14 +16,22 @@ import { useOutletContext } from 'react-router-dom';
  *
  * @param buttons - **@default=`clickableButtons`** - Optional array of button configurations.
  */
-export function Controls({ buttons = clickableButtons }) {
+export const MemoizedControls = memo(function Controls({
+    buttons = clickableButtons,
+}) {
     const context: contextTypes = useOutletContext();
+    const { startModelTraining } = use(appContext);
+
     const [isSuccess, setIsSuccess] = useState<ControlsStateTypes>({
         status: false,
         id: null,
         error: null,
     });
-    Object.assign(functionProps, { ...context, setIsSuccess });
+    Object.assign(functionProps, {
+        ...context,
+        setIsSuccess,
+        startModelTraining,
+    });
 
     return (
         <section className="controls">
@@ -58,4 +67,6 @@ export function Controls({ buttons = clickableButtons }) {
             ))}
         </section>
     );
-}
+});
+
+export default MemoizedControls;
