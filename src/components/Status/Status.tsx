@@ -1,9 +1,9 @@
-import useAnimalIdentification from '@/hooks/useAnimalIdentification.ts';
-import { useTensorFlowScript } from '@/hooks/useTensorFlowScript.ts';
 import '@css/stats.scss';
 import '@css/generic-layout.scss';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { GenericTitle } from '@/components/Texts/GenericTitle.tsx';
+import { useAnimalIdentification } from '@/hooks/models/useAnimalIdentification.ts';
+import { useOutlet, useOutletContext } from 'react-router-dom';
 
 export function Status({
     // trainingCount,
@@ -12,27 +12,17 @@ export function Status({
     resetSystem,
     setResetSystem,
 }) {
+    // const { ...context } = useOutletContext();
     const microOutDivRef = useRef<HTMLDivElement>(null!);
+    const [isInitialized, setIsInitialized] = useState(false);
     const [message, setMessage] = useState<ReactNode>(
         "🚀 Initialisation du classificateur d'images..."
     );
     const [resultsMessage, setResultsMessage] = useState<ReactNode>(
         'Aucune comparaison effectuée'
     );
-    const { trainingCount, accuracy, predictionCount } = useTensorFlowScript();
-    const {
-        isInitialized,
-        isTraining,
-        isComparing,
-        stats,
-        lastResult,
-        addTrainingPair,
-        trainModel,
-        compareAnimals,
-        resetModel,
-        saveModel,
-        loadModel,
-    } = useAnimalIdentification();
+    // const { trainingCount, accuracy, predictionCount } = useTensorFlowScript();
+    // const { isInitialized, status } = useAnimalIdentification();
 
     useEffect(() => {
         if (resetSystem) {
@@ -84,19 +74,19 @@ export function Status({
             <div className="stats">
                 <div className="stats__item">
                     <div className="stats__value" id="training-count">
-                        {trainingCount}
+                        {status.trainingCount}
                     </div>
                     <div className="stats__label">Paires d'entraînement</div>
                 </div>
                 <div className="stats__item">
                     <div className="stats__value" id="accuracy">
-                        {accuracy}%
+                        {status.accuracy}%
                     </div>
                     <div className="stats__label">Précision du modèle</div>
                 </div>
                 <div className="stats__item">
                     <div className="stats__value" id="comparisons-count">
-                        {predictionCount}
+                        {status.predictionCount}
                     </div>
                     <div className="stats__label">Comparaisons effectuées</div>
                 </div>
