@@ -1,20 +1,31 @@
 import '@css/stats.scss';
 import '@css/generic-layout.scss';
-import { ReactNode, useEffect, useRef, useState } from 'react';
+import {
+    use,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+    type ReactNode,
+} from 'react';
 import { GenericTitle } from '@/components/Texts/GenericTitle.tsx';
-import { useAnimalIdentification } from '@/hooks/models/useAnimalIdentification.ts';
-import { useOutlet, useOutletContext } from 'react-router-dom';
+import { useOutletContext } from 'react-router-dom';
+import { appContext } from '@/App.tsx';
 
-export function Status({
-    // trainingCount,
-    // accuracy,
-    // predictionsCount,
-    resetSystem,
-    setResetSystem,
-}) {
-    // const { ...context } = useOutletContext();
+export function Status() {
+    const { resetSystem } = useOutletContext();
+    const { isInitialized, status } = use(appContext);
+
+    const contextPropsMemo = useMemo(
+        () => ({
+            resetSystem,
+            isInitialized,
+            status,
+        }),
+        [resetSystem, isInitialized, status]
+    );
+
     const microOutDivRef = useRef<HTMLDivElement>(null!);
-    const [isInitialized, setIsInitialized] = useState(false);
     const [message, setMessage] = useState<ReactNode>(
         "🚀 Initialisation du classificateur d'images..."
     );
@@ -25,7 +36,7 @@ export function Status({
     // const { isInitialized, status } = useAnimalIdentification();
 
     useEffect(() => {
-        if (resetSystem) {
+        if (contextPropsMemo.resetSystem) {
             setMessage(
                 <>
                     <strong>🔄 Système réinitialisé!</strong>
@@ -33,17 +44,17 @@ export function Status({
                     <small>✓ Prêt pour un nouvel entraînement</small>
                 </>
             );
-        } else if (isInitialized) {
+        } else if (contextPropsMemo.isInitialized) {
             setMessage(
                 <>
                     <small>✓ Prêt pour l'entraînement interactif</small>
                 </>
             );
         }
-    }, [resetSystem, isInitialized]);
+    }, [contextPropsMemo.resetSystem, contextPropsMemo.isInitialized]);
 
     useEffect(() => {
-        if (microOutDivRef.current && isInitialized) {
+        if (microOutDivRef.current && contextPropsMemo.isInitialized) {
             setMessage(
                 <>
                     <strong>🤖 Classificateur d'Images IA Prêt!</strong>
@@ -54,7 +65,7 @@ export function Status({
                 </>
             );
         }
-        if (microOutDivRef.current && !isInitialized) {
+        if (microOutDivRef.current && !contextPropsMemo.isInitialized) {
             setMessage(
                 <>
                     <strong>🔄 Chargement du modèle...</strong>
@@ -63,7 +74,7 @@ export function Status({
                 </>
             );
         }
-    }, [isInitialized]);
+    }, [contextPropsMemo.isInitialized]);
 
     return (
         <div className="generic-layout stats-container">
@@ -74,21 +85,35 @@ export function Status({
             <div className="stats">
                 <div className="stats__item">
                     <div className="stats__value" id="training-count">
-                        {status.trainingCount}
+                        {contextPropsMemo.status.trainingPairs.length}
                     </div>
                     <div className="stats__label">Paires d'entraînement</div>
                 </div>
                 <div className="stats__item">
                     <div className="stats__value" id="accuracy">
-                        {status.accuracy}%
+                        {contextPropsMemo.status.accuracy}%
                     </div>
                     <div className="stats__label">Précision du modèle</div>
                 </div>
                 <div className="stats__item">
                     <div className="stats__value" id="comparisons-count">
-                        {status.predictionCount}
+                        {contextPropsMemo.status.comparisons}
                     </div>
                     <div className="stats__label">Comparaisons effectuées</div>
+                </div>
+                <div className="stats__item">
+                    <div className="stats__value" id="balance">
+                        <span style={{ color: 'green', marginLeft: 6 }}>
+                            {`▲ ${contextPropsMemo.status.balance.positive} `}
+                        </span>
+                        /
+                        <span
+                            style={{ color: 'red', marginLeft: 6 }}
+                        >{`▼ ${contextPropsMemo.status.balance.negative}`}</span>
+                    </div>
+                    <div className="stats__label">
+                        Equilibre de l'entraînement
+                    </div>
                 </div>
             </div>
             <div className="generic-layout__alert">{resultsMessage}</div>
