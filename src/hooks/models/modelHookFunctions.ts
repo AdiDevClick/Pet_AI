@@ -10,17 +10,15 @@ export function getDataBalance({ trainingPairs, setStatus }) {
     }));
 }
 
-export async function loadData({
+export async function loadStorageData({
     setStatus,
-    localStorageKey,
     setIsTraining,
     isInitialized,
     status,
     config,
+    trainingPairs = [],
 }) {
     try {
-        const trainingPairs = JSON.parse(localStorage.getItem(localStorageKey));
-
         if (!trainingPairs) {
             throw new Error(
                 "Aucune paire d'entraînement trouvée dans le stockage local",
@@ -38,6 +36,8 @@ export async function loadData({
                 const { image1Url, image2Url, isSameAnimal } = element;
                 const img1 = await loadImageElement(image1Url);
                 const img2 = await loadImageElement(image2Url);
+                // const img1 = await loadImageElement(image1Url);
+                // const img2 = await loadImageElement(image2Url);
                 addTrainingPairToModel({
                     imgPairArray: [img1, img2],
                     isSameAnimal,
@@ -49,10 +49,14 @@ export async function loadData({
                 });
             })
         );
-        console.log(
-            `📊 Paires d'entraînement restaurées: ${status.trainingPairs.length}`
-        );
-        // getDataBalance();
+        setStatus((prev) => ({
+            ...prev,
+            loadingState: {
+                message: 'Données image chargées',
+                isLoading: 'done',
+            },
+            localStorageDataLoaded: true,
+        }));
     } catch (error) {
         setStatus((prev) => ({
             ...prev,
@@ -67,14 +71,16 @@ export async function loadData({
 export function loadImageElement(imageUrl) {
     return new Promise((resolve, reject) => {
         const img = new Image();
+        img.crossOrigin = 'anonymous';
         img.src = imageUrl;
+
         img.onload = () => resolve(img);
         img.onerror = () =>
             reject(new Error(`Failed to load image: ${imageUrl}`));
     });
 }
 
-export async function addTrainingPairToModel({
+export function addTrainingPairToModel({
     imgPairArray,
     isSameAnimal,
     setStatus,
@@ -125,30 +131,66 @@ export async function addTrainingPairToModel({
 export function preprocessImage(imageElement, config) {
     const { imageSize, augment } = config;
     return tf.tidy(() => {
-        let tensor = tf.browser.fromPixels(imageElement);
+        try {
+            let tensor = tf.browser.fromPixels(imageElement);
 
-        tensor = tf.image.resizeBilinear(tensor, [imageSize, imageSize]);
+            tensor = tf.image.resizeBilinear(tensor, [imageSize, imageSize]);
 
-        tensor = tensor.toFloat();
+            tensor = tensor.toFloat();
 
-        // Augmentation simple si demandée
-        if (augment && Math.random() < 0.5) {
-            const withBatch = tensor.expandDims(0);
-            const flipped = tf.image.flipLeftRight(withBatch);
-            tensor = flipped.squeeze(0);
+            // Augmentation simple si demandée
+            if (augment) {
+                if (tensor.rank === 3) {
+                    tensor = tensor.expandDims(0);
+                }
+                // Flip horizontal (déjà présent)
+                if (Math.random() < 0.5) {
+                    tensor = tf.image.flipLeftRight(tensor);
+                }
+                // Flip vertical (rare mais possible)
+                if (Math.random() < 0.1) {
+                    tensor = tensor.reverse(1);
+                }
+                // Rotation légère (±15°)
+                if (Math.random() < 0.2) {
+                    const angle = (Math.random() - 0.5) * (Math.PI / 6); // -15° à +15°
+                    tensor = tf.image.rotateWithOffset(tensor, angle, 0);
+                }
+                // Décalage (translation) légère
+                if (Math.random() < 0.2) {
+                    const dx = Math.floor((Math.random() - 0.5) * 10); // -5 à +5 px
+                    const dy = Math.floor((Math.random() - 0.5) * 10);
+                    const transformMatrix = [[1, 0, dx, 0, 1, dy, 0, 0]];
+                    tensor = tf.image.transform(tensor, transformMatrix);
+                }
+                // Variation de luminosité
+                if (Math.random() < 0.2) {
+                    const brightnessDelta = (Math.random() - 0.5) * 0.2;
+                    tensor = tensor.add(brightnessDelta);
+                }
+                // Variation de contraste
+                if (Math.random() < 0.2) {
+                    const contrastFactor = 1 + (Math.random() - 0.5) * 0.3;
+                    const mean = tensor.mean();
+                    tensor = tensor.sub(mean).mul(contrastFactor).add(mean);
+                }
+                tensor = tensor.squeeze(0);
+            }
+
+            // Normalisation
+            tensor = tensor.div(255.0);
+            tensor = tensor.sub([0.485, 0.456, 0.406]);
+            tensor = tensor.div([0.229, 0.224, 0.225]);
+
+            return tensor.expandDims(0);
+        } catch (error) {
+            throw new Error("Erreur de prétraitement de l'image", error);
         }
-
-        // Normalisation
-        tensor = tensor.div(255.0);
-        tensor = tensor.sub([0.485, 0.456, 0.406]);
-        tensor = tensor.div([0.229, 0.224, 0.225]);
-
-        return tensor.expandDims(0);
     });
 }
 
-export async function createFeatureExtractor({
-    setFeatureExtractor,
+export function createFeatureExtractor({
+    // setFeatureExtractor,
     config = { imageSize: 224, featureSize: 256 },
 }) {
     try {
@@ -206,12 +248,12 @@ export async function createFeatureExtractor({
             ],
         });
 
-        console.log('✅ Feature Extractor créé');
-        setFeatureExtractor(featureExtractor);
-        return true;
+        console.log('✅ Feature Extractor créé', featureExtractor);
+        // setFeatureExtractor(() => featureExtractor);
+        return { extractor: featureExtractor, success: true };
     } catch (error) {
         console.error('❌ Erreur création feature extractor:', error);
-        return false;
+        return { success: false };
     }
 }
 
@@ -230,11 +272,11 @@ export function setupOptimalBackend() {
 }
 
 export function createSiameseModel({
-    setStatus,
+    // setStatus,
     status,
     config,
     featureExtractor,
-    setSiameseModel,
+    // setSiameseModel,
 }) {
     if (status.siameseModelInitialized) {
         console.log('✅ Modèle siamois déjà créé');
@@ -313,16 +355,16 @@ export function createSiameseModel({
             metrics: config.metrics || ['accuracy'],
         });
 
-        setSiameseModel(siameseModel);
-        setStatus((prev) => ({
-            ...prev,
-            siameseModelInitialized: true,
-        }));
+        // setSiameseModel(siameseModel);
+        // setStatus((prev) => ({
+        //     ...prev,
+        //     siameseModelInitialized: true,
+        // }));
         console.log('✅ Modèle siamois créé');
-        return true;
+        return { siameseModel: siameseModel, success: true };
     } catch (error) {
         console.error('❌ Erreur création modèle siamois:', error);
-        return false;
+        return { success: false };
     }
 }
 
@@ -358,38 +400,49 @@ export function initialize({
         // Configuration backend avec gestion d'erreur
         setupOptimalBackend();
 
-        const featureSuccess = createFeatureExtractor({
-            setFeatureExtractor,
+        const feature = createFeatureExtractor({
+            // setFeatureExtractor,
             config,
         });
 
-        if (!featureSuccess) {
-            throw new Error(`❌ Échec de l'initialisation: ${featureSuccess}`, {
-                cause: {
-                    status: 500,
-                    message: 'Feature extraction failed',
-                },
-            });
+        if (!feature.success) {
+            throw new Error(
+                `❌ Échec de l'initialisation: ${feature.success}`,
+                {
+                    cause: {
+                        status: 500,
+                        message: 'Feature extraction failed',
+                    },
+                }
+            );
         }
         // if (!featureSuccess) return false;
 
-        const siameseSuccess = createSiameseModel({
-            setStatus,
+        const siamese = createSiameseModel({
+            // setStatus,
             status,
             config,
-            featureExtractor,
-            setSiameseModel,
+            featureExtractor: feature.extractor,
+            // setSiameseModel,
         });
 
-        if (!siameseSuccess) {
-            throw new Error(`❌ Échec de l'initialisation: ${siameseSuccess}`, {
+        if (!siamese.success) {
+            throw new Error(`❌ Échec de l'initialisation: ${siamese}`, {
                 cause: {
                     status: 500,
                     message: 'Initialization failed',
                 },
             });
         }
-        setIsInitialized(siameseSuccess);
+        setIsInitialized(siamese.success);
+        setFeatureExtractor(feature.extractor);
+        setSiameseModel(siamese.siameseModel);
+        setStatus((prev) => ({
+            ...prev,
+            loadingState: { message: 'Modèle initialisé', isLoading: 'done' },
+            siameseModelInitialized: true,
+            featureExtractorInitialized: true,
+        }));
         // updateStats();
         return;
     } catch (error) {
