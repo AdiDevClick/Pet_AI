@@ -1,4 +1,4 @@
-import { HTMLAttributes } from 'react';
+import type { HTMLAttributes } from 'react';
 
 export function CardPrediction<T extends HTMLAttributes<HTMLDivElement>>({
     showPrediction,
