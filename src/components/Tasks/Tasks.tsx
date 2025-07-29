@@ -1,5 +1,6 @@
 import '@css/tasks.scss';
-export function Tasks({ children }) {
+import { memo } from 'react';
+export const MemoizedTasks = memo(function Tasks({ children }) {
     return (
         <section className="tasks">
             <div className="task-description">
@@ -11,4 +12,6 @@ export function Tasks({ children }) {
             </div>
         </section>
     );
-}
+});
+
+export default MemoizedTasks;
