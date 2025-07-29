@@ -3,27 +3,26 @@ import { CardFeedback } from '@/components/Cards/CardFeedback.tsx';
 import { CardPrediction } from '@/components/Cards/CardPrediction.tsx';
 import { GenericCard } from '@/components/Cards/GenericCard.tsx';
 import { GenericFigure } from '@/components/Images/GenericFigure.tsx';
-import { useTensorFlowScript } from '@/hooks/useTensorFlowScript.ts';
 import {
-    HTMLAttributes,
-    MouseEvent,
-    ReactNode,
+    use,
     useCallback,
     useState,
+    type HTMLAttributes,
+    type MouseEvent,
+    type ReactNode,
 } from 'react';
 import '@css/card.scss';
+import { appContext } from '@/App.tsx';
 
 export function TrainingTwoCards<T extends HTMLAttributes<HTMLDivElement>>({
-    children,
     animals,
-    animalName,
 }: {
     children: ReactNode;
 } & T) {
     const [previewImages, setPreviewImages] = useState(new Map());
     const [isCorrect, setIsCorrect] = useState<boolean>(null!);
     const [showPrediction, setShowPrediction] = useState(false);
-    const [prediction, setPrediction] = useState(null!);
+    const { compareAnimals, status } = use(appContext);
 
     // const { addTrainingData, predict } = useTensorFlowScript();
 
@@ -55,16 +54,11 @@ export function TrainingTwoCards<T extends HTMLAttributes<HTMLDivElement>>({
 
     const handlePredict = async (e: MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
+
         if (previewImages.size === 2) {
             const entries = Array.from(previewImages.values());
-
-            const result = await window.animalIdentifier.compareAnimals(
-                entries
-            );
-            if (result) {
-                setPrediction(result);
-                setShowPrediction(true);
-            }
+            compareAnimals(entries);
+            setShowPrediction(true);
         }
     };
 
@@ -107,7 +101,7 @@ export function TrainingTwoCards<T extends HTMLAttributes<HTMLDivElement>>({
             <CardFeedback isCorrect={isCorrect} image={animals} />
             <CardPrediction
                 showPrediction={showPrediction}
-                prediction={prediction}
+                prediction={status}
                 image={animals}
             />
         </GenericCard>
