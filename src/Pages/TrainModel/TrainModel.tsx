@@ -1,10 +1,11 @@
-import { Tasks } from '@/components/Tasks/Tasks.tsx';
+import MemoizedTasks from '@/components/Tasks/Tasks.tsx';
 import { Status } from '@/components/Status/Status.tsx';
 import { Instructions } from '@/components/Instructions/Instructions.tsx';
 import { TrainingTwoCards } from '@/components/Cards/TrainingTwoCards.tsx';
 import originalAnimals from '@/data/animals.json';
 import { useOutletContext } from 'react-router-dom';
-import { Controls } from '@/components/Controls/Controls.tsx';
+import MemoizedControls from '@/components/Controls/Controls.tsx';
+import { memo } from 'react';
 
 const onlyPositive = false;
 const allShuffled = true;
@@ -38,35 +39,17 @@ function createImageCard(lastId, animalData) {
     };
 }
 
-export function TrainModel() {
-    const {
-        onLoad,
-        setOnLoad,
-        predictionsCount,
-        setPredictionsCount,
-        trainingCount,
-        setTrainingCount,
-        setCount,
-        count,
-        setResetSystem,
-        resetSystem,
-        accuracy,
-    } = useOutletContext();
+export const MemoizedTrainModel = memo(function TrainModel() {
+    const { onLoad, count } = useOutletContext();
 
     const animalName = 'Chat';
 
     const shuffledAnimals = [...animals].sort(() => 0.5 - Math.random());
-
     return (
         <>
-            <Tasks>chats</Tasks>
-            <Controls />
-            <Status
-                accuracy={accuracy}
-                predictionsCount={predictionsCount}
-                resetSystem={resetSystem}
-                setResetSystem={setResetSystem}
-            />
+            <MemoizedTasks>chats</MemoizedTasks>
+            <MemoizedControls />
+            <Status />
             {(onLoad || count > 0) && (
                 <>
                     {onlyPositive &&
@@ -123,4 +106,6 @@ export function TrainModel() {
             <Instructions />
         </>
     );
-}
+});
+
+export default MemoizedTrainModel;
