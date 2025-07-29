@@ -1,7 +1,8 @@
 import { SocialContainer } from '@/components/Social/SocialContainer.tsx';
 import '@css/footer.scss';
+import { memo } from 'react';
 
-export function Footer() {
+export const MemoizedFooter = memo(function Footer() {
     return (
         <footer className="footer">
             <p className="footer__note">Made with ❤️ by the Pet AI Team</p>
@@ -11,4 +12,6 @@ export function Footer() {
             </div>
         </footer>
     );
-}
+});
+
+export default MemoizedFooter;
