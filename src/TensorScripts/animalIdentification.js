@@ -237,30 +237,66 @@ class AnimalIdentificationTF {
     }
 
     // Préprocesser une image
-    preprocessImage(imageElement, augment = false) {
+    preprocessImage(imageElement, augment = true) {
         return tf.tidy(() => {
-            let tensor = tf.browser.fromPixels(imageElement);
+            try {
+                let tensor = tf.browser.fromPixels(imageElement);
 
-            tensor = tf.image.resizeBilinear(tensor, [
-                this.imageSize,
-                this.imageSize,
-            ]);
+                tensor = tf.image.resizeBilinear(tensor, [
+                    this.imageSize,
+                    this.imageSize,
+                ]);
 
-            tensor = tensor.toFloat();
+                tensor = tensor.toFloat();
 
-            // Augmentation simple si demandée
-            if (augment && Math.random() < 0.5) {
-                const withBatch = tensor.expandDims(0);
-                const flipped = tf.image.flipLeftRight(withBatch);
-                tensor = flipped.squeeze(0);
+                // Augmentation simple si demandée
+                if (augment) {
+                    if (tensor.rank === 3) {
+                        tensor = tensor.expandDims(0);
+                    }
+                    // Flip horizontal (déjà présent)
+                    if (Math.random() < 0.5) {
+                        tensor = tf.image.flipLeftRight(tensor);
+                    }
+                    // Flip vertical (rare mais possible)
+                    if (Math.random() < 0.1) {
+                        tensor = tensor.reverse(1);
+                    }
+                    // Rotation légère (±15°)
+                    if (Math.random() < 0.2) {
+                        const angle = (Math.random() - 0.5) * (Math.PI / 6); // -15° à +15°
+                        tensor = tf.image.rotateWithOffset(tensor, angle, 0);
+                    }
+                    // Décalage (translation) légère
+                    if (Math.random() < 0.2) {
+                        const dx = Math.floor((Math.random() - 0.5) * 10); // -5 à +5 px
+                        const dy = Math.floor((Math.random() - 0.5) * 10);
+                        const transformMatrix = [[1, 0, dx, 0, 1, dy, 0, 0]];
+                        tensor = tf.image.transform(tensor, transformMatrix);
+                    }
+                    // Variation de luminosité
+                    if (Math.random() < 0.2) {
+                        const brightnessDelta = (Math.random() - 0.5) * 0.2;
+                        tensor = tensor.add(brightnessDelta);
+                    }
+                    // Variation de contraste
+                    if (Math.random() < 0.2) {
+                        const contrastFactor = 1 + (Math.random() - 0.5) * 0.3;
+                        const mean = tensor.mean();
+                        tensor = tensor.sub(mean).mul(contrastFactor).add(mean);
+                    }
+                    tensor = tensor.squeeze(0);
+                }
+
+                // Normalisation
+                tensor = tensor.div(255.0);
+                tensor = tensor.sub([0.485, 0.456, 0.406]);
+                tensor = tensor.div([0.229, 0.224, 0.225]);
+
+                return tensor.expandDims(0);
+            } catch (error) {
+                throw new Error("Erreur de prétraitement de l'image", error);
             }
-
-            // Normalisation
-            tensor = tensor.div(255.0);
-            tensor = tensor.sub([0.485, 0.456, 0.406]);
-            tensor = tensor.div([0.229, 0.224, 0.225]);
-
-            return tensor.expandDims(0);
         });
     }
 
@@ -1020,8 +1056,8 @@ async function initAnimalIdentification() {
 
 // Page already loaded
 if (document.readyState !== 'loading') {
-    initAnimalIdentification();
+    // initAnimalIdentification();
 } else {
     // Not yet fully loaded, wait for DOMContentLoaded
-    document.addEventListener('DOMContentLoaded', initAnimalIdentification);
+    // document.addEventListener('DOMContentLoaded', initAnimalIdentification);
 }
