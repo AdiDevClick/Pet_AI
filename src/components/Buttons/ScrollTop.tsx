@@ -1,7 +1,7 @@
 import { Button } from '@/components/Buttons/Button.tsx';
 import { UIScrollDistance } from '@/configs/UIScroll.config.ts';
 import '@css/button.scss';
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 
 /**
  * A simple button that scrolls the page to the top when clicked.
@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
  * @description You can define the distance to scroll before the button appears
  * using the `UIScrollDistance` constant from the `UIScroll.config.ts` file
  */
-export function ScrollTop() {
+export const MemoizedScrollTop = memo(function ScrollTop() {
     const [isScrolled, setIsScrolled] = useState(false);
 
     useEffect(() => {
@@ -36,7 +36,7 @@ export function ScrollTop() {
         )) ||
         null
     );
-}
+});
 
 function scrollToTop() {
     window.scrollTo({
@@ -44,3 +44,5 @@ function scrollToTop() {
         behavior: 'smooth',
     });
 }
+
+export default MemoizedScrollTop;
