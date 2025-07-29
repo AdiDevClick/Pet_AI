@@ -6,11 +6,13 @@ import {
     initialize,
     loadData,
     loadModelFromData,
+    loadStorageData,
     save,
     trainModel,
 } from '@/hooks/models/modelHookFunctions.ts';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { toast } from 'sonner';
 
 // Hook personnalisé pour l'identification d'animaux
 export function useAnimalIdentification() {
@@ -20,7 +22,10 @@ export function useAnimalIdentification() {
     const [featureExtractor, setFeatureExtractor] = useState(null);
     const [siameseModel, setSiameseModel] = useState(null);
     const [status, setStatus] = useState({
+        loadingState: { message: '', isLoading: '' },
         siameseModelInitialized: false,
+        featureExtractorInitialized: false,
+        localStorageDataLoaded: false,
         trainingPairs: [],
         comparisons: 0,
         accuracy: 0,
@@ -41,7 +46,7 @@ export function useAnimalIdentification() {
         featureSize: 256,
         imageSize: 224,
         localStorageKey: 'pair-array',
-        augment: false,
+        augment: true,
         epochs: 100,
         batchSize: 4,
         validationSplit: 0.2,
@@ -54,26 +59,84 @@ export function useAnimalIdentification() {
     });
 
     /**
-     * Triggers the loading of training data from local storage.
-     * on mount
+     * Initialized the feature extractor and Siamese model.
+     * This will be called on component mount.
      */
     useEffect(() => {
         initializeModel();
-
-        loadData({
-            setStatus,
-            setIsTraining,
-            isInitialized,
-            localStorageKey: configRef.current.localStorageKey,
-            status,
-            config: configRef.current,
-        });
     }, []);
+
+    /**
+     * Load training pairs from local storage.
+     * This will be triggered after the model is initialized.
+     */
+    useEffect(() => {
+        if (!isInitialized) return;
+
+        if (!status.loadingState.isLoading && !status.localStorageDataLoaded) {
+            setStatus((prev) => ({
+                ...prev,
+                loadingState: {
+                    message: 'Chargement des données images...',
+                    isLoading: 'storage',
+                },
+            }));
+
+            const trainingPairs = JSON.parse(
+                localStorage.getItem(configRef.current.localStorageKey)
+            );
+
+            loadStorageData({
+                setStatus,
+                setIsTraining,
+                isInitialized,
+                status,
+                config: configRef.current,
+                trainingPairs,
+            });
+        }
+    }, [isInitialized, status.loadingState]);
+
+    /**
+     * Triggers a toaster notification when the loading state changes.
+     */
+    useEffect(() => {
+        // Show loading state messages
+        if (
+            status.loadingState.isLoading &&
+            status.loadingState.isLoading !== 'done'
+        ) {
+            toast.loading(status.loadingState.message, {
+                position: 'top-right',
+            });
+        }
+        // Show success message when loading is done
+        if (
+            status.loadingState.isLoading &&
+            status.loadingState.isLoading === 'done'
+        ) {
+            setStatus((prev) => ({
+                ...prev,
+                loadingState: { ...prev.loadingState, isLoading: '' },
+            }));
+            toast.dismiss();
+            toast.success(status.loadingState.message, {
+                position: 'top-right',
+            });
+        }
+    }, [status.loadingState]);
 
     /**
      * Initialize the animal identification model.
      */
     const initializeModel = useCallback(() => {
+        setStatus((prev) => ({
+            ...prev,
+            loadingState: {
+                message: 'Initialisation du modèle',
+                isLoading: 'initializing',
+            },
+        }));
         initialize({
             setStatus,
             setIsInitialized,
