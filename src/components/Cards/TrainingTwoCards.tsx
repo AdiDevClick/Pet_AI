@@ -16,12 +16,17 @@ import { appContext } from '@/App.tsx';
 
 export function TrainingTwoCards<T extends HTMLAttributes<HTMLDivElement>>({
     animals,
+    isOnLoad,
 }: {
     children: ReactNode;
 } & T) {
     const [previewImages, setPreviewImages] = useState(new Map());
     const [isCorrect, setIsCorrect] = useState<boolean>(null!);
     const [showPrediction, setShowPrediction] = useState(false);
+    const [prediction, setPrediction] = useState<{
+        sameAnimal: boolean;
+        confidence: number;
+    }>(null!);
     const { compareAnimals, status, addTrainingPair } = use(appContext);
 
     // const { addTrainingData, predict } = useTensorFlowScript();
@@ -45,11 +50,7 @@ export function TrainingTwoCards<T extends HTMLAttributes<HTMLDivElement>>({
         if (previewImages.size === 2) {
             const entries = Array.from(previewImages.values());
 
-            addTrainingPair(entries, selectedCorrect);
-            // await window.animalIdentifier.addTrainingPair(
-            //     entries,
-            //     selectedCorrect
-            // );
+            addTrainingPair(entries, selectedCorrect, isOnLoad);
         }
     };
 
@@ -58,7 +59,8 @@ export function TrainingTwoCards<T extends HTMLAttributes<HTMLDivElement>>({
 
         if (previewImages.size === 2) {
             const entries = Array.from(previewImages.values());
-            compareAnimals(entries);
+            const result = await compareAnimals(entries);
+            setPrediction(result);
             setShowPrediction(true);
         }
     };
@@ -68,7 +70,7 @@ export function TrainingTwoCards<T extends HTMLAttributes<HTMLDivElement>>({
             setPreviewImages((prev) => prev.set(element.id, element));
         }
     }, []);
-
+    console.log('je render la carte');
     return (
         <GenericCard className={className}>
             {/* <GenericCard className={className} id={`card-${images.id}`}> */}
@@ -102,7 +104,7 @@ export function TrainingTwoCards<T extends HTMLAttributes<HTMLDivElement>>({
             <CardFeedback isCorrect={isCorrect} image={animals} />
             <CardPrediction
                 showPrediction={showPrediction}
-                prediction={status}
+                prediction={prediction}
                 image={animals}
             />
         </GenericCard>
