@@ -8,7 +8,7 @@ export function CardPrediction<T extends HTMLAttributes<HTMLDivElement>>({
 }: {
     animalName?: string;
     showPrediction: boolean;
-    prediction: { prediction: boolean; confidence: number } | null;
+    prediction: { sameAnimal: boolean; confidence: number } | null;
     image: { id: string; url: string; description: string };
 } & T) {
     return (
