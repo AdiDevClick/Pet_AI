@@ -35,11 +35,11 @@ export async function loadStorageData({
                 const img2 = await loadImageElement(image2Url);
 
                 addTrainingPairToModel({
-                    imgPairArray: [img1, img2],
+                    imgArray: [img1, img2],
                     isSameAnimal,
                     setStatus,
-                    isInitialized,
                     config,
+                    isInitialized,
                 });
             })
         );
@@ -76,19 +76,19 @@ export function loadImageElement(imageUrl) {
 }
 
 export function addTrainingPairToModel({
-    imgPairArray,
+    imgArray,
     isSameAnimal,
     setStatus,
-    isInitialized,
-    // status,
     config,
+    isInitialized,
 }) {
     checkIfInitialized(isInitialized);
 
     try {
-        const img1 = preprocessImage(imgPairArray[0], config);
-        const img2 = preprocessImage(imgPairArray[1], config);
+        const img1 = preprocessImage(imgArray[0], config);
+        const img2 = preprocessImage(imgArray[1], config);
         const label = isSameAnimal ? 1 : 0;
+        console.log(`📊 Nouvelle paire ajoutée à l'entraînement`);
         // console.log(
         //     `📊 Paire ajoutée: ${status.trainingPairs.length} paires d'entraînement`
         // );
@@ -97,8 +97,8 @@ export function addTrainingPairToModel({
             pairsArrayForSaving: [
                 ...prev.pairsArrayForSaving,
                 {
-                    image1Url: imgPairArray[0].src,
-                    image2Url: imgPairArray[1].src,
+                    image1Url: imgArray[0].src,
+                    image2Url: imgArray[1].src,
                     isSameAnimal,
                 },
             ],
@@ -360,12 +360,8 @@ export function createSiameseModel({
  */
 export function initialize({
     isInitialized,
-    // setIsInitialized,
     setStatus,
     config,
-    // featureExtractor,
-    // setFeatureExtractor,
-    // setSiameseModel,
     setModel,
     status,
 }) {
