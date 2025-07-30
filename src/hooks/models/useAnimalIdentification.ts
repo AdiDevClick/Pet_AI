@@ -212,35 +212,42 @@ export function useAnimalIdentification() {
             // Avoid the first lag
             if (status.comparisonsCount === 0) await wait(100);
 
-            try {
-                checkIfInitialized(model.isInitialized);
-                const results = await compareImages({
-                    imageArray: imagesArray,
-                    config: configRef.current,
-                    updateStatus,
-                    model,
-                    initializeModel,
-                });
+            // try {
+            // checkIfInitialized(model.isInitialized);
+            const results = await compareImages({
+                imageArray: imagesArray,
+                config: configRef.current,
+                model,
+                initializeModel,
+            });
+
+            if (results.error) {
                 updateStatus({
-                    comparisonsCount: status.comparisonsCount + 1,
                     ...results,
-                    loadingState: {
-                        message: `Comparaison ${
-                            status.comparisonsCount + 1
-                        } terminée`,
-                        isLoading: 'done',
-                        type: 'comparison',
-                    },
                 });
                 return results;
-            } catch (error) {
-                updateStatus({
-                    error: {
-                        status: 'error',
-                        message: `Erreur lors de la comparaison: ${error.message}`,
-                    },
-                });
             }
+
+            updateStatus({
+                comparisonsCount: status.comparisonsCount + 1,
+                ...results,
+                loadingState: {
+                    message: `Comparaison ${
+                        status.comparisonsCount + 1
+                    } terminée`,
+                    isLoading: 'done',
+                    type: 'comparison',
+                },
+            });
+            return results;
+            // } catch (error) {
+            //     updateStatus({
+            //         error: {
+            //             status: 'error',
+            //             message: `Erreur lors de la comparaison: ${error.message}`,
+            //         },
+            //     });
+            // }
         },
         [model.isInitialized, model.siameseModel, status]
     );
@@ -333,7 +340,6 @@ export function useAnimalIdentification() {
             const pair = addTrainingPairToModel({
                 imgArray,
                 isSameAnimal,
-                updateStatus,
                 config: configRef.current,
                 isInitialized: model.isInitialized,
             });
