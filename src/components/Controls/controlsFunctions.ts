@@ -3,14 +3,14 @@ import { toast } from 'sonner';
 
 export function loadNewImages({
     setPredictionsCount,
-    onLoad,
-    setOnLoad,
+    isOnLoad,
+    setIsOnLoad,
     setCount,
     count,
     e,
 }) {
     e.preventDefault();
-    if (onLoad) setOnLoad(!onLoad);
+    if (isOnLoad) setIsOnLoad(!isOnLoad);
     if (count > 10) setCount(1);
     setCount((prev) => prev + 1);
     setPredictionsCount(0);
