@@ -22,7 +22,7 @@ export function TrainingTwoCards<T extends HTMLAttributes<HTMLDivElement>>({
     const [previewImages, setPreviewImages] = useState(new Map());
     const [isCorrect, setIsCorrect] = useState<boolean>(null!);
     const [showPrediction, setShowPrediction] = useState(false);
-    const { compareAnimals, status } = use(appContext);
+    const { compareAnimals, status, addTrainingPair } = use(appContext);
 
     // const { addTrainingData, predict } = useTensorFlowScript();
 
@@ -45,10 +45,11 @@ export function TrainingTwoCards<T extends HTMLAttributes<HTMLDivElement>>({
         if (previewImages.size === 2) {
             const entries = Array.from(previewImages.values());
 
-            await window.animalIdentifier.addTrainingPair(
-                entries,
-                selectedCorrect
-            );
+            addTrainingPair(entries, selectedCorrect);
+            // await window.animalIdentifier.addTrainingPair(
+            //     entries,
+            //     selectedCorrect
+            // );
         }
     };
 
