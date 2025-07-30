@@ -40,7 +40,7 @@ function createImageCard(lastId, animalData) {
 }
 
 export const MemoizedTrainModel = memo(function TrainModel() {
-    const { onLoad, count } = useOutletContext();
+    const { isOnLoad, count } = useOutletContext();
 
     const animalName = 'Chat';
 
@@ -50,7 +50,7 @@ export const MemoizedTrainModel = memo(function TrainModel() {
             <MemoizedTasks>chats</MemoizedTasks>
             <MemoizedControls />
             <Status />
-            {(onLoad || count > 0) && (
+            {(isOnLoad || count > 0) && (
                 <>
                     {onlyPositive &&
                         shuffledAnimals.map((animalA, indexA) =>
@@ -72,6 +72,7 @@ export const MemoizedTrainModel = memo(function TrainModel() {
                                             },
                                         ]}
                                         animalName={animalName}
+                                        isOnLoad={isOnLoad}
                                     />
                                 );
                             })
