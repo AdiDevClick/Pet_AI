@@ -75,7 +75,7 @@ createRoot(document.getElementById('root')!).render(
 export function Root(contentType: { contentType?: string }) {
     const errorContent = contentType.contentType === 'error';
 
-    const [onLoad, setOnLoad] = useState(true);
+    const [isOnLoad, setIsOnLoad] = useState(true);
     const [resetSystem, setResetSystem] = useState(false);
     const [count, setCount] = useState(0);
     const [predictionsCount, setPredictionsCount] = useState(0);
@@ -84,7 +84,7 @@ export function Root(contentType: { contentType?: string }) {
 
     useEffect(() => {
         if (resetSystem) {
-            setOnLoad(true);
+            setIsOnLoad(true);
             setCount(0);
             setPredictionsCount(0);
             setTrainingCount(0);
@@ -100,8 +100,8 @@ export function Root(contentType: { contentType?: string }) {
     }, [resetSystem]);
     const functionProps: contextTypes = {
         accuracy,
-        onLoad,
-        setOnLoad,
+        isOnLoad,
+        setIsOnLoad,
         predictionsCount,
         setPredictionsCount,
         trainingCount,
