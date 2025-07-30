@@ -9,10 +9,34 @@ import {
     save,
     trainModel,
 } from '@/hooks/models/modelHookFunctions.ts';
+import { wait } from '@/lib/utils.ts';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
-
+type StatusType = {
+    loadingState: {
+        message: string;
+        isLoading: string;
+        type: string;
+    };
+    siameseModelInitialized: boolean;
+    featureExtractorInitialized: boolean;
+    localStorageDataLoaded: boolean;
+    trainingPairs: any[]; // <-- allow any[]
+    comparisonsCount: number;
+    accuracy: number;
+    pairsArrayForSaving: any[]; // <-- allow any[]
+    balance: { positive: number; negative: number; total: number };
+    similarityScore: number;
+    sameAnimal: boolean;
+    confidence: number;
+    trainEpochCount: number;
+    loss: number;
+    error: {
+        status: string;
+        message: string;
+    };
+};
 // Hook personnalisé pour l'identification d'animaux
 export function useAnimalIdentification() {
     const [model, setModel] = useState({
@@ -20,7 +44,8 @@ export function useAnimalIdentification() {
         featureExtractor: null,
         siameseModel: null,
     });
-    const [status, setStatus] = useState({
+
+    const [status, setStatus] = useState<StatusType>({
         loadingState: {
             message: 'Initialisation du modèle',
             isLoading: 'initializing',
@@ -60,130 +85,79 @@ export function useAnimalIdentification() {
         taskName: 'task',
     });
 
-    /**
-     * Toaster Handler
-     * @description Triggers a toaster notification when
-     * the loadingstate changes.
-     */
-    useEffect(() => {
-        if (status.error.message) {
-            toast.dismiss(`loading-${status.loadingState.type}`);
-            return;
-        }
-        if (status.loadingState.isLoading) {
-            toast.dismiss(`loading-${status.loadingState.type}`);
-
-            // Show success message when loading is done
-            if (status.loadingState.isLoading === 'done') {
-                toast.success(status.loadingState.message, {
-                    position: 'top-right',
-                });
-            }
-
-            // Show loading state messages
-            if (status.loadingState.isLoading !== 'done') {
-                toast.loading(status.loadingState.message, {
-                    position: 'top-right',
-                    id: `loading-${status.loadingState.type}`,
-                });
-            }
-        }
-    }, [status.loadingState, status.error.message]);
-
-    /**
-     * Error Toaster Handler
-     * @description This will show an error message
-     * if there is an error in the status.
-     */
-    useEffect(() => {
-        // Show error message if there is an error in the status
-        if (status.error.message) {
-            toast.dismiss(`loading-${status.loadingState.type}`);
-
-            // toast.getHistory().forEach((t) => {
-            //     if (t.type === 'loading') toast.dismiss(t.id);
-            // });
-            toast.error(status.error.message, {
-                position: 'top-right',
+    const updateStatus = useCallback((newStatus: Partial<StatusType>) => {
+        setStatus((prev) => {
+            const merged = { ...prev };
+            Object.entries(newStatus).forEach(([key, value]) => {
+                // Si la propriété existe et est un tableau, et la nouvelle valeur est aussi un tableau
+                if (Array.isArray(prev[key])) {
+                    merged[key] = [
+                        ...prev[key],
+                        ...(Array.isArray(value) ? value : [value]),
+                    ];
+                } else {
+                    merged[key] = value;
+                }
             });
-            setStatus((prev) => ({
-                ...prev,
-                error: { status: '', message: '' },
-                loadingState: { message: '', isLoading: '', type: '' },
-            }));
-        }
-    }, [status.error.message, status.error.status, status.loadingState.type]);
 
-    /**
-     * Initialized the feature extractor and Siamese model.
-     * This will be called on component mount.
-     */
-    useEffect(() => {
-        initializeModel();
+            return merged;
+        });
+        // setStatus((prev) => {
+        // const merged = { ...prev };
+        // Object.entries(newStatus).forEach(([key, value]) => {
+        //     // Spread uniquement pour les propriétés tableau
+        //     if (
+        //         (key === 'trainingPairs' || key === 'pairsArrayForSaving') &&
+        //         Array.isArray(prev[key])
+        //     ) {
+        //         merged[key] = [
+        //             ...prev[key],
+        //             ...(Array.isArray(value) ? value : [value]),
+        //         ];
+        //     } else {
+        //         merged[key] = value;
+        //     }
+        // });
+        // return merged;
+        // });
     }, []);
-
-    /**
-     * Load training pairs from local storage.
-     * This will be triggered after the model is initialized.
-     */
-    useEffect(() => {
-        if (!model.isInitialized || status.localStorageDataLoaded) {
-            // setStatus((prev) => ({
-            //     ...prev,
-            //     error: {
-            //         status: 'error',
-            //         message: 'Modèle non initialisé',
-            //     },
-            // }));
-            return;
-        }
-
-        if (!status.localStorageDataLoaded) {
-            setStatus((prev) => ({
-                ...prev,
-                loadingState: {
-                    message: 'Chargement des données images...',
-                    isLoading: 'storage',
-                    type: 'storage',
-                },
-            }));
-
-            const trainingPairs = JSON.parse(
-                localStorage.getItem(configRef.current.localStorageKey)
-            );
-
-            loadStorageData({
-                setStatus,
-                isInitialized: model.isInitialized,
-                config: configRef.current,
-                trainingPairs,
-            });
-        }
-    }, [model.isInitialized, status.localStorageDataLoaded]);
 
     /**
      * Initialize the animal identification model.
      */
     const initializeModel = useCallback(() => {
         if (!model.isInitialized) {
-            initialize({
-                setStatus,
+            const results = initialize({
+                updateStatus,
                 setModel,
                 config: configRef.current,
                 isInitialized: model.isInitialized,
                 status,
             });
-        }
-    }, [status.siameseModelInitialized, model.isInitialized]);
+            if (results) {
+                if (results.error) {
+                    updateStatus({
+                        ...results,
+                    });
+                    return;
+                }
 
-    /**
-     * Calculates the balance of training pairs.
-     * This will trigger each time the training pairs are updated.
-     * @description -It counts the number of positive and negative pairs.
-     */
-    useEffect(() => {
-        getDataBalance({ trainingPairs: status.trainingPairs, setStatus });
-    }, [status.trainingPairs]);
+                setModel((prev) => ({
+                    ...prev,
+                    ...results,
+                }));
+                updateStatus({
+                    siameseModelInitialized: true,
+                    featureExtractorInitialized: true,
+                    loadingState: {
+                        message: 'Modèle initialisé',
+                        isLoading: 'done',
+                        type: 'initializing',
+                    },
+                });
+            }
+        }
+    }, [status, model.isInitialized]);
 
     /**
      * This will start training the model.
@@ -191,28 +165,26 @@ export function useAnimalIdentification() {
      */
     const startModelTraining = useCallback(() => {
         if (!model.isInitialized) {
-            setStatus((prev) => ({
-                ...prev,
+            updateStatus({
                 error: {
                     status: 'error',
                     message: "Le modèle n'est pas initialisé",
                 },
-            }));
+            });
             return;
         }
 
         if (status.loadingState.isLoading !== 'training') {
-            setStatus((prev) => ({
-                ...prev,
+            updateStatus({
                 loadingState: {
                     message: "Début de l'entraînement...",
                     isLoading: 'training',
                     type: 'training',
                 },
-            }));
+            });
             trainModel({
                 status,
-                setStatus,
+                updateStatus,
                 model,
                 config: configRef.current,
                 initializeModel,
@@ -223,28 +195,51 @@ export function useAnimalIdentification() {
     /**
      * Compares two images to identify if
      * they belong to the same animal.
-     * @param {Array} imagesArray - An array containing two image elements.
+     *
+     * @param imagesArray - An array containing two image elements.
+     * @return A promise that resolves to the comparison result.
+     * `exemple : { similarityScore: 0.85, sameAnimal: true, confidence: 0.7 }`
      */
     const compareAnimals = useCallback(
-        (imagesArray) => {
+        async (imagesArray) => {
+            updateStatus({
+                loadingState: {
+                    message: 'Comparaison des images...',
+                    isLoading: 'comparison',
+                    type: 'comparison',
+                },
+            });
+            // Avoid the first lag
+            if (status.comparisonsCount === 0) await wait(100);
+
             try {
                 checkIfInitialized(model.isInitialized);
-                compareImages({
+                const results = await compareImages({
                     imageArray: imagesArray,
                     config: configRef.current,
-                    setStatus,
+                    updateStatus,
                     model,
-                    status,
                     initializeModel,
                 });
+                updateStatus({
+                    comparisonsCount: status.comparisonsCount + 1,
+                    ...results,
+                    loadingState: {
+                        message: `Comparaison ${
+                            status.comparisonsCount + 1
+                        } terminée`,
+                        isLoading: 'done',
+                        type: 'comparison',
+                    },
+                });
+                return results;
             } catch (error) {
-                setStatus((prev) => ({
-                    ...prev,
+                updateStatus({
                     error: {
                         status: 'error',
                         message: `Erreur lors de la comparaison: ${error.message}`,
                     },
-                }));
+                });
             }
         },
         [model.isInitialized, model.siameseModel, status]
@@ -260,21 +255,19 @@ export function useAnimalIdentification() {
                 if (pair.image2) pair.image2.dispose();
             });
             // setLastResult(null);
-            setStatus((prev) => ({
-                ...prev,
+            updateStatus({
                 trainingPairs: [],
                 comparisonCount: 0,
-            }));
+            });
 
             initializeModel();
         } catch (error) {
-            setStatus((prev) => ({
-                ...prev,
+            updateStatus({
                 error: {
                     status: 'error',
                     message: `Erreur lors de la réinitialisation: ${error.message}`,
                 },
-            }));
+            });
         }
     }, [model.isInitialized, status.trainingPairs]);
 
@@ -286,18 +279,17 @@ export function useAnimalIdentification() {
                 save({
                     name,
                     status,
-                    setStatus,
+                    updateStatus,
                     model,
                     config: configRef.current,
                 });
             } catch (error) {
-                setStatus((prev) => ({
-                    ...prev,
+                updateStatus({
                     error: {
                         status: 'error',
                         message: `Erreur lors de la sauvegarde: ${error.message}`,
                     },
-                }));
+                });
             }
         },
         [
@@ -314,24 +306,211 @@ export function useAnimalIdentification() {
             modelData,
             setModel,
             config: configRef.current,
-            setStatus,
+            updateStatus,
         });
     }, []);
 
+    /**
+     * Add a training pair to the model.
+     *
+     * @description This will update the status with
+     * the new image pair transformed into a tensor.
+     *
+     * @param imgArray - An array containing two image elements.
+     * @param isSameAnimal - A boolean indicating if the images are of the same animal.
+     */
     const addTrainingPair = useCallback(
-        async (image1Element, image2Element, isSameAnimal) => {
-            addTrainingPairToModel({
-                imgPairArray: [image1Element, image2Element],
-                isSameAnimal,
-                setStatus,
-                setIsTraining,
-                isInitialized,
-                status,
-                config: configRef.current,
+        async (imgArray, isSameAnimal, count) => {
+            updateStatus({
+                loadingState: {
+                    message: "Ajout de la paire d'entraînement...",
+                    isLoading: 'adding',
+                    type: 'adding',
+                },
             });
+            // Avoid the first lag
+            if (count === 0) await wait(100);
+            const pair = addTrainingPairToModel({
+                imgArray,
+                isSameAnimal,
+                updateStatus,
+                config: configRef.current,
+                isInitialized: model.isInitialized,
+            });
+            if (pair) {
+                updateStatus({
+                    trainingPairs: pair.trainingPairs,
+                    pairsArrayForSaving: pair.pairsArrayForSaving,
+                    loadingState: {
+                        message: "Paire d'entraînement ajoutée avec succès",
+                        isLoading: 'done',
+                        type: 'adding',
+                    },
+                });
+            }
         },
-        []
+        [model.isInitialized]
     );
+
+    /**
+     * Load image pairs from local storage.
+     *
+     * @description Each pair will be transformed into a tensor
+     * and added to the training pairs state.
+     */
+    const loadFromStorageData = useCallback(async () => {
+        if (
+            !model.isInitialized ||
+            status.localStorageDataLoaded ||
+            status.loadingState.isLoading !== 'storage'
+        )
+            return;
+
+        const trainingPairs = JSON.parse(
+            localStorage.getItem(configRef.current.localStorageKey)
+        );
+
+        const results = await loadStorageData({
+            updateStatus,
+            isInitialized: model.isInitialized,
+            config: configRef.current,
+            trainingPairs,
+        });
+
+        if (results) {
+            if (results.error?.status.toString() === '404') {
+                // Helps the toaster to be able to show the message
+                await wait(100);
+                updateStatus({
+                    ...results,
+                    localStorageDataLoaded: true,
+                });
+                return;
+            }
+            updateStatus({
+                ...results,
+                loadingState: {
+                    message: 'Données image chargées',
+                    isLoading: 'done',
+                    type: 'storage',
+                },
+                localStorageDataLoaded: true,
+            });
+        }
+    }, [
+        model.isInitialized,
+        status.localStorageDataLoaded,
+        status.loadingState.isLoading,
+        status.loadingState.type,
+        status.loadingState.message,
+    ]);
+
+    /**
+     * Initialized the feature extractor and Siamese model.
+     * This will be called on component mount.
+     */
+    useEffect(() => {
+        initializeModel();
+    }, []);
+
+    /**
+     * Load training pairs from local storage.
+     * This will be triggered after the model is initialized.
+     */
+    useEffect(() => {
+        if (!model.isInitialized || status.localStorageDataLoaded) return;
+        updateStatus({
+            loadingState: {
+                message: 'Chargement des données images...',
+                isLoading: 'storage',
+                type: 'storage',
+            },
+        });
+
+        loadFromStorageData();
+    }, [
+        model.isInitialized,
+        status.localStorageDataLoaded,
+        status.loadingState.isLoading,
+    ]);
+
+    /**
+     * Error Toaster Handler
+     * @description This will show an error message
+     * if there is an error in the status.
+     */
+    useEffect(() => {
+        if (status.error.message) {
+            console.log('Il y a bien une erreur', status.error.message);
+            // toast.dismiss();
+            toast.dismiss(`loading-${status.loadingState.type}`);
+
+            // toast.getHistory().forEach((t) => {
+            //     if (t.type === 'loading') toast.dismiss(t.id);
+            // });
+            toast.error(status.error.message, {
+                position: 'top-right',
+            });
+            updateStatus({
+                error: { status: '', message: '' },
+                loadingState: { message: '', isLoading: '', type: '' },
+            });
+        }
+    }, [status.error.message, status.loadingState.type]);
+
+    /**
+     * Toaster Handler
+     * @description Triggers a toaster notification when
+     * the loadingstate changes.
+     */
+    useEffect(() => {
+        if (status.error.message || !status.loadingState.message) {
+            return;
+        }
+        if (status.loadingState.isLoading) {
+            console.log(
+                'jentre dans le toaster handler',
+                status.loadingState.type
+            );
+
+            // Show success message when loading is done
+            if (status.loadingState.isLoading === 'done') {
+                console.log('done : ', status.loadingState.type);
+                toast.dismiss(`loading-${status.loadingState.type}`);
+                toast.success(status.loadingState.message, {
+                    position: 'top-right',
+                });
+                updateStatus({
+                    loadingState: {
+                        message: '',
+                        isLoading: '',
+                        type: '',
+                    },
+                });
+            }
+            if (status.loadingState.isLoading !== 'done') {
+                console.log('object : ', status.loadingState.type);
+                // toast.dismiss(`loading-${status.loadingState.type}`);
+                toast.loading(status.loadingState.message, {
+                    position: 'top-right',
+                    id: `loading-${status.loadingState.type}`,
+                });
+            }
+        }
+    }, [
+        status.loadingState.isLoading,
+        status.loadingState.type,
+        status.loadingState.message,
+    ]);
+
+    /**
+     * Calculates the balance of training pairs.
+     * This will trigger each time the training pairs are updated.
+     * @description -It counts the number of positive and negative pairs.
+     */
+    useEffect(() => {
+        getDataBalance({ trainingPairs: status.trainingPairs, updateStatus });
+    }, [status.trainingPairs]);
 
     return {
         /** State */
