@@ -1,7 +1,7 @@
 export type contextTypes = {
     accuracy: number;
-    onLoad: boolean;
-    setOnLoad: (value: boolean) => void;
+    isOnLoad: boolean;
+    setIsOnLoad: (value: boolean) => void;
     predictionsCount: number;
     setPredictionsCount: (value: number) => void;
     trainingCount: number;
