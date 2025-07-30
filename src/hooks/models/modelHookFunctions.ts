@@ -1,20 +1,26 @@
-export function getDataBalance({ trainingPairs, setStatus }) {
+export function getDataBalance({ trainingPairs, updateStatus }) {
+    // if (!trainingPairs || trainingPairs.length === 0) {
+    //     return updateStatus({
+    //         balance: { positive: 0, negative: 0, total: 0 },
+    //     });
+    // }
     const positive = trainingPairs.filter((pair) => pair.label === 1).length;
     const negative = trainingPairs.filter((pair) => pair.label === 0).length;
     const total = trainingPairs.length;
 
-    setStatus((prev) => ({
-        ...prev,
+    updateStatus({
         balance: { positive, negative, total },
-    }));
+    });
 }
 
 export async function loadStorageData({
-    setStatus,
+    updateStatus,
     isInitialized,
     config,
     trainingPairs = [],
 }) {
+    const tensorPairs = [];
+    const savingPairs = [];
     try {
         if (!trainingPairs) {
             throw new Error(
@@ -34,32 +40,42 @@ export async function loadStorageData({
                 const img1 = await loadImageElement(image1Url);
                 const img2 = await loadImageElement(image2Url);
 
-                addTrainingPairToModel({
+                const pairs = addTrainingPairToModel({
                     imgArray: [img1, img2],
                     isSameAnimal,
-                    setStatus,
                     config,
                     isInitialized,
                 });
+
+                if (pairs.error) {
+                    return Promise.reject(
+                        new Error("Erreur d'ajout de tensor paires", {
+                            cause: {
+                                status: pairs.error.status || 500,
+                                message:
+                                    pairs.error.message ||
+                                    'Error loading pairs',
+                            },
+                        })
+                    );
+                }
+                tensorPairs.push(pairs.trainingPairs);
+                savingPairs.push(pairs.pairsArrayForSaving);
             })
         );
-        setStatus((prev) => ({
-            ...prev,
-            loadingState: {
-                message: 'Données image chargées',
-                isLoading: 'done',
-                type: 'storage',
-            },
-            localStorageDataLoaded: true,
-        }));
+
+        return {
+            pairsArrayForSaving: savingPairs,
+            trainingPairs: tensorPairs,
+        };
     } catch (error) {
-        setStatus((prev) => ({
-            ...prev,
+        console.log('Catch ?');
+        return {
             error: {
-                message: error.message,
-                status: error.cause.status || 500,
+                message: error.cause?.message || error.message,
+                status: error.cause?.status || 500,
             },
-        }));
+        };
     }
 }
 
@@ -78,45 +94,31 @@ export function loadImageElement(imageUrl) {
 export function addTrainingPairToModel({
     imgArray,
     isSameAnimal,
-    setStatus,
     config,
     isInitialized,
 }) {
-    checkIfInitialized(isInitialized);
-
     try {
+        checkIfInitialized(isInitialized);
+
         const img1 = preprocessImage(imgArray[0], config);
         const img2 = preprocessImage(imgArray[1], config);
         const label = isSameAnimal ? 1 : 0;
-        console.log(`📊 Nouvelle paire ajoutée à l'entraînement`);
-        // console.log(
-        //     `📊 Paire ajoutée: ${status.trainingPairs.length} paires d'entraînement`
-        // );
-        setStatus((prev) => ({
-            ...prev,
-            pairsArrayForSaving: [
-                ...prev.pairsArrayForSaving,
-                {
-                    image1Url: imgArray[0].src,
-                    image2Url: imgArray[1].src,
-                    isSameAnimal,
-                },
-            ],
-            trainingPairs: [
-                ...prev.trainingPairs,
-                { image1: img1, image2: img2, label: label },
-            ],
-        }));
-        // setIsTraining(false);
-    } catch (error) {
-        setStatus((prev) => ({
-            ...prev,
-            error: {
-                message: error.message,
-                status: error.cause.status || 500,
+        return {
+            pairsArrayForSaving: {
+                image1Url: imgArray[0].src,
+                image2Url: imgArray[1].src,
+                isSameAnimal,
             },
-        }));
-        // setIsTraining(false);
+
+            trainingPairs: { image1: img1, image2: img2, label: label },
+        };
+    } catch (error) {
+        return {
+            error: {
+                message: error.cause?.message || error.message,
+                status: error.cause?.status || 500,
+            },
+        };
     }
 }
 
@@ -176,7 +178,12 @@ export function preprocessImage(imageElement, config) {
 
             return tensor.expandDims(0);
         } catch (error) {
-            throw new Error("Erreur de prétraitement de l'image", error);
+            throw new Error("Erreur de prétraitement de l'image", {
+                cause: {
+                    status: 500,
+                    message: error.message || 'Image preprocessing failed',
+                },
+            });
         }
     });
 }
@@ -246,29 +253,33 @@ export function createFeatureExtractor({
     }
 }
 
+/**
+ * Setup the optimal backend for TensorFlow.js.
+ *
+ * @description This function sets the backend to 'webgl' if available,
+ * otherwise it falls back to 'cpu'.
+ */
 export function setupOptimalBackend() {
-    try {
-        if (tf.getBackend() === 'webgl') {
-            return;
-            // throw new Error('WebGL déjà actif');
-        }
-        tf.setBackend('webgl');
-        // console.log('✅ Backend WebGL configuré');
-    } catch (error) {
-        tf.setBackend('cpu');
-        console.log('✅ Fallback vers CPU');
+    // try {
+    if (tf.getBackend() === 'webgl') {
+        return;
     }
+    tf.setBackend('webgl');
+    // } catch (error) {
+    //     tf.setBackend('cpu');
+    // }
 }
 
-export function createSiameseModel({
-    // setStatus,
-    status,
-    config,
-    featureExtractor,
-    // setSiameseModel,
-}) {
+/**
+ * Create a Siamese model for image similarity.
+ *
+ * @param status - The status object containing the current state of the model.
+ * @param config - The configuration object for the model.
+ * @param featureExtractor - The feature extractor model to be used.
+ * @returns The created Siamese model or an error object.
+ */
+export function createSiameseModel({ status, config, featureExtractor }) {
     if (status.siameseModelInitialized) {
-        console.log('✅ Modèle siamois déjà créé');
         return true;
     }
     try {
@@ -343,12 +354,6 @@ export function createSiameseModel({
             loss: config.loss || 'binaryCrossentropy',
             metrics: config.metrics || ['accuracy'],
         });
-
-        // setSiameseModel(siameseModel);
-        // setStatus((prev) => ({
-        //     ...prev,
-        //     siameseModelInitialized: true,
-        // }));
         return { siameseModel: siameseModel, success: true };
     } catch (error) {
         return { success: false };
@@ -357,14 +362,11 @@ export function createSiameseModel({
 
 /**
  * Initialize the animal identification model.
+ *
+ * @description This function sets up the TensorFlow.js backend,
+ * creates the feature extractor and the Siamese model.
  */
-export function initialize({
-    isInitialized,
-    setStatus,
-    config,
-    setModel,
-    status,
-}) {
+export function initialize({ isInitialized, config, status }) {
     try {
         if (isInitialized) {
             throw new Error("Le système d'identification est déjà initialisé", {
@@ -374,32 +376,24 @@ export function initialize({
                 },
             });
         }
-        // throw new Error('AnimalIdentificationTF not loaded', {
-        //     cause: { status: 404, message: 'Script not found' },
-        // });
 
         tf.ready();
 
-        // Configuration backend avec gestion d'erreur
+        // Backend setup
         setupOptimalBackend();
 
         const feature = createFeatureExtractor({
-            // setFeatureExtractor,
             config,
         });
 
         if (!feature.success) {
-            throw new Error(
-                `❌ Échec de l'initialisation: ${feature.success}`,
-                {
-                    cause: {
-                        status: 500,
-                        message: 'Feature extraction failed',
-                    },
-                }
-            );
+            throw new Error(`Échec de l'initialisation: ${feature.success}`, {
+                cause: {
+                    status: 500,
+                    message: 'Feature extraction failed',
+                },
+            });
         }
-        // if (!featureSuccess) return false;
 
         const siamese = createSiameseModel({
             status,
@@ -408,38 +402,26 @@ export function initialize({
         });
 
         if (!siamese.success) {
-            throw new Error(`❌ Échec de l'initialisation: ${siamese}`, {
+            throw new Error(`Échec de l'initialisation: ${siamese}`, {
                 cause: {
                     status: 500,
-                    message: 'Initialization failed',
+                    message: 'Siamese model initialization failed',
                 },
             });
         }
-        setStatus((prev) => ({
-            ...prev,
-            loadingState: {
-                message: 'Modèle initialisé',
-                isLoading: 'done',
-                type: 'initializing',
-            },
-            siameseModelInitialized: true,
-            featureExtractorInitialized: true,
-        }));
-        setModel((prev) => ({
-            ...prev,
+
+        return {
             siameseModel: siamese.siameseModel,
             featureExtractor: feature.extractor,
             isInitialized: siamese.success,
-        }));
-        console.log('modèle initialisé avec succès');
+        };
     } catch (error) {
-        setStatus((prev) => ({
-            ...prev,
+        return {
             error: {
-                message: "❌ Échec de l'initialisation :" + error.message,
+                message: error.cause?.message || error.message,
                 status: error.cause?.status || 500,
             },
-        }));
+        };
     }
 }
 
@@ -447,7 +429,7 @@ export async function trainModel({
     status,
     model,
     config = {},
-    setStatus,
+    updateStatus,
     initializeModel,
 }) {
     try {
@@ -518,12 +500,11 @@ export async function trainModel({
                             4
                         )}, accuracy=${logs.acc?.toFixed(4)}`
                     );
-                    setStatus((prev) => ({
-                        ...prev,
+                    updateStatus({
                         trainEpochCount: epoch + 1,
                         loss: logs.loss,
                         accuracy: (logs.acc * 100).toFixed(1),
-                    }));
+                    });
                 },
             },
         });
@@ -532,18 +513,16 @@ export async function trainModel({
         xs2.dispose();
         ys.dispose();
 
-        setStatus((prev) => ({
-            ...prev,
+        updateStatus({
             loadingState: {
                 message: 'Entraînement du modèle terminé',
                 isLoading: 'done',
                 type: 'training',
             },
-        }));
+        });
         // return history;
     } catch (error) {
-        setStatus((prev) => ({
-            ...prev,
+        updateStatus({
             error: {
                 message: "Erreur lors de l'entraînement \n" + error.message,
                 status: error.cause?.status || 500,
@@ -553,7 +532,7 @@ export async function trainModel({
                 isLoading: '',
                 type: '',
             },
-        }));
+        });
     }
 }
 
@@ -561,8 +540,6 @@ export async function compareImages({
     imageArray,
     config,
     model,
-    setStatus,
-    status,
     initializeModel,
 }) {
     try {
@@ -594,32 +571,22 @@ export async function compareImages({
         prediction.dispose();
 
         const score = similarity[0];
-
-        // console.log(
-        //     `🔍 Comparaison ${status.comparisonsCount}: score=${score.toFixed(
-        //         4
-        //     )}`
-        // );
-
-        setStatus((prev) => ({
-            ...prev,
-            comparisonsCount: prev.comparisonsCount + 1,
-            similarityScore: score,
+        return {
             sameAnimal: score > config.predictionThreshold,
             confidence: Math.abs(score - 0.5) * 2,
-        }));
+            similarityScore: score,
+        };
     } catch (error) {
-        setStatus((prev) => ({
-            ...prev,
+        return {
             error: {
-                message: '❌ Erreur lors de la comparaison:' + error.message,
+                message: error.cause?.message || error.message,
                 status: error.cause?.status || 500,
             },
-        }));
+        };
     }
 }
 
-export function saveTrainingPairs({ config, status, setStatus }) {
+export function saveTrainingPairs({ config, status, updateStatus }) {
     try {
         localStorage.setItem(
             config.localStorageKey,
@@ -627,22 +594,21 @@ export function saveTrainingPairs({ config, status, setStatus }) {
         );
         console.log("💾 Paires d'entraînement sauvegardées");
     } catch (error) {
-        setStatus((prev) => ({
-            ...prev,
+        updateStatus({
             error: {
                 message:
                     "❌ Erreur lors de la sauvegarde des paires d'entraînement:" +
                     error.message,
                 status: error.cause?.status || 500,
             },
-        }));
+        });
     }
 }
 
 export async function save({
     name = null,
     status,
-    setStatus,
+    updateStatus,
     // featureExtractor,
     // siameseModel,
     model,
@@ -713,7 +679,7 @@ export async function save({
         URL.revokeObjectURL(url);
 
         // Save the model to local storage for quick access
-        saveTrainingPairs({ config, status, setStatus });
+        saveTrainingPairs({ config, status, updateStatus });
 
         console.log(`💾 Modèle sauvegardé: ${modelName}.json`);
         console.log(
@@ -768,7 +734,7 @@ export function checkIfInitialized(isInitialized) {
 export async function loadModelFromData({
     modelData,
     config,
-    setStatus,
+    updateStatus,
     setModel,
 }) {
     try {
@@ -853,13 +819,12 @@ export async function loadModelFromData({
         console.log(`📂 Modèle chargé avec succès: ${modelName}`);
         return true;
     } catch (error) {
-        setStatus((prev) => ({
-            ...prev,
+        updateStatus({
             error: {
                 message: `❌ Erreur lors du chargement du modèle: ${error.message}`,
                 status: error.cause?.status || 500,
             },
-        }));
+        });
         return false;
     }
 }
