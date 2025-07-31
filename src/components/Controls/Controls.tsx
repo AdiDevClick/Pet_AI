@@ -1,4 +1,7 @@
-import { appContext } from '@/App.tsx';
+import {
+    AnimalActionsContext,
+    withAnimalModelContext,
+} from '@/api/context/animalContext/AnimalModelContext.tsx';
 import { AlertDialogButton } from '@/components/Alerts/AlertDialogButton';
 import { Button } from '@/components/Buttons/Button';
 import type { ControlsStateTypes } from '@/components/Controls/controlsTypes.ts';
@@ -20,7 +23,7 @@ export const MemoizedControls = memo(function Controls({
     buttons = clickableButtons,
 }) {
     const context: contextTypes = useOutletContext();
-    const { startModelTraining } = use(appContext);
+    const { startModelTraining } = use(AnimalActionsContext);
 
     const [isSuccess, setIsSuccess] = useState<ControlsStateTypes>({
         status: false,
@@ -32,7 +35,6 @@ export const MemoizedControls = memo(function Controls({
         setIsSuccess,
         startModelTraining,
     });
-
     return (
         <section className="controls">
             {buttons.map((button, index) => (
@@ -69,4 +71,5 @@ export const MemoizedControls = memo(function Controls({
     );
 });
 
-export default MemoizedControls;
+export const MemoizedControlsWithContext =
+    withAnimalModelContext(MemoizedControls);
