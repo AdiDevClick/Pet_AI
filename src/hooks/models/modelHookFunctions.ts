@@ -1,26 +1,109 @@
-export function getDataBalance({ trainingPairs, updateStatus }) {
-    // if (!trainingPairs || trainingPairs.length === 0) {
-    //     return updateStatus({
-    //         balance: { positive: 0, negative: 0, total: 0 },
-    //     });
-    // }
-    const positive = trainingPairs.filter((pair) => pair.label === 1).length;
-    const negative = trainingPairs.filter((pair) => pair.label === 0).length;
-    const total = trainingPairs.length;
+import * as tf from '@tensorflow/tfjs';
+import type {
+    AddTrainingPairToModelProps,
+    AddTrainingPairToModelResults,
+    CompareImagesProps,
+    CompareImagesResults,
+    CreateFeatureExtractorProps,
+    CreateFeatureExtractorResult,
+    CreateSiameseModelProps,
+    CreateSiameseModelResults,
+    GetDataBalanceProps,
+    GetDataBalanceResults,
+    InitializeProps,
+    InitializeResults,
+    LoadImageElementProps,
+    LoadStorageDataProps,
+    LoadStorageDataResults,
+    PairsArrayForSaving,
+    PreprocessImageProps,
+    PreprocessImageResults,
+    TrainingPair,
+    TrainModelProps,
+} from '@/hooks/models/useAnimalIdentificationTypes.ts';
+import type { CustomError } from '@/mainTypes.ts';
 
-    updateStatus({
-        balance: { positive, negative, total },
-    });
+/**
+ * Get the data balance of the training pairs.
+ *
+ * @param trainingPairs - The parameters for getting the data balance.
+ * @returns An object containing the count of positive, negative, and total pairs.
+ * @example
+ * > **Successful result:**
+ * > ```json
+ * > {
+ * >    positive: 12,
+ * >    negative: 5,
+ * >    total: 17
+ * > }
+ * ```
+ */
+export function getDataBalance({
+    trainingPairs,
+}: GetDataBalanceProps): GetDataBalanceResults {
+    let positive = 0;
+    let negative = 0;
+    let total = 0;
+
+    if (trainingPairs && trainingPairs.length > 0) {
+        positive = trainingPairs.filter((pair) => pair.label === 1).length;
+        negative = trainingPairs.filter((pair) => pair.label === 0).length;
+        total = trainingPairs.length;
+    }
+
+    return {
+        positive,
+        negative,
+        total,
+    };
 }
 
+/**
+ * Load training pairs from local storage.
+ *
+ * @description This function loads training pairs from local storage,
+ *
+ * @param isInitialized - A boolean indicating if the model is initialized.
+ * @param config - The configuration object for the model.
+ * @param trainingPairs - An array of training pairs to be loaded.
+ * @returns A promise that resolves to the result of adding training pairs to the model.
+ * @throwsError - If no training pairs are found in local storage or if
+ * an error occurs while trying to reconstruct the tensors.
+ *
+ * @example
+ * // Awaited result example:
+ * {
+ *   pairsArrayForSaving: [
+ *     {
+ *       image1Url: "url1",
+ *       image2Url: "url2",
+ *       isSameAnimal: true
+ *     }
+ *   ],
+ *   trainingPairs: [
+ *     {
+ *       image1: tensor1,
+ *       image2: tensor2,
+ *       label: 1
+ *     }
+ *   ]
+ * }
+ *
+ * // Error case example:
+ * {
+ *   error: {
+ *     message: "Message d'erreur",
+ *     status: 500
+ *   }
+ * }
+ */
 export async function loadStorageData({
-    updateStatus,
     isInitialized,
     config,
     trainingPairs = [],
-}) {
-    const tensorPairs = [];
-    const savingPairs = [];
+}: LoadStorageDataProps): Promise<LoadStorageDataResults> {
+    const tensorPairs: TrainingPair[] = [];
+    const savingPairs: PairsArrayForSaving[] = [];
     try {
         if (!trainingPairs) {
             throw new Error(
@@ -37,8 +120,8 @@ export async function loadStorageData({
         await Promise.all(
             trainingPairs.map(async (element) => {
                 const { image1Url, image2Url, isSameAnimal } = element;
-                const img1 = await loadImageElement(image1Url);
-                const img2 = await loadImageElement(image2Url);
+                const img1 = await loadImageElement({ imageUrl: image1Url });
+                const img2 = await loadImageElement({ imageUrl: image2Url });
 
                 const pairs = addTrainingPairToModel({
                     imgArray: [img1, img2],
@@ -47,7 +130,7 @@ export async function loadStorageData({
                     isInitialized,
                 });
 
-                if (pairs.error) {
+                if ('error' in pairs) {
                     return Promise.reject(
                         new Error("Erreur d'ajout de tensor paires", {
                             cause: {
@@ -69,17 +152,29 @@ export async function loadStorageData({
             trainingPairs: tensorPairs,
         };
     } catch (error) {
-        console.log('Catch ?');
         return {
             error: {
-                message: error.cause?.message || error.message,
-                status: error.cause?.status || 500,
+                message:
+                    (error as CustomError).cause?.message ||
+                    (error as Error).message,
+                status: (error as CustomError).cause?.status || 500,
             },
         };
     }
 }
 
-export function loadImageElement(imageUrl) {
+/**
+ * Load an image element from a URL.
+ *
+ * @description This function creates a new Image object,
+ * sets its source to the provided URL,
+ *
+ * @param imageUrl - The URL of the image to load.
+ * @returns A promise that resolves to the loaded image element.
+ */
+export function loadImageElement({
+    imageUrl,
+}: LoadImageElementProps): Promise<HTMLImageElement> {
     return new Promise((resolve, reject) => {
         const img = new Image();
         img.crossOrigin = 'anonymous';
@@ -91,17 +186,33 @@ export function loadImageElement(imageUrl) {
     });
 }
 
+/**
+ * Add a training pair to the model.
+ *
+ * @description This function preprocesses two images, checks if the model is initialized,
+ * and adds the training pair to the model.
+ *
+ * @param imgArray - An array containing two image elements to be preprocessed.
+ * @param isSameAnimal - A boolean indicating if the two images are of the same animal.
+ * @param config - The configuration object for preprocessing.
+ * @param isInitialized - A boolean indicating if the model is initialized.
+ *
+ * @returns An object containing the preprocessed images and their label,
+ * or an error object if the model is not initialized or if an error occurs.
+ *
+ * @throws {Error} If the model is not initialized or if image preprocessing fails.
+ */
 export function addTrainingPairToModel({
     imgArray,
     isSameAnimal,
     config,
     isInitialized,
-}) {
+}: AddTrainingPairToModelProps): AddTrainingPairToModelResults {
     try {
         checkIfInitialized(isInitialized);
 
-        const img1 = preprocessImage(imgArray[0], config);
-        const img2 = preprocessImage(imgArray[1], config);
+        const img1 = preprocessImage({ imageElement: imgArray[0], config });
+        const img2 = preprocessImage({ imageElement: imgArray[1], config });
         const label = isSameAnimal ? 1 : 0;
         return {
             pairsArrayForSaving: {
@@ -115,83 +226,135 @@ export function addTrainingPairToModel({
     } catch (error) {
         return {
             error: {
-                message: error.cause?.message || error.message,
-                status: error.cause?.status || 500,
+                status: (error as CustomError).cause?.status || '500',
+                message:
+                    (error as CustomError).cause?.message ||
+                    (error as Error).message,
             },
         };
     }
 }
 
-export function preprocessImage(imageElement, config) {
+/**
+ * Preprocess an image for model input.
+ * @description This function resizes, normalizes, and applies augmentations to the image.
+ * It returns a tensor ready for model input.
+ *
+ * @param imageElement - The image element to preprocess.
+ * @param config - The configuration for preprocessing.
+ * @param config.augment - If `true`, apply data augmentation.
+ * @returns The preprocessed image tensor and its dimensions.
+ * @throws {Error} If the image preprocessing fails.
+ */
+export function preprocessImage({
+    imageElement,
+    config,
+}: PreprocessImageProps): PreprocessImageResults {
     const { imageSize, augment } = config;
     return tf.tidy(() => {
         try {
-            let tensor = tf.browser.fromPixels(imageElement);
+            let tensor3d: tf.Tensor3D | tf.Tensor4D =
+                tf.browser.fromPixels(imageElement);
 
-            tensor = tf.image.resizeBilinear(tensor, [imageSize, imageSize]);
+            tensor3d = tf.image.resizeBilinear(tensor3d, [
+                imageSize,
+                imageSize,
+            ]);
 
-            tensor = tensor.toFloat();
+            tensor3d = tensor3d.toFloat();
 
             // Augmentation simple si demandée
             if (augment) {
-                if (tensor.rank === 3) {
-                    tensor = tensor.expandDims(0);
+                if (tensor3d.rank === 3) {
+                    tensor3d = tensor3d.expandDims(0);
                 }
                 // Flip horizontal (déjà présent)
                 if (Math.random() < 0.5) {
-                    tensor = tf.image.flipLeftRight(tensor);
+                    tensor3d = tf.image.flipLeftRight(tensor3d as tf.Tensor4D);
                 }
                 // Flip vertical (rare mais possible)
                 if (Math.random() < 0.1) {
-                    tensor = tensor.reverse(1);
+                    tensor3d = tensor3d.reverse(1);
                 }
                 // Rotation légère (±15°)
                 if (Math.random() < 0.2) {
                     const angle = (Math.random() - 0.5) * (Math.PI / 6); // -15° à +15°
-                    tensor = tf.image.rotateWithOffset(tensor, angle, 0);
+                    tensor3d = tf.image.rotateWithOffset(
+                        tensor3d as tf.Tensor4D,
+                        angle,
+                        0
+                    );
                 }
                 // Décalage (translation) légère
                 if (Math.random() < 0.2) {
                     const dx = Math.floor((Math.random() - 0.5) * 10); // -5 à +5 px
                     const dy = Math.floor((Math.random() - 0.5) * 10);
                     const transformMatrix = [[1, 0, dx, 0, 1, dy, 0, 0]];
-                    tensor = tf.image.transform(tensor, transformMatrix);
+                    tensor3d = tf.image.transform(
+                        tensor3d as tf.Tensor4D,
+                        transformMatrix
+                    );
                 }
                 // Variation de luminosité
                 if (Math.random() < 0.2) {
                     const brightnessDelta = (Math.random() - 0.5) * 0.2;
-                    tensor = tensor.add(brightnessDelta);
+                    tensor3d = tensor3d.add(brightnessDelta);
                 }
                 // Variation de contraste
                 if (Math.random() < 0.2) {
                     const contrastFactor = 1 + (Math.random() - 0.5) * 0.3;
-                    const mean = tensor.mean();
-                    tensor = tensor.sub(mean).mul(contrastFactor).add(mean);
+                    const mean = tensor3d.mean();
+                    tensor3d = tensor3d.sub(mean).mul(contrastFactor).add(mean);
                 }
-                tensor = tensor.squeeze(0);
+                tensor3d = tensor3d.squeeze([0]);
             }
 
             // Normalisation
-            tensor = tensor.div(255.0);
-            tensor = tensor.sub([0.485, 0.456, 0.406]);
-            tensor = tensor.div([0.229, 0.224, 0.225]);
+            tensor3d = tensor3d.div(255.0);
+            tensor3d = tensor3d.sub([0.485, 0.456, 0.406]);
+            tensor3d = tensor3d.div([0.229, 0.224, 0.225]);
 
-            return tensor.expandDims(0);
+            return tensor3d.expandDims(0) as tf.Tensor4D;
         } catch (error) {
             throw new Error("Erreur de prétraitement de l'image", {
                 cause: {
                     status: 500,
-                    message: error.message || 'Image preprocessing failed',
+                    message:
+                        (error as Error).message ||
+                        'Image preprocessing failed',
                 },
             });
         }
     });
 }
 
+/**
+ * Create a feature extractor model.
+ *
+ * @param config - The configuration object for the model.
+ * @returns The created feature extractor model.
+ * @example
+ * > **Successful result:**
+ * > ```json
+ * > {
+ * >   "pairsArrayForSaving": [
+ * >     { "image1Url": "url1", "image2Url": "url2", "isSameAnimal": true }
+ * >   ],
+ * >   "trainingPairs": [
+ * >     { "image1": "tensor1", "image2": "tensor2", "label": 1 }
+ * >   ]
+ * > }
+ *
+ * > **Error case:**
+ * > ```json
+ * > {
+ * >   "error": { "message": "Message d'erreur", "status": 500 }
+ * > }
+ *  ```
+ */
 export function createFeatureExtractor({
-    // setFeatureExtractor,
     config = { imageSize: 224, featureSize: 256 },
-}) {
+}: CreateFeatureExtractorProps): CreateFeatureExtractorResult {
     try {
         const featureExtractor = tf.sequential({
             layers: [
@@ -248,7 +411,7 @@ export function createFeatureExtractor({
         });
 
         return { extractor: featureExtractor, success: true };
-    } catch (error) {
+    } catch {
         return { success: false };
     }
 }
@@ -277,11 +440,25 @@ export function setupOptimalBackend() {
  * @param config - The configuration object for the model.
  * @param featureExtractor - The feature extractor model to be used.
  * @returns The created Siamese model or an error object.
+ * @example
+ * > **Successful result:**
+ * > ```json
+ * > {
+ * >   "siameseModel": "model",
+ * >   "success": true
+ * > }
+ *
+ * > **Error case:**
+ * > ```json
+ * > {
+ * >   "error": { "success": false }
+ * > }
+ *  ```
  */
-export function createSiameseModel({ status, config, featureExtractor }) {
-    if (status.siameseModelInitialized) {
-        return true;
-    }
+export function createSiameseModel({
+    config,
+    featureExtractor,
+}: CreateSiameseModelProps): CreateSiameseModelResults {
     try {
         const inputA = tf.input({
             shape: [config.imageSize, config.imageSize, 3],
@@ -293,8 +470,8 @@ export function createSiameseModel({ status, config, featureExtractor }) {
         });
 
         // Extraire les features des deux images
-        const featuresA = featureExtractor.apply(inputA);
-        const featuresB = featureExtractor.apply(inputB);
+        const featuresA = featureExtractor.apply(inputA) as tf.SymbolicTensor;
+        const featuresB = featureExtractor.apply(inputB) as tf.SymbolicTensor;
 
         // Concaténer les features des deux images
         const concatenated = tf.layers
@@ -345,7 +522,7 @@ export function createSiameseModel({ status, config, featureExtractor }) {
             .apply(decision);
         const siameseModel = tf.model({
             inputs: [inputA, inputB],
-            outputs: prediction,
+            outputs: prediction as tf.SymbolicTensor,
             name: 'siamese_network',
         });
 
@@ -355,7 +532,7 @@ export function createSiameseModel({ status, config, featureExtractor }) {
             metrics: config.metrics || ['accuracy'],
         });
         return { siameseModel: siameseModel, success: true };
-    } catch (error) {
+    } catch {
         return { success: false };
     }
 }
@@ -365,8 +542,30 @@ export function createSiameseModel({ status, config, featureExtractor }) {
  *
  * @description This function sets up the TensorFlow.js backend,
  * creates the feature extractor and the Siamese model.
+ *
+ * @param isInitialized - A boolean indicating if the model is already initialized.
+ * @param config - The configuration object for the model.
+ *
+ * @returns An object containing the initialized models or an error object.
+ * @example
+ * > **Successful result:**
+ * > ```json
+ * > { "siameseModel": "model",
+ * >   "featureExtractor": "extractor",
+ * >   "isInitialized": true
+ * > }
+ *
+ * > **Error case:**
+ * > ```json
+ * > {
+ * >   "error": { "message": "Error message", "status": 500 }
+ * > }
+ *  ```
  */
-export function initialize({ isInitialized, config, status }) {
+export function initialize({
+    isInitialized,
+    config,
+}: InitializeProps): InitializeResults {
     try {
         if (isInitialized) {
             throw new Error("Le système d'identification est déjà initialisé", {
@@ -386,7 +585,7 @@ export function initialize({ isInitialized, config, status }) {
             config,
         });
 
-        if (!feature.success) {
+        if (!feature.success || !('extractor' in feature)) {
             throw new Error(`Échec de l'initialisation: ${feature.success}`, {
                 cause: {
                     status: 500,
@@ -396,12 +595,11 @@ export function initialize({ isInitialized, config, status }) {
         }
 
         const siamese = createSiameseModel({
-            status,
             config,
             featureExtractor: feature.extractor,
         });
 
-        if (!siamese.success) {
+        if (!siamese.success || !('siameseModel' in siamese)) {
             throw new Error(`Échec de l'initialisation: ${siamese}`, {
                 cause: {
                     status: 500,
@@ -418,20 +616,35 @@ export function initialize({ isInitialized, config, status }) {
     } catch (error) {
         return {
             error: {
-                message: error.cause?.message || error.message,
-                status: error.cause?.status || 500,
+                message:
+                    (error as CustomError).cause?.message ||
+                    (error as Error).message,
+                status: (error as CustomError).cause?.status || 500,
             },
         };
     }
 }
 
+/**
+ * Train the Siamese model with the provided training pairs.
+ *
+ * @description This function will update `Status` State at the end
+ * of the training process.
+ * It will also update the `Status` State after each epoch.
+ *
+ * @param model - The model object containing the Siamese model and its initialization status.
+ * @param status - The current `Status` State of the model, including training pairs and loading state.
+ * @param config - The configuration object for the model, including training parameters.
+ * @param updateStatus - A function to update the `Status` State of the model.
+ * @param initializeModel - A function to initialize the model if it is not already initialized.
+ */
 export async function trainModel({
     status,
     model,
     config = {},
     updateStatus,
     initializeModel,
-}) {
+}: TrainModelProps) {
     try {
         if (status.trainingPairs.length < 4) {
             throw new Error("Pas assez de paires pour l'entraînement", {
@@ -452,7 +665,11 @@ export async function trainModel({
         }
 
         // Initialiser les modèles s'ils ne sont pas créés
-        if (!model.siameseModel || !model.isInitialized) {
+        if (
+            !model.siameseModel ||
+            !model.isInitialized ||
+            !model.featureExtractor
+        ) {
             initializeModel();
             checkIfInitialized(model.isInitialized);
         }
@@ -462,7 +679,7 @@ export async function trainModel({
             status.balance.negative > status.balance.positive * 1.2
         ) {
             throw new Error(
-                `⚠️ Déséquilibre des données : ${status.balance.positive} positives, ${status.balance.negative} négatives`,
+                `Déséquilibre des données : ${status.balance.positive} positives, ${status.balance.negative} négatives`,
                 {
                     cause: {
                         status: 500,
@@ -472,20 +689,31 @@ export async function trainModel({
             );
         }
 
-        const images1 = [];
-        const images2 = [];
-        const labels = [];
+        const images1: TrainingPair['image1'][] = [];
+        const images2: TrainingPair['image2'][] = [];
+        const labels: TrainingPair['label'][] = [];
 
         status.trainingPairs.forEach((pair) => {
-            images1.push(pair.image1);
-            images2.push(pair.image2);
-            labels.push(pair.label);
+            if (isTensor4D(pair.image1) && isTensor4D(pair.image2)) {
+                images1.push(pair.image1);
+                images2.push(pair.image2);
+                labels.push(pair.label);
+            }
         });
 
-        const xs1 = tf.concat(images1);
-        const xs2 = tf.concat(images2);
+        const xs1 = tf.concat(images1 as tf.Tensor4D[]);
+        const xs2 = tf.concat(images2 as tf.Tensor4D[]);
 
         const ys = tf.tensor1d(labels, 'float32');
+
+        if (!model.siameseModel) {
+            throw new Error('Le modèle Siamese non initialisé', {
+                cause: {
+                    status: 500,
+                    message: 'Siamese model is not found',
+                },
+            });
+        }
 
         await model.siameseModel.fit([xs1, xs2], ys, {
             epochs: config.epochs,
@@ -496,14 +724,15 @@ export async function trainModel({
             callbacks: {
                 onEpochEnd: (epoch, logs) => {
                     console.log(
-                        `Epoch ${epoch + 1}: loss=${logs.loss?.toFixed(
+                        `Epoch ${epoch + 1}: loss=${logs?.loss?.toFixed(
                             4
-                        )}, accuracy=${logs.acc?.toFixed(4)}`
+                        )}, accuracy=${logs?.acc?.toFixed(4)}`
                     );
                     updateStatus({
                         trainEpochCount: epoch + 1,
-                        loss: logs.loss,
-                        accuracy: (logs.acc * 100).toFixed(1),
+                        loss: logs?.loss,
+                        accuracy:
+                            (logs && (logs.acc * 100).toFixed(1)) || 'N/A',
                     });
                 },
             },
@@ -520,12 +749,13 @@ export async function trainModel({
                 type: 'training',
             },
         });
-        // return history;
     } catch (error) {
         updateStatus({
             error: {
-                message: "Erreur lors de l'entraînement \n" + error.message,
-                status: error.cause?.status || 500,
+                message:
+                    "Erreur lors de l'entraînement \n" +
+                    (error as Error).message,
+                status: (error as CustomError).cause?.status || 500,
             },
             loadingState: {
                 message: '',
@@ -536,12 +766,49 @@ export async function trainModel({
     }
 }
 
+/**
+ * Checks if the provided tensor is a 4D tensor.
+ *
+ * @description This is used in the `trainModel` function
+ * to ensure that the tensors being processed are of the correct shape.
+ *
+ * @param tensor - The tensor to check.
+ * @returns True if the tensor is a 4D tensor, false otherwise.
+ */
+function isTensor4D(tensor: unknown): tensor is tf.Tensor4D {
+    return tensor instanceof tf.Tensor && tensor.rank === 4;
+}
+
+/**
+ * Compare two images using the Siamese model.
+ *
+ * @param imageArray - An array containing two image elements to be compared.
+ * @param config - The configuration object for the model, including preprocessing parameters.
+ * @param model - The model object containing the Siamese model and its initialization status.
+ * @returns A promise that resolves to the comparison result, including similarity score and confidence.
+ *
+ * @example
+ * > **Successful result:**
+ * > ```json
+ * > {
+ * >   "sameAnimal": true,
+ * >   "confidence": 0.85,
+ * >   "similarityScore": 0.85
+ * > }
+ *
+ * > **Error case:**
+ * > ```json
+ * > {
+ * >   "error": { "message": "Message d'erreur", "status": 500 }
+ * > }
+ * ```
+ */
 export async function compareImages({
     imageArray,
     config,
     model,
     initializeModel,
-}) {
+}: CompareImagesProps): Promise<CompareImagesResults> {
     try {
         if (!model.siameseModel || !model.isInitialized) {
             initializeModel();
@@ -550,20 +817,42 @@ export async function compareImages({
 
         if (imageArray.length !== 2) {
             throw new Error(
-                '⚠️ Deux images sont nécessaires pour la comparaison',
+                'Deux images sont nécessaires pour la comparaison',
                 {
                     cause: {
                         status: 400,
-                        message: 'Bad Request',
+                        message: 'Bad Request, you need two images',
                     },
                 }
             );
         }
 
-        const img1 = preprocessImage(imageArray[0], config);
-        const img2 = preprocessImage(imageArray[1], config);
+        const img1 = preprocessImage({ imageElement: imageArray[0], config });
+        const img2 = preprocessImage({ imageElement: imageArray[1], config });
 
-        const prediction = model.siameseModel.predict([img1, img2]);
+        if (!model.siameseModel) {
+            throw new Error('Modèle Siamese non trouvé', {
+                cause: {
+                    status: 404,
+                    message: 'Siamese model not found',
+                },
+            });
+        }
+
+        if (!isTensor4D(img1) || !isTensor4D(img2)) {
+            throw new Error('Erreur de prétraitement des images', {
+                cause: {
+                    status: 500,
+                    message:
+                        'Image preprocessing failed, ensure images are tensors',
+                },
+            });
+        }
+
+        const predictionRaw = model.siameseModel.predict([img1, img2]);
+        const prediction = Array.isArray(predictionRaw)
+            ? predictionRaw[0]
+            : predictionRaw;
         const similarity = await prediction.data();
 
         img1.dispose();
@@ -579,8 +868,10 @@ export async function compareImages({
     } catch (error) {
         return {
             error: {
-                message: error.cause?.message || error.message,
-                status: error.cause?.status || 500,
+                message:
+                    (error as CustomError).cause?.message ||
+                    (error as Error).message,
+                status: (error as CustomError).cause?.status || 500,
             },
         };
     }
@@ -720,7 +1011,16 @@ export async function save({
 //     console.log('🔄 Modèle réinitialisé');
 // }
 
-export function checkIfInitialized(isInitialized) {
+/**
+ * Check if the model is initialized.
+ *
+ * @description This function checks if the model is initialized.
+ * If not, it throws an error with a specific message and status code.
+ *
+ * @param isInitialized - A boolean indicating if the model is initialized.
+ * @throws {Error} If the model is not initialized.
+ */
+export function checkIfInitialized(isInitialized = false) {
     if (!isInitialized) {
         throw new Error("Système d'identification non initialisé", {
             cause: {
