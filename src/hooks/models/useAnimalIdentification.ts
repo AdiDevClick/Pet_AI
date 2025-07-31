@@ -85,12 +85,12 @@ export function useAnimalIdentification(): AnimalIdentification {
             Object.entries(newStatus).forEach(([key, value]) => {
                 // Si la propriété existe et est un tableau, et la nouvelle valeur est aussi un tableau
                 if (Array.isArray(prev[key])) {
-                    return [
+                    merged[key] = [
                         ...prev[key],
                         ...(Array.isArray(value) ? value : [value]),
                     ];
                 } else {
-                    return value;
+                    merged[key] = value;
                 }
             });
 
