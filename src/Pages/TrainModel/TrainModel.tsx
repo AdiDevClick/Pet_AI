@@ -1,11 +1,11 @@
 import MemoizedTasks from '@/components/Tasks/Tasks.tsx';
 import { Status } from '@/components/Status/Status.tsx';
 import { Instructions } from '@/components/Instructions/Instructions.tsx';
-import { TrainingTwoCards } from '@/components/Cards/TrainingTwoCards.tsx';
+import { MemoizedTrainingTwoCards } from '@/components/Cards/TrainingTwoCards.tsx';
 import originalAnimals from '@/data/animals.json';
 import { useOutletContext } from 'react-router-dom';
-import MemoizedControls from '@/components/Controls/Controls.tsx';
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
+import { MemoizedControls } from '@/components/Controls/Controls.tsx';
 
 const onlyPositive = false;
 const allShuffled = true;
@@ -49,7 +49,9 @@ export const MemoizedTrainModel = memo(function TrainModel() {
         <>
             <MemoizedTasks>chats</MemoizedTasks>
             <MemoizedControls />
+            {/* <AnimalModelProvider value="state"> */}
             <Status />
+            {/* </AnimalModelProvider> */}
             {(isOnLoad || count > 0) && (
                 <>
                     {onlyPositive &&
@@ -59,7 +61,7 @@ export const MemoizedTrainModel = memo(function TrainModel() {
                                 if (indexA >= indexB) return null;
 
                                 return (
-                                    <TrainingTwoCards
+                                    <MemoizedTrainingTwoCards
                                         key={`${animalA.id}-${animalB.id}-${indexA}-${indexB}`}
                                         animals={[
                                             {
@@ -83,10 +85,13 @@ export const MemoizedTrainModel = memo(function TrainModel() {
                             if (nextIndex >= shuffledAnimals.length)
                                 nextIndex = index - 10;
                             return (
-                                <TrainingTwoCards
+                                <MemoizedTrainingTwoCards
                                     key={(count + index) * Math.random()}
                                     animals={[
-                                        { ...animal, image: animal.images[0] },
+                                        {
+                                            ...animal,
+                                            image: animal.images[0],
+                                        },
                                         {
                                             ...shuffledAnimals[nextIndex],
                                             image: shuffledAnimals[nextIndex]
