@@ -9,43 +9,27 @@ import {
     save,
     trainModel,
 } from '@/hooks/models/modelHookFunctions.ts';
+import type {
+    AddTrainingPairCallBackProps,
+    AnimalIdentification,
+    CompareImagesProps,
+    ConfigTypes,
+    ModelTypes,
+    StatusTypes,
+} from '@/hooks/models/useAnimalIdentificationTypes.ts';
 import { wait } from '@/lib/utils.ts';
-
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
-type StatusType = {
-    loadingState: {
-        message: string;
-        isLoading: string;
-        type: string;
-    };
-    siameseModelInitialized: boolean;
-    featureExtractorInitialized: boolean;
-    localStorageDataLoaded: boolean;
-    trainingPairs: any[]; // <-- allow any[]
-    comparisonsCount: number;
-    accuracy: number;
-    pairsArrayForSaving: any[]; // <-- allow any[]
-    balance: { positive: number; negative: number; total: number };
-    similarityScore: number;
-    sameAnimal: boolean;
-    confidence: number;
-    trainEpochCount: number;
-    loss: number;
-    error: {
-        status: string;
-        message: string;
-    };
-};
+
 // Hook personnalisé pour l'identification d'animaux
-export function useAnimalIdentification() {
-    const [model, setModel] = useState({
+export function useAnimalIdentification(): AnimalIdentification {
+    const [model, setModel] = useState<ModelTypes>({
         isInitialized: false,
-        featureExtractor: null,
-        siameseModel: null,
+        featureExtractor: null!,
+        siameseModel: null!,
     });
 
-    const [status, setStatus] = useState<StatusType>({
+    const [status, setStatus] = useState<StatusTypes>({
         loadingState: {
             message: 'Initialisation du modèle',
             isLoading: 'initializing',
@@ -69,7 +53,7 @@ export function useAnimalIdentification() {
             message: '',
         },
     });
-    const configRef = useRef({
+    const configRef = useRef<ConfigTypes>({
         featureSize: 256,
         imageSize: 224,
         localStorageKey: 'pair-array',
@@ -84,19 +68,29 @@ export function useAnimalIdentification() {
         predictionThreshold: 0.7,
         taskName: 'task',
     });
+    const statusRef = useRef(status);
 
-    const updateStatus = useCallback((newStatus: Partial<StatusType>) => {
+    /**
+     * Update the status reference whenever the status changes.
+     * Used to avoid unnecessary re-renders due
+     * to closures in callbacks.
+     */
+    useEffect(() => {
+        statusRef.current = status;
+    }, [status]);
+
+    const updateStatus = useCallback((newStatus: Partial<StatusTypes>) => {
         setStatus((prev) => {
             const merged = { ...prev };
             Object.entries(newStatus).forEach(([key, value]) => {
                 // Si la propriété existe et est un tableau, et la nouvelle valeur est aussi un tableau
                 if (Array.isArray(prev[key])) {
-                    merged[key] = [
+                    return [
                         ...prev[key],
                         ...(Array.isArray(value) ? value : [value]),
                     ];
                 } else {
-                    merged[key] = value;
+                    return value;
                 }
             });
 
@@ -128,14 +122,11 @@ export function useAnimalIdentification() {
     const initializeModel = useCallback(() => {
         if (!model.isInitialized) {
             const results = initialize({
-                updateStatus,
-                setModel,
                 config: configRef.current,
                 isInitialized: model.isInitialized,
-                status,
             });
             if (results) {
-                if (results.error) {
+                if ('error' in results) {
                     updateStatus({
                         ...results,
                     });
@@ -157,7 +148,7 @@ export function useAnimalIdentification() {
                 });
             }
         }
-    }, [status, model.isInitialized]);
+    }, [model.isInitialized]);
 
     /**
      * This will start training the model.
@@ -174,7 +165,7 @@ export function useAnimalIdentification() {
             return;
         }
 
-        if (status.loadingState.isLoading !== 'training') {
+        if (statusRef.current.loadingState.isLoading !== 'training') {
             updateStatus({
                 loadingState: {
                     message: "Début de l'entraînement...",
@@ -183,14 +174,14 @@ export function useAnimalIdentification() {
                 },
             });
             trainModel({
-                status,
+                status: statusRef.current,
                 updateStatus,
                 model,
                 config: configRef.current,
                 initializeModel,
             });
         }
-    }, [model, initializeModel, status]);
+    }, [model]);
 
     /**
      * Compares two images to identify if
@@ -201,7 +192,7 @@ export function useAnimalIdentification() {
      * `exemple : { similarityScore: 0.85, sameAnimal: true, confidence: 0.7 }`
      */
     const compareAnimals = useCallback(
-        async (imagesArray) => {
+        async (imagesArray: CompareImagesProps['imageArray']) => {
             updateStatus({
                 loadingState: {
                     message: 'Comparaison des images...',
@@ -210,8 +201,7 @@ export function useAnimalIdentification() {
                 },
             });
             // Avoid the first lag
-            if (status.comparisonsCount === 0) await wait(100);
-
+            if (statusRef.current.comparisonsCount === 0) await wait(100);
             // try {
             // checkIfInitialized(model.isInitialized);
             const results = await compareImages({
@@ -221,7 +211,7 @@ export function useAnimalIdentification() {
                 initializeModel,
             });
 
-            if (results.error) {
+            if ('error' in results) {
                 updateStatus({
                     ...results,
                 });
@@ -229,11 +219,11 @@ export function useAnimalIdentification() {
             }
 
             updateStatus({
-                comparisonsCount: status.comparisonsCount + 1,
+                comparisonsCount: statusRef.current.comparisonsCount + 1,
                 ...results,
                 loadingState: {
                     message: `Comparaison ${
-                        status.comparisonsCount + 1
+                        statusRef.current.comparisonsCount + 1
                     } terminée`,
                     isLoading: 'done',
                     type: 'comparison',
@@ -249,7 +239,7 @@ export function useAnimalIdentification() {
             //     });
             // }
         },
-        [model.isInitialized, model.siameseModel, status]
+        [model]
     );
 
     // Réinitialiser le modèle
@@ -257,7 +247,7 @@ export function useAnimalIdentification() {
         if (!model.isInitialized) return false;
 
         try {
-            status.trainingPairs.forEach((pair) => {
+            statusRef.current.trainingPairs.forEach((pair) => {
                 if (pair.image1) pair.image1.dispose();
                 if (pair.image2) pair.image2.dispose();
             });
@@ -276,7 +266,7 @@ export function useAnimalIdentification() {
                 },
             });
         }
-    }, [model.isInitialized, status.trainingPairs]);
+    }, [model.isInitialized, statusRef.current.trainingPairs]);
 
     // Sauvegarder le modèle
     const saveModel = useCallback(
@@ -285,7 +275,7 @@ export function useAnimalIdentification() {
                 checkIfInitialized(model.isInitialized);
                 save({
                     name,
-                    status,
+                    status: statusRef.current,
                     updateStatus,
                     model,
                     config: configRef.current,
@@ -327,7 +317,11 @@ export function useAnimalIdentification() {
      * @param isSameAnimal - A boolean indicating if the images are of the same animal.
      */
     const addTrainingPair = useCallback(
-        async (imgArray, isSameAnimal, count) => {
+        async ({
+            imgArray,
+            isSameAnimal,
+            count,
+        }: AddTrainingPairCallBackProps) => {
             updateStatus({
                 loadingState: {
                     message: "Ajout de la paire d'entraînement...",
@@ -344,6 +338,12 @@ export function useAnimalIdentification() {
                 isInitialized: model.isInitialized,
             });
             if (pair) {
+                if ('error' in pair) {
+                    updateStatus({
+                        ...pair,
+                    });
+                    return;
+                }
                 updateStatus({
                     trainingPairs: pair.trainingPairs,
                     pairsArrayForSaving: pair.pairsArrayForSaving,
@@ -367,8 +367,8 @@ export function useAnimalIdentification() {
     const loadFromStorageData = useCallback(async () => {
         if (
             !model.isInitialized ||
-            status.localStorageDataLoaded ||
-            status.loadingState.isLoading !== 'storage'
+            statusRef.current.localStorageDataLoaded ||
+            statusRef.current.loadingState.isLoading !== 'storage'
         )
             return;
 
@@ -377,14 +377,16 @@ export function useAnimalIdentification() {
         );
 
         const results = await loadStorageData({
-            updateStatus,
             isInitialized: model.isInitialized,
             config: configRef.current,
             trainingPairs,
         });
 
         if (results) {
-            if (results.error?.status.toString() === '404') {
+            if (
+                'error' in results &&
+                results.error?.status.toString() === '404'
+            ) {
                 // Helps the toaster to be able to show the message
                 await wait(100);
                 updateStatus({
@@ -405,10 +407,10 @@ export function useAnimalIdentification() {
         }
     }, [
         model.isInitialized,
-        status.localStorageDataLoaded,
-        status.loadingState.isLoading,
-        status.loadingState.type,
-        status.loadingState.message,
+        statusRef.current.localStorageDataLoaded,
+        statusRef.current.loadingState.isLoading,
+        statusRef.current.loadingState.type,
+        statusRef.current.loadingState.message,
     ]);
 
     /**
@@ -432,7 +434,6 @@ export function useAnimalIdentification() {
                 type: 'storage',
             },
         });
-
         loadFromStorageData();
     }, [
         model.isInitialized,
@@ -443,11 +444,10 @@ export function useAnimalIdentification() {
     /**
      * Error Toaster Handler
      * @description This will show an error message
-     * if there is an error in the status.
+     * if there is an error in the statusRef.current.
      */
     useEffect(() => {
         if (status.error.message) {
-            console.log('Il y a bien une erreur', status.error.message);
             // toast.dismiss();
             toast.dismiss(`loading-${status.loadingState.type}`);
 
@@ -462,7 +462,11 @@ export function useAnimalIdentification() {
                 loadingState: { message: '', isLoading: '', type: '' },
             });
         }
-    }, [status.error.message, status.loadingState.type]);
+    }, [
+        status.error.message,
+        status.loadingState.type,
+        // statusRef.current.error,
+    ]);
 
     /**
      * Toaster Handler
@@ -515,12 +519,19 @@ export function useAnimalIdentification() {
      * @description -It counts the number of positive and negative pairs.
      */
     useEffect(() => {
-        getDataBalance({ trainingPairs: status.trainingPairs, updateStatus });
+        const results = getDataBalance({
+            trainingPairs: status.trainingPairs,
+        });
+        updateStatus({
+            balance: results,
+        });
     }, [status.trainingPairs]);
 
+    // console.log('JE RERENDER LE HOOK USEANIMALIDENTIFICATION');
     return {
         /** State */
         isInitialized: model.isInitialized,
+        model,
         status,
 
         /** Actions */
