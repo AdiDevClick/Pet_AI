@@ -11,3 +11,9 @@ export type contextTypes = {
     setResetSystem: (value: boolean) => void;
     resetSystem: boolean;
 };
+export type CustomError = {
+    cause?: {
+        message?: string;
+        status?: number;
+    };
+} & Error;
