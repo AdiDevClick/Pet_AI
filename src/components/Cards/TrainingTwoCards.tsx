@@ -4,32 +4,34 @@ import { CardPrediction } from '@/components/Cards/CardPrediction.tsx';
 import { GenericCard } from '@/components/Cards/GenericCard.tsx';
 import { GenericFigure } from '@/components/Images/GenericFigure.tsx';
 import {
+    memo,
     use,
     useCallback,
+    useRef,
     useState,
     type HTMLAttributes,
     type MouseEvent,
     type ReactNode,
 } from 'react';
 import '@css/card.scss';
-import { appContext } from '@/App.tsx';
+import { AnimalActionsContext } from '@/api/context/animalContext/AnimalModelContext.tsx';
 
-export function TrainingTwoCards<T extends HTMLAttributes<HTMLDivElement>>({
+export const MemoizedTrainingTwoCards = memo(function TrainingTwoCards<
+    T extends HTMLAttributes<HTMLDivElement>
+>({
     animals,
     isOnLoad,
 }: {
     children: ReactNode;
 } & T) {
-    const [previewImages, setPreviewImages] = useState(new Map());
+    const previewImgsRef = useRef(new Map()).current;
     const [isCorrect, setIsCorrect] = useState<boolean>(null!);
     const [showPrediction, setShowPrediction] = useState(false);
     const [prediction, setPrediction] = useState<{
         sameAnimal: boolean;
         confidence: number;
     }>(null!);
-    const { compareAnimals, status, addTrainingPair } = use(appContext);
-
-    // const { addTrainingData, predict } = useTensorFlowScript();
+    const { compareAnimals, addTrainingPair } = use(AnimalActionsContext);
 
     let className = '';
 
@@ -47,18 +49,21 @@ export function TrainingTwoCards<T extends HTMLAttributes<HTMLDivElement>>({
         e.preventDefault();
         setIsCorrect(selectedCorrect);
 
-        if (previewImages.size === 2) {
-            const entries = Array.from(previewImages.values());
+        if (previewImgsRef.size === 2) {
+            const entries = Array.from(previewImgsRef.values());
 
-            addTrainingPair(entries, selectedCorrect, isOnLoad);
+            addTrainingPair({
+                imgArray: entries,
+                isSameAnimal: selectedCorrect,
+                count: isOnLoad,
+            });
         }
     };
 
     const handlePredict = async (e: MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
-
-        if (previewImages.size === 2) {
-            const entries = Array.from(previewImages.values());
+        if (previewImgsRef.size === 2) {
+            const entries = Array.from(previewImgsRef.values());
             const result = await compareAnimals(entries);
             setPrediction(result);
             setShowPrediction(true);
@@ -67,10 +72,15 @@ export function TrainingTwoCards<T extends HTMLAttributes<HTMLDivElement>>({
 
     const onImageRef = useCallback((element: HTMLImageElement) => {
         if (element) {
-            setPreviewImages((prev) => prev.set(element.id, element));
+            previewImgsRef.set(element.id, element);
         }
     }, []);
-    console.log('je render la carte');
+
+    console.log(
+        'je render la carte et voici sa prediction : ',
+        prediction,
+        showPrediction
+    );
     return (
         <GenericCard className={className}>
             {/* <GenericCard className={className} id={`card-${images.id}`}> */}
@@ -109,4 +119,4 @@ export function TrainingTwoCards<T extends HTMLAttributes<HTMLDivElement>>({
             />
         </GenericCard>
     );
-}
+});
