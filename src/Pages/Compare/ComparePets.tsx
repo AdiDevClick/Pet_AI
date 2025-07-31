@@ -1,6 +1,6 @@
 import { Button } from '@/components/Buttons/Button.tsx';
 import { GenericCard } from '@/components/Cards/GenericCard.tsx';
-import MemoizedControls from '@/components/Controls/Controls.tsx';
+import { MemoizedControls } from '@/components/Controls/Controls.tsx';
 import { GenericGrid } from '@/components/Grid/GenericGrid.tsx';
 import { ImageInput } from '@/components/Inputs/ImageInput.tsx';
 import { GenericDescription } from '@/components/Texts/GenericDescription.tsx';
