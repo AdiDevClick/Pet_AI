@@ -10,17 +10,15 @@ import {
 } from 'react';
 import { GenericTitle } from '@/components/Texts/GenericTitle.tsx';
 import { useOutletContext } from 'react-router-dom';
-import { appContext } from '@/App.tsx';
+import { AnimalStateContext } from '@/api/context/animalContext/AnimalModelContext.tsx';
 
 export function Status() {
     const { resetSystem } = useOutletContext();
-    const { isInitialized, status } = use(appContext);
+    const { isInitialized, status } = use(AnimalStateContext);
 
     const contextPropsMemo = useMemo(
         () => ({
             resetSystem,
-            isInitialized,
-            status,
         }),
         [resetSystem, isInitialized, status]
     );
@@ -44,17 +42,17 @@ export function Status() {
                     <small>✓ Prêt pour un nouvel entraînement</small>
                 </>
             );
-        } else if (contextPropsMemo.isInitialized) {
+        } else if (isInitialized) {
             setMessage(
                 <>
                     <small>✓ Prêt pour l'entraînement interactif</small>
                 </>
             );
         }
-    }, [contextPropsMemo.resetSystem, contextPropsMemo.isInitialized]);
+    }, [contextPropsMemo.resetSystem, isInitialized]);
 
     useEffect(() => {
-        if (microOutDivRef.current && contextPropsMemo.isInitialized) {
+        if (microOutDivRef.current && isInitialized) {
             setMessage(
                 <>
                     <strong>🤖 Classificateur d'Images IA Prêt!</strong>
@@ -65,7 +63,7 @@ export function Status() {
                 </>
             );
         }
-        if (microOutDivRef.current && !contextPropsMemo.isInitialized) {
+        if (microOutDivRef.current && !isInitialized) {
             setMessage(
                 <>
                     <strong>🔄 Chargement du modèle...</strong>
@@ -74,7 +72,7 @@ export function Status() {
                 </>
             );
         }
-    }, [contextPropsMemo.isInitialized]);
+    }, [isInitialized]);
 
     return (
         <div className="generic-layout stats-container">
@@ -85,31 +83,31 @@ export function Status() {
             <div className="stats">
                 <div className="stats__item">
                     <div className="stats__value" id="training-count">
-                        {contextPropsMemo.status.trainingPairs.length}
+                        {status.trainingPairs.length}
                     </div>
                     <div className="stats__label">Paires d'entraînement</div>
                 </div>
                 <div className="stats__item">
                     <div className="stats__value" id="accuracy">
-                        {contextPropsMemo.status.accuracy}%
+                        {status.accuracy}%
                     </div>
                     <div className="stats__label">Précision du modèle</div>
                 </div>
                 <div className="stats__item">
                     <div className="stats__value" id="comparisons-count">
-                        {contextPropsMemo.status.comparisons}
+                        {status.comparisons}
                     </div>
                     <div className="stats__label">Comparaisons effectuées</div>
                 </div>
                 <div className="stats__item">
                     <div className="stats__value" id="balance">
                         <span style={{ color: 'green', marginLeft: 6 }}>
-                            {`▲ ${contextPropsMemo.status.balance.positive} `}
+                            {`▲ ${status.balance.positive} `}
                         </span>
                         /
                         <span
                             style={{ color: 'red', marginLeft: 6 }}
-                        >{`▼ ${contextPropsMemo.status.balance.negative}`}</span>
+                        >{`▼ ${status.balance.negative}`}</span>
                     </div>
                     <div className="stats__label">
                         Equilibre de l'entraînement
