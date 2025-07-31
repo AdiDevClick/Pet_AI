@@ -1,7 +1,6 @@
-import { useAnimalIdentification } from '@/hooks/models/useAnimalIdentification.ts';
-import { createContext, type ReactNode } from 'react';
+import { AnimalModelProvider } from '@/api/context/animalContext/AnimalModelContext.tsx';
+import type { ReactNode } from 'react';
 
-export const appContext = createContext(null!);
 /**
  * @description This component serves as the main layout for the application, wrapping all child components.
  *
@@ -9,20 +8,9 @@ export const appContext = createContext(null!);
  * @returns
  */
 export function App({ children }: { children: ReactNode }) {
-    const animalModel = useAnimalIdentification();
     return (
-        <>
-            <appContext.Provider value={{ ...animalModel }}>
-                <main className="main-container">{children}</main>
-            </appContext.Provider>
-        </>
+        <AnimalModelProvider>
+            <main className="main-container">{children}</main>
+        </AnimalModelProvider>
     );
 }
-
-// const WithApp = (Component) => (props) => {
-//     return (
-//         <App>
-//             <Component {...props} />
-//         </App>
-//     );
-// };
