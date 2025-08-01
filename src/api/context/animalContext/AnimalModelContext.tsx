@@ -22,6 +22,7 @@ export const AnimalModelProvider = ({ children }: AnimalModelProviderProps) => {
             compareAnimals: animalModel.compareAnimals,
             addTrainingPair: animalModel.addTrainingPair,
             startModelTraining: animalModel.startModelTraining,
+            saveModelToLocalStorage: animalModel.saveModelToLocalStorage,
         }),
         [animalModel.model]
     );
