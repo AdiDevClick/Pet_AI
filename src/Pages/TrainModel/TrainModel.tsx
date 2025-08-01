@@ -4,7 +4,7 @@ import { Instructions } from '@/components/Instructions/Instructions.tsx';
 import { MemoizedTrainingTwoCards } from '@/components/Cards/TrainingTwoCards.tsx';
 import originalAnimals from '@/data/animals.json';
 import { useOutletContext } from 'react-router-dom';
-import { memo, useMemo } from 'react';
+import { memo } from 'react';
 import { MemoizedControls } from '@/components/Controls/Controls.tsx';
 
 const onlyPositive = false;
