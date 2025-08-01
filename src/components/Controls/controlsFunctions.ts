@@ -1,4 +1,7 @@
 import type { LoadModelTypes } from '@/components/Controls/controlsTypes';
+import { MODEL_LOADER_ID } from '@/configs/toaster.config.ts';
+import { wait } from '@/lib/utils.ts';
+import type { CustomError } from '@/mainTypes.ts';
 import { toast } from 'sonner';
 
 export function loadNewImages({
@@ -18,18 +21,43 @@ export function loadNewImages({
 
 export async function saveModel({ e, ...functionProps }) {
     e.preventDefault();
-    console.log(functionProps);
+    const element = e.target;
     try {
-        const result = await functionProps.saveModelToLocalStorage();
-        if (!result.status) {
+        const result = await functionProps.saveModelAsFile({
+            name: 'test de sauvegarde',
+        });
+        await wait(100);
+        if ('error' in result) {
             throw new Error(`Erreur de sauvegarde: ${result.message}`, {
-                cause: { status: result.status, message: result.message },
+                cause: {
+                    status: result.status,
+                    message: result.message,
+                    type: result.type,
+                },
             });
         }
-        console.log(result);
-        // alert(`💾 Modèle sauvegardé avec succès! ${result}`);
+        functionProps.setButtonState((prev) => ({
+            ...prev,
+            download: { state: true, data: result.modelData },
+            id: element.id,
+        }));
+
+        toast.dismiss(`${MODEL_LOADER_ID}${result.type}`);
+        toast.success('Modèle sauvegardé avec succès!', {
+            position: 'top-right',
+        });
     } catch (error) {
-        alert('❌ Erreur lors de la sauvegarde du modèle');
+        toast.dismiss(
+            `${MODEL_LOADER_ID}${
+                (error as CustomError).cause?.type || (error as Error).type
+            }`
+        );
+        toast.error(
+            `Erreur de sauvegarde: ${(error as CustomError).cause?.message}`,
+            {
+                position: 'top-right',
+            }
+        );
     }
 }
 
@@ -68,12 +96,11 @@ export async function loadDefaultDataArray({ e }) {
  * It expects the file to be a valid JSON containing the model data.
  *
  * @param e - The event object.
- * @param setIsSuccess - Function to set the success state.
- * @param isSuccess - The current success state.
+ * @param setButtonState - Function to set the button state.
  *
- * @trigger The `setIsSuccess` setter with error and button id.
+ * @trigger The `setButtonState` setter with error and button id.
  */
-export async function loadModel({ e, setIsSuccess }: LoadModelTypes) {
+export async function loadModel({ e, setButtonState }: LoadModelTypes) {
     e.preventDefault();
     const element = e.target as HTMLElement;
     const success = await window.animalIdentifier.loadModel();
@@ -88,7 +115,7 @@ export async function loadModel({ e, setIsSuccess }: LoadModelTypes) {
         });
     }
 
-    return setIsSuccess({
+    return setButtonState({
         ...success,
         id: element.id,
     });
