@@ -1,12 +1,12 @@
 import {
     addTrainingPairToModel,
-    checkIfInitialized,
+    checkForErrorAndUpdateState,
     compareImages,
     getDataBalance,
     initialize,
     loadModelFromData,
     loadStorageData,
-    save,
+    saveModelAsLocal,
     trainModel,
 } from '@/hooks/models/modelHookFunctions.ts';
 import type {
@@ -41,7 +41,7 @@ export function useAnimalIdentification(): AnimalIdentification {
         featureExtractorInitialized: false,
         localStorageDataLoaded: false,
         trainingPairs: [],
-        comparisonsCount: 0,
+        comparisonCount: 0,
         accuracy: 0,
         pairsArrayForSaving: [],
         balance: { positive: 0, negative: 0, total: 0 },
@@ -118,23 +118,16 @@ export function useAnimalIdentification(): AnimalIdentification {
                 config: configRef.current,
                 isInitialized: model.isInitialized,
             });
-            if (results) {
-                if ('error' in results) {
-                    updateState(
-                        {
-                            ...results,
-                        },
-                        setStatus
-                    );
-                    return;
-                }
 
+            if (results) {
                 setModel((prev) => ({
                     ...prev,
                     ...results,
                 }));
-                updateState(
-                    {
+                checkForErrorAndUpdateState({
+                    results,
+                    setStatus,
+                    newValues: {
                         siameseModelInitialized: true,
                         featureExtractorInitialized: true,
                         loadingState: {
@@ -143,8 +136,7 @@ export function useAnimalIdentification(): AnimalIdentification {
                             type: 'initializing',
                         },
                     },
-                    setStatus
-                );
+                });
             }
         }
     }, [model.isInitialized]);
@@ -206,13 +198,10 @@ export function useAnimalIdentification(): AnimalIdentification {
         });
 
         if (result) {
-            updateState(
-                {
-                    ...result,
-                },
-                setStatus
-            );
-            return;
+            checkForErrorAndUpdateState({
+                results: result,
+                setStatus,
+            });
         }
     }, [model]);
 
@@ -239,9 +228,8 @@ export function useAnimalIdentification(): AnimalIdentification {
                 );
             }
             // Avoid the first lag
-            if (statusRef.current.comparisonsCount === 0) await wait(100);
-            // try {
-            // checkIfInitialized(model.isInitialized);
+            if (statusRef.current.comparisonCount === 0) await wait(100);
+
             const results = await compareImages({
                 imageArray: imagesArray,
                 config: configRef.current,
@@ -249,39 +237,24 @@ export function useAnimalIdentification(): AnimalIdentification {
                 initializeModel,
             });
 
-            if ('error' in results) {
-                updateState(
-                    {
+            if (results) {
+                checkForErrorAndUpdateState({
+                    results,
+                    setStatus,
+                    newValues: {
+                        comparisonCount: statusRef.current.comparisonCount + 1,
                         ...results,
+                        loadingState: {
+                            message: `Comparaison ${
+                                statusRef.current.comparisonCount + 1
+                            } terminée`,
+                            isLoading: 'done',
+                            type: 'comparison',
+                        },
                     },
-                    setStatus
-                );
-                return results;
+                });
             }
-
-            updateState(
-                {
-                    comparisonsCount: statusRef.current.comparisonsCount + 1,
-                    ...results,
-                    loadingState: {
-                        message: `Comparaison ${
-                            statusRef.current.comparisonsCount + 1
-                        } terminée`,
-                        isLoading: 'done',
-                        type: 'comparison',
-                    },
-                },
-                setStatus
-            );
             return results;
-            // } catch (error) {
-            //     updateStatus({
-            //         error: {
-            //             status: 'error',
-            //             message: `Erreur lors de la comparaison: ${error.message}`,
-            //         },
-            //     });
-            // }
         },
         [model]
     );
@@ -318,29 +291,53 @@ export function useAnimalIdentification(): AnimalIdentification {
         }
     }, [model.isInitialized, statusRef.current.trainingPairs]);
 
-    // Sauvegarder le modèle
-    const saveModel = useCallback(
+    /**
+     * Saves the current model localy as Local Storage.
+     *
+     * @description This will create a JSON compatible array
+     */
+    const saveModelToLocalStorage = useCallback(
         async (name = null) => {
-            try {
-                checkIfInitialized(model.isInitialized);
-                save({
-                    name,
-                    status: statusRef.current,
+            console.log('Sauvegarde du modèle en cours...');
+            updateState(
+                {
+                    loadingState: {
+                        message: 'Sauvegarde locale du modèle...',
+                        isLoading: 'savingToFile',
+                        type: 'savingToFile',
+                    },
+                },
+                setStatus
+            );
+
+            // Ensure the loader can be displayed
+            // then removed properly
+            // await wait(100);
+
+            const results = await saveModelAsLocal({
+                name,
+                status: statusRef.current,
+                model,
+                config: configRef.current,
+            });
+
+            if (results) {
+                await wait(100);
+
+                checkForErrorAndUpdateState({
+                    results,
                     setStatus,
-                    model,
-                    config: configRef.current,
-                });
-            } catch (error) {
-                updateState(
-                    {
-                        error: {
-                            status: 'error',
-                            message: `Erreur lors de la sauvegarde: ${error.message}`,
+                    newValues: {
+                        loadingState: {
+                            message: 'Succès de la sauvegarde locale',
+                            isLoading: 'done',
+                            type: 'savingToFile',
                         },
                     },
-                    setStatus
-                );
+                });
             }
+
+            return results;
         },
         [
             model.featureExtractor,
@@ -393,29 +390,27 @@ export function useAnimalIdentification(): AnimalIdentification {
                 config: configRef.current,
                 isInitialized: model.isInitialized,
             });
+
             if (pair) {
-                if ('error' in pair) {
-                    updateState(
-                        {
-                            ...pair,
-                        },
-                        setStatus
-                    );
-                    return;
-                }
-                updateState(
-                    {
-                        trainingPairs: pair.trainingPair as TrainingPair[],
+                checkForErrorAndUpdateState({
+                    results: pair,
+                    setStatus,
+                    newValues: {
+                        trainingPairs:
+                            'trainingPair' in pair
+                                ? (pair.trainingPair as TrainingPair[])
+                                : undefined,
                         pairsArrayForSaving:
-                            pair.pairArrayForSaving as PairArrayForSaving[],
+                            'pairArrayForSaving' in pair
+                                ? (pair.pairArrayForSaving as PairArrayForSaving[])
+                                : undefined,
                         loadingState: {
                             message: "Paire d'entraînement ajoutée avec succès",
                             isLoading: 'done',
                             type: 'adding',
                         },
                     },
-                    setStatus
-                );
+                });
             }
         },
         [model.isInitialized]
@@ -446,33 +441,17 @@ export function useAnimalIdentification(): AnimalIdentification {
         });
 
         if (results) {
-            if (
-                'error' in results &&
-                results.error?.status.toString() === '404'
-            ) {
-                // Helps the toaster to be able to show the message
-                await wait(100);
-                updateState(
-                    {
-                        ...results,
-                        localStorageDataLoaded: true,
-                    },
-                    setStatus
-                );
-                return;
-            }
-            updateState(
-                {
-                    ...results,
+            checkForErrorAndUpdateState({
+                results: { ...results, localStorageDataLoaded: true },
+                setStatus,
+                newValues: {
                     loadingState: {
                         message: 'Données image chargées',
                         isLoading: 'done',
                         type: 'storage',
                     },
-                    localStorageDataLoaded: true,
                 },
-                setStatus
-            );
+            });
         }
     }, [
         model.isInitialized,
@@ -643,7 +622,7 @@ export function useAnimalIdentification(): AnimalIdentification {
         compareAnimals,
         // findMatches,
         resetModel,
-        saveModel,
+        saveModelToLocalStorage,
         loadModel,
     };
 }
