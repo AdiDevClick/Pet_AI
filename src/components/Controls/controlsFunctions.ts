@@ -16,14 +16,19 @@ export function loadNewImages({
     setPredictionsCount(0);
 }
 
-export async function saveModel({ e }) {
+export async function saveModel({ e, ...functionProps }) {
     e.preventDefault();
-
+    console.log(functionProps);
     try {
-        await window.animalIdentifier.saveModel();
-        alert('💾 Modèle sauvegardé avec succès!');
+        const result = await functionProps.saveModelToLocalStorage();
+        if (!result.status) {
+            throw new Error(`Erreur de sauvegarde: ${result.message}`, {
+                cause: { status: result.status, message: result.message },
+            });
+        }
+        console.log(result);
+        // alert(`💾 Modèle sauvegardé avec succès! ${result}`);
     } catch (error) {
-        console.error('Erreur de sauvegarde:', error);
         alert('❌ Erreur lors de la sauvegarde du modèle');
     }
 }
