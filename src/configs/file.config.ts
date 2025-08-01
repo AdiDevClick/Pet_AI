@@ -20,3 +20,21 @@ export const FILE_SIZE_LIMIT_EXCEEDED_ERROR = `Le fichier dépasse la taille max
 /** Error message for unsupported file MIME type */
 export const FILE_MIME_NOT_ACCEPTED_ERROR =
     "Ce type de fichier n'est pas autorisé, veuillez n'utiliser que des .JPEG, .JPG ou .PNG";
+
+/**
+ * SAVE AND LOAD CONFIGURATION VARIABLES
+ * @description This configuration is used to save and load the model and data.
+ * It includes the file name, file type, and the maximum file size.
+ */
+
+/** Properties to save from model config to insert into the metadatas */
+export const METADATA_PROPERTIES_FROM_CONFIG = [
+    'imageSize',
+    'featureSize',
+    'taskName',
+] as const;
+/** Properties to save from feature artifacts */
+export const ARTIFACTS_PROPERTIES_FROM_ARTIFACTS = [
+    'modelTopology',
+    'weightSpecs',
+] as const;
