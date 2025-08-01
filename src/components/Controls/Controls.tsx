@@ -6,6 +6,7 @@ import { AlertDialogButton } from '@/components/Alerts/AlertDialogButton';
 import { Button } from '@/components/Buttons/Button';
 import type { ControlsStateTypes } from '@/components/Controls/controlsTypes.ts';
 import { clickableButtons, functionProps } from '@/configs/controls.config.ts';
+import { useDownloadFileFromData } from '@/hooks/download/useDownloadFileFromData.ts';
 import type { contextTypes } from '@/mainTypes.ts';
 import '@css/controls.scss';
 import { memo, use, useState } from 'react';
@@ -22,29 +23,41 @@ import { useOutletContext } from 'react-router-dom';
 export const MemoizedControls = memo(function Controls({
     buttons = clickableButtons,
 }) {
-    const context: contextTypes = useOutletContext();
-    const contextActions = use(AnimalActionsContext);
-
-    const [isSuccess, setIsSuccess] = useState<ControlsStateTypes>({
+    const [buttonState, setButtonState] = useState<ControlsStateTypes>({
         status: false,
+        openModal: false,
+        download: { state: false, data: null },
         id: null,
         error: null,
     });
+
+    const context: contextTypes = useOutletContext();
+    const contextActions = use(AnimalActionsContext);
+
+    useDownloadFileFromData({
+        data: buttonState.download.data,
+        setState: setButtonState,
+        fileName: 'Animal.json',
+    });
+
     Object.assign(functionProps, {
         ...context,
-        setIsSuccess,
+        setButtonState,
         ...contextActions,
     });
+
     return (
         <section className="controls">
             {buttons.map((button, index) => (
                 <AlertDialogButton
                     key={`alert-${index}`}
-                    open={!isSuccess.status && isSuccess.id === button.id}
+                    open={
+                        !buttonState.openModal && buttonState.id === button.id
+                    }
                     onOpenChange={() =>
-                        setIsSuccess((prev) => ({
+                        setButtonState((prev) => ({
                             ...prev,
-                            status: !prev.status,
+                            openModal: !prev.openModal,
                         }))
                     }
                     context={
@@ -53,9 +66,9 @@ export const MemoizedControls = memo(function Controls({
                         button.context.error
                             ? {
                                   ...button.context.error,
-                                  error: isSuccess.error,
+                                  error: buttonState.error,
                               }
-                            : { error: isSuccess.error }
+                            : { error: buttonState.error }
                     }
                 >
                     <Button
