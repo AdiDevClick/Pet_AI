@@ -2,10 +2,16 @@ import * as tf from '@tensorflow/tfjs';
 import type {
     AddTrainingPairToModelProps,
     AddTrainingPairToModelResults,
+    ArtifactProperties,
+    CheckForErrorAndUpdateStateProps,
+    CheckIfModelsFoundProps,
     CompareImagesProps,
     CompareImagesResults,
+    CreateCompleteDataStructureProps,
+    CreateCompleteDataStructureResults,
     CreateFeatureExtractorProps,
     CreateFeatureExtractorResult,
+    CreatePropertiesFromItemProps,
     CreateSiameseModelProps,
     CreateSiameseModelResults,
     GetDataBalanceProps,
@@ -15,14 +21,24 @@ import type {
     LoadImageElementProps,
     LoadStorageDataProps,
     LoadStorageDataResults,
-    PairsArrayForSaving,
+    MetadataProperties,
+    PairArrayForSaving,
     PreprocessImageProps,
     PreprocessImageResults,
+    SaveModelArtifactsProps,
+    SaveModelAsLocalProps,
+    SaveModelAsLocalResults,
+    SaveTrainingPairsProps,
     TrainingPair,
     TrainModelProps,
     TrainModelResults,
 } from '@/hooks/models/useAnimalIdentificationTypes.ts';
 import type { CustomError } from '@/mainTypes.ts';
+import {
+    ARTIFACTS_PROPERTIES_FROM_ARTIFACTS,
+    METADATA_PROPERTIES_FROM_CONFIG,
+} from '@/configs/file.config.ts';
+import { updateState } from '@/lib/utils.ts';
 
 /**
  * Get the data balance of the training pairs.
@@ -104,9 +120,9 @@ export async function loadStorageData({
     trainingPairs = [],
 }: LoadStorageDataProps): Promise<LoadStorageDataResults> {
     const tensorPairs: TrainingPair[] = [];
-    const savingPairs: PairsArrayForSaving[] = [];
+    const savingPairs: PairArrayForSaving[] = [];
     try {
-        if (!trainingPairs) {
+        if (!trainingPairs || trainingPairs.length === 0) {
             throw new Error(
                 "Aucune paire d'entraînement trouvée dans le stockage local",
                 {
@@ -143,8 +159,10 @@ export async function loadStorageData({
                         })
                     );
                 }
-                tensorPairs.push(pairs.trainingPairs);
-                savingPairs.push(pairs.pairsArrayForSaving);
+                tensorPairs.push(pairs.trainingPair as TrainingPair);
+                savingPairs.push(
+                    pairs.pairArrayForSaving as PairArrayForSaving
+                );
             })
         );
 
@@ -797,7 +815,7 @@ export async function compareImages({
     initializeModel,
 }: CompareImagesProps): Promise<CompareImagesResults> {
     try {
-        if (!model.siameseModel || !model.isInitialized) {
+        if (!model.isInitialized) {
             initializeModel();
             checkIfInitialized(model.isInitialized);
         }
@@ -864,113 +882,363 @@ export async function compareImages({
     }
 }
 
-export function saveTrainingPairs({ config, status, updateStatus }) {
+/**
+ * Save training pairs to local storage.
+ *
+ * @description This function saves the training pairs to local storage.
+ *
+ * @param config - The configuration object for the model, including local storage key.
+ * @param status - The current status of the model, including pairs to be saved.
+ * @return An object containing the status and message of the save operation.
+ * @ThrowsError If an error occurs during the save operation.
+ *
+ * @example
+ * > **Successful result:**
+ * > ```json
+ * > {
+ * >   "status": 200,
+ * >   "message": "Paires d’entraînement sauvegardées avec succès"
+ * > }
+ *
+ * > **Error case:**
+ * > ```json
+ * > {
+ * >   "status": 500,
+ * >   "message": "Erreur lors de la sauvegarde des paires d'entraînement"
+ * > }
+ * ```
+ */
+export function saveTrainingPairs({
+    config,
+    status,
+}: SaveTrainingPairsProps): SaveModelAsLocalResults {
     try {
         localStorage.setItem(
             config.localStorageKey,
             JSON.stringify(status.pairsArrayForSaving)
         );
-        console.log("💾 Paires d'entraînement sauvegardées");
+        return {
+            status: 200,
+            message: 'Sauvegarde locale des paires d’entraînement réussie',
+        };
     } catch (error) {
-        updateStatus({
+        return {
             error: {
+                status: (error as CustomError).cause?.status || 500,
                 message:
-                    "❌ Erreur lors de la sauvegarde des paires d'entraînement:" +
-                    error.message,
-                status: error.cause?.status || 500,
+                    (error as CustomError).message ||
+                    "Erreur lors de la sauvegarde des paires d'entraînement",
             },
-        });
+        };
     }
 }
 
-export async function save({
-    name = null,
+/**
+ * Save model artifacts to a specified location.
+ *
+ * @param modelTosave - The parameters for saving model artifacts.
+ * @returns A promise that resolves to the saved model artifacts.
+ */
+export async function saveModelArtifacts({
+    modelTosave,
+}: SaveModelArtifactsProps): Promise<tf.io.ModelArtifacts> {
+    const handler = tf.io.withSaveHandler(
+        async (artifacts: tf.io.ModelArtifacts) => ({
+            modelArtifactsInfo: {
+                dateSaved: new Date(),
+                modelTopologyType: 'JSON',
+            },
+            ...artifacts,
+        })
+    );
+    return (await modelTosave.save(handler)) as tf.io.ModelArtifacts;
+}
+
+/**
+ * Save the model as a JSON file.
+ * 
+ * @description This function saves the model as a JSON file,
+ * including metadata and model artifacts. 
+ * It also saves the training pairs to local storage.
+ * 
+ * @param name - The name of the model to be saved.
+ * @param status - The current status of the model, including training pairs and comparisons.
+ * @param model - The model object containing the Siamese model and feature extractor.
+ * @param config - The configuration object for the model, including task name and image size.
+
+ * @returns A promise that resolves to the result of the save operation.
+ * @example
+ * > **Successful result:**
+ * > ```json
+ * > {
+ * >   "status": 200,
+ * >   "message": "Modèle sauvegardé avec succès"
+ * > }
+ * > ```
+ * 
+ * > **Error case:**
+ * > ```json
+ * > {
+ * >   "status": 500,
+ * >   "message": "Erreur lors de la sauvegarde du modèle"
+ * > }
+ * ```
+ */
+export async function saveModelAsLocal({
+    name = 'IAModelSave',
     status,
-    updateStatus,
-    // featureExtractor,
-    // siameseModel,
     model,
     config,
-}) {
+}: SaveModelAsLocalProps): Promise<SaveModelAsLocalResults> {
     try {
-        if (!model.siameseModel || !model.featureExtractor) {
-            throw new Error('⚠️ Aucun modèle à sauvegarder', {
+        // Throws error if model is not initialized
+        // or models are not found
+        checkIfInitialized(model.isInitialized);
+        checkIfModelsFound({
+            siameseModel: model.siameseModel,
+            featureExtractor: model.featureExtractor,
+        });
+
+        const modelName = name || config.taskName;
+
+        // Data capture for the models
+        const siameseArtifacts = await saveModelArtifacts({
+            modelTosave: model.siameseModel!,
+        });
+        const featureArtifacts = await saveModelArtifacts({
+            modelTosave: model.featureExtractor!,
+        });
+        if (!siameseArtifacts || !featureArtifacts) {
+            throw new Error('Échec de la sauvegarde des artefacts du modèle', {
                 cause: {
-                    status: 404,
-                    message: 'Model not found',
+                    status: 500,
+                    message: 'Failed to save model artifacts',
                 },
             });
         }
+        // Create object to save
+        const modelData = createCompleteDataStructure({
+            siameseArtifacts,
+            featureArtifacts,
+            config,
+            status,
+            modelName,
+        });
 
-        const modelName = name || `animal-identifier-${config.taskName}`;
-        // Utiliser un IOHandler personnalisé pour capturer les données
-        const siameseHandler = tf.io.withSaveHandler(
-            async (artifacts) => artifacts
-        );
-        const featureHandler = tf.io.withSaveHandler(
-            async (artifacts) => artifacts
-        );
+        if ('error' in modelData) {
+            throw new Error('Échec de la création de la structure de données', {
+                cause: {
+                    status: 500,
+                    message: 'Failed to create model data structure',
+                },
+            });
+        }
+        // // Créer et télécharger le fichier JSON
+        // const jsonString = JSON.stringify(modelData, null, 2);
+        // const blob = new Blob([jsonString], { type: 'application/json' });
+        // const url = URL.createObjectURL(blob);
 
-        const siameseArtifacts = await model.siameseModel.save(siameseHandler);
-        const featureArtifacts = await model.featureExtractor.save(
-            featureHandler
-        );
-
-        // Créer l'objet de données complet
-        const modelData = {
-            metadata: {
-                name: modelName,
-                taskName: config.taskName,
-                timestamp: new Date().toISOString(),
-                imageSize: config.imageSize,
-                featureSize: config.featureSize,
-                trainingPairsCount: status.trainingPairs.length,
-                comparisonCount: status.comparisonsCount,
-            },
-            siameseModel: {
-                modelTopology: siameseArtifacts.modelTopology,
-                weightSpecs: siameseArtifacts.weightSpecs,
-                weightData: Array.from(
-                    new Uint8Array(siameseArtifacts.weightData)
-                ),
-            },
-            featureExtractor: {
-                modelTopology: featureArtifacts.modelTopology,
-                weightSpecs: featureArtifacts.weightSpecs,
-                weightData: Array.from(
-                    new Uint8Array(featureArtifacts.weightData)
-                ),
-            },
-        };
-
-        // Créer et télécharger le fichier JSON
-        const jsonString = JSON.stringify(modelData, null, 2);
-        const blob = new Blob([jsonString], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${modelName}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        // const a = document.createElement('a');
+        // a.href = url;
+        // a.download = `${modelName}.json`;
+        // document.body.appendChild(a);
+        // a.click();
+        // document.body.removeChild(a);
+        // URL.revokeObjectURL(url);
 
         // Save the model to local storage for quick access
-        saveTrainingPairs({ config, status, updateStatus });
+        const results = saveTrainingPairs({ config, status });
 
-        console.log(`💾 Modèle sauvegardé: ${modelName}.json`);
+        if ('error' in results) {
+            throw new Error(results.message, {
+                cause: {
+                    status: results.error?.status,
+                    message: results.error?.message,
+                },
+            });
+        }
+        console.log(`💾 Modèle sauvegardé localement: ${modelName}.json`);
         console.log(
             '📁 Le fichier sera téléchargé dans votre dossier de téléchargements'
         );
+        return results;
     } catch (error) {
-        throw new Error('Erreur lors de la sauvegarde du modèle ', {
-            cause: {
-                status: error.status || 500,
-                message: error.message || 'Model not found',
+        return {
+            error: {
+                status: (error as CustomError).cause?.status || 500,
+                message:
+                    (error as CustomError).message ||
+                    'Erreur lors de la sauvegarde du modèle',
             },
-        });
+        };
     }
+}
+
+/**
+ * Creates a complete data structure for the model.
+ * ready to be saved or used in JSON Format.
+ *
+ * @description This function creates a complete data structure for the model,
+ *
+ * @param siameseArtifacts - The artifacts of the Siamese model.
+ * @param featureArtifacts - The artifacts of the feature extractor model.
+ * @param config - The configuration object for the model.
+ * @param status - The current status of the model, including training pairs and comparisons.
+ * @param modelName - The name of the model.
+ *
+ * @returns The complete data structure for the model.
+ */
+function createCompleteDataStructure({
+    siameseArtifacts,
+    featureArtifacts,
+    config,
+    status,
+    modelName,
+}: CreateCompleteDataStructureProps): CreateCompleteDataStructureResults {
+    try {
+        const metadataProperties = createPropertiesFromItem({
+            item: config,
+            configVariable: METADATA_PROPERTIES_FROM_CONFIG,
+        });
+        const siameseProperties = createPropertiesFromItem({
+            item: siameseArtifacts,
+            configVariable: ARTIFACTS_PROPERTIES_FROM_ARTIFACTS,
+        });
+        const featureProperties = createPropertiesFromItem({
+            item: featureArtifacts,
+            configVariable: ARTIFACTS_PROPERTIES_FROM_ARTIFACTS,
+        });
+        const modelData = {
+            metadata: {
+                name: modelName,
+                timestamp: new Date().toISOString(),
+                trainingPairsCount: status.trainingPairs.length,
+                comparisonCount: status.comparisonCount,
+                ...metadataProperties,
+            },
+            siameseModel: {
+                weightData: arrayBufferToBase64(
+                    siameseArtifacts.weightData as ArrayBuffer
+                ),
+                // weightData: Array.from(
+                //     new Uint8Array(siameseArtifacts.weightData)
+                // ),
+                // weightData: btoa(
+                //     String.fromCharCode(
+                //         ...new Uint8Array(
+                //             siameseArtifacts.weightData as ArrayBuffer
+                //         )
+                //     )
+                // ),
+                ...siameseProperties,
+            },
+            featureExtractor: {
+                weightData: arrayBufferToBase64(
+                    featureArtifacts.weightData as ArrayBuffer
+                ),
+
+                // weightData: Array.from(
+                //     new Uint8Array(featureArtifacts.weightData)
+                // ),
+                // weightData: btoa(
+                //     String.fromCharCode(
+                //         ...new Uint8Array(
+                //             featureArtifacts.weightData as ArrayBuffer
+                //         )
+                //     )
+                // ),
+                ...featureProperties,
+            },
+        };
+        return modelData;
+    } catch (error) {
+        return {
+            error: {
+                message: (error as CustomError).message || 'Erreur inconnue',
+                status: 500,
+            },
+        };
+    }
+}
+
+/**
+ * Converts an ArrayBuffer to a Base64 string.
+ *
+ * @param buffer - The ArrayBuffer to convert.
+ * @returns The Base64 string representation of the ArrayBuffer.
+ */
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const chunkSize = 0x8000; // 32k
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+        binary += String.fromCharCode.apply(
+            null,
+            Array.from(bytes.subarray(i, i + chunkSize))
+        );
+    }
+    return btoa(binary);
+}
+
+/**
+ * Returns a record of properties from the item based on the provided configuration variable.
+ *
+ * @param item - The item from which to create properties.
+ * @description This function creates properties from the item based on the provided configuration variable.
+ * It filters the item's properties to include only those that are present in the config variable.
+ * @param configVariable - The configuration variable that determines which properties to include.
+ * @returns A record containing the filtered properties.
+ */
+function createPropertiesFromItem({
+    item,
+    configVariable,
+}: CreatePropertiesFromItemProps): Partial<
+    ArtifactProperties | MetadataProperties
+> {
+    return Object.fromEntries(
+        Object.entries(item).filter(([key]) =>
+            configVariable.includes(key as (typeof configVariable)[number])
+        )
+    );
+}
+
+/**
+ * Checks for errors in the results and updates the state accordingly.
+ *
+ * @description A small `Timeout 100ms` is added to ensure
+ * the loader can be displayed in certain circumstances.
+ *
+ * @param results - The results object containing the data to update the state.
+ * @param setStatus - The setter function to update the state.
+ * @param newValues - Additional values to merge into the results before updating the state.
+ * @returns A promise that resolves when the state is updated.
+ */
+export async function checkForErrorAndUpdateState<
+    T extends Record<string, unknown>
+>({
+    results,
+    setStatus,
+    newValues = {},
+}: CheckForErrorAndUpdateStateProps<T>): Promise<void> {
+    if ('error' in results) {
+        // Ensure the loader can be displayed
+        // in certain circumstances
+        // await wait(100);
+        updateState(
+            {
+                ...results,
+            },
+            setStatus
+        );
+        return;
+    }
+    updateState(
+        {
+            ...results,
+            ...newValues,
+        },
+        setStatus
+    );
 }
 
 // export function reset({ status, setStatus }) {
@@ -1005,7 +1273,7 @@ export async function save({
  * If not, it throws an error with a specific message and status code.
  *
  * @param isInitialized - A boolean indicating if the model is initialized.
- * @throws {Error} If the model is not initialized.
+ * @throwsError `400` If the model is not initialized.
  */
 export function checkIfInitialized(isInitialized = false) {
     if (!isInitialized) {
@@ -1013,6 +1281,27 @@ export function checkIfInitialized(isInitialized = false) {
             cause: {
                 status: 400,
                 message: 'System not initialized',
+            },
+        });
+    }
+}
+
+/**
+ * Checks if the siamese & feature extractor models are found.
+ *
+ * @param siameseModel - Siamese model.
+ * @param featureExtractor - Feature extractor.
+ * @throwsError `404` If the models are not found.
+ */
+export function checkIfModelsFound({
+    siameseModel,
+    featureExtractor,
+}: CheckIfModelsFoundProps) {
+    if (!siameseModel || !featureExtractor) {
+        throw new Error('Modèles non trouvés', {
+            cause: {
+                status: 404,
+                message: 'Models not found',
             },
         });
     }
@@ -1026,14 +1315,10 @@ export async function loadModelFromData({
 }) {
     try {
         // Vérifier la structure des données
-        if (!modelData.siameseModel || !modelData.featureExtractor) {
-            throw new Error('Structure de données invalide', {
-                cause: {
-                    status: 400,
-                    message: 'Invalid data structure',
-                },
-            });
-        }
+        checkIfModelsFound({
+            siameseModel: modelData.siameseModel,
+            featureExtractor: modelData.featureExtractor,
+        });
 
         // Restaurer les métadonnées si disponibles
         if (modelData.metadata) {
@@ -1041,70 +1326,75 @@ export async function loadModelFromData({
             config.imageSize = modelData.metadata.imageSize || config.imageSize;
             config.featureSize =
                 modelData.metadata.featureSize || config.featureSize;
-            console.log(
-                `📋 Métadonnées restaurées: ${modelData.metadata.name}`
+            // Reconvertir les données de poids
+            function base64ToArrayBuffer(base64: string): ArrayBuffer {
+                const binaryString = atob(base64);
+                const len = binaryString.length;
+                const bytes = new Uint8Array(len);
+                for (let i = 0; i < len; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                return bytes.buffer;
+            }
+            const siameseWeightData = base64ToArrayBuffer(
+                modelData.siameseModel.weightData
             );
+            const featureWeightData = base64ToArrayBuffer(
+                modelData.featureExtractor.weightData
+            );
+
+            // Créer des IOHandlers personnalisés pour le chargement
+            const featureHandler = {
+                load: async () => ({
+                    modelTopology: modelData.featureExtractor.modelTopology,
+                    weightSpecs: modelData.featureExtractor.weightSpecs,
+                    weightData: featureWeightData,
+                    format: 'layers-model',
+                    generatedBy: 'TensorFlow.js',
+                    convertedBy: 'useAnimalIdentificationHook',
+                    userDefinedMetadata: {},
+                }),
+            };
+
+            const siameseHandler = {
+                load: async () => ({
+                    modelTopology: modelData.siameseModel.modelTopology,
+                    weightSpecs: modelData.siameseModel.weightSpecs,
+                    weightData: siameseWeightData,
+                    format: 'layers-model',
+                    generatedBy: 'TensorFlow.js',
+                    convertedBy: 'useAnimalIdentificationHook',
+                    userDefinedMetadata: {},
+                }),
+            };
+
+            console.log('🔄 Chargement du feature extractor...');
+
+            const featureExtractor = await tf.loadLayersModel(featureHandler);
+            console.log('✅ Feature extractor chargé');
+
+            console.log('🔄 Chargement du modèle siamois...');
+            const siameseModel = await tf.loadLayersModel(siameseHandler);
+            console.log('✅ Modèle siamois chargé');
+
+            siameseModel.compile({
+                optimizer: config.optimizer || tf.train.adam(0.0001),
+                loss: config.loss || 'binaryCrossentropy',
+                metrics: config.metrics || ['accuracy'],
+            });
+            setModel(async (prev) => ({
+                ...prev,
+                siameseModel,
+                isInitialized: true,
+                featureExtractor,
+            }));
+            const modelName = modelData.metadata?.name || 'modèle-chargé';
+
+            // this.loadData();
+
+            console.log(`📂 Modèle chargé avec succès: ${modelName}`);
+            return true;
         }
-
-        // Reconvertir les données de poids
-        const siameseWeightData = new Uint8Array(
-            modelData.siameseModel.weightData
-        ).buffer;
-        const featureWeightData = new Uint8Array(
-            modelData.featureExtractor.weightData
-        ).buffer;
-
-        // Créer des IOHandlers personnalisés pour le chargement
-        const featureHandler = {
-            load: async () => ({
-                modelTopology: modelData.featureExtractor.modelTopology,
-                weightSpecs: modelData.featureExtractor.weightSpecs,
-                weightData: featureWeightData,
-                format: 'layers-model',
-                generatedBy: 'TensorFlow.js',
-                convertedBy: 'useAnimalIdentificationHook',
-                userDefinedMetadata: {},
-            }),
-        };
-
-        const siameseHandler = {
-            load: async () => ({
-                modelTopology: modelData.siameseModel.modelTopology,
-                weightSpecs: modelData.siameseModel.weightSpecs,
-                weightData: siameseWeightData,
-                format: 'layers-model',
-                generatedBy: 'TensorFlow.js',
-                convertedBy: 'useAnimalIdentificationHook',
-                userDefinedMetadata: {},
-            }),
-        };
-
-        console.log('🔄 Chargement du feature extractor...');
-
-        const featureExtractor = await tf.loadLayersModel(featureHandler);
-        console.log('✅ Feature extractor chargé');
-
-        console.log('🔄 Chargement du modèle siamois...');
-        const siameseModel = await tf.loadLayersModel(siameseHandler);
-        console.log('✅ Modèle siamois chargé');
-
-        siameseModel.compile({
-            optimizer: config.optimizer || tf.train.adam(0.0001),
-            loss: config.loss || 'binaryCrossentropy',
-            metrics: config.metrics || ['accuracy'],
-        });
-        setModel(async (prev) => ({
-            ...prev,
-            siameseModel,
-            isInitialized: true,
-            featureExtractor,
-        }));
-        const modelName = modelData.metadata?.name || 'modèle-chargé';
-
-        // this.loadData();
-
-        console.log(`📂 Modèle chargé avec succès: ${modelName}`);
-        return true;
     } catch (error) {
         updateStatus({
             error: {
