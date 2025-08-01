@@ -28,7 +28,8 @@ import type {
     SaveModelArtifactsProps,
     SaveModelAsLocalProps,
     SaveModelAsLocalResults,
-    SaveTrainingPairsProps,
+    SaveModelToFileProps,
+    SaveModelToFileResults,
     TrainingPair,
     TrainModelProps,
     TrainModelResults,
@@ -38,7 +39,7 @@ import {
     ARTIFACTS_PROPERTIES_FROM_ARTIFACTS,
     METADATA_PROPERTIES_FROM_CONFIG,
 } from '@/configs/file.config.ts';
-import { updateState } from '@/lib/utils.ts';
+import { updateState, wait } from '@/lib/utils.ts';
 
 /**
  * Get the data balance of the training pairs.
@@ -356,18 +357,14 @@ export function preprocessImage({
  * > **Successful result:**
  * > ```json
  * > {
- * >   "pairsArrayForSaving": [
- * >     { "image1Url": "url1", "image2Url": "url2", "isSameAnimal": true }
- * >   ],
- * >   "trainingPairs": [
- * >     { "image1": "tensor1", "image2": "tensor2", "label": 1 }
- * >   ]
+ * >   "extractor": featureExtractor,
+ * >   "success": true
  * > }
  *
  * > **Error case:**
  * > ```json
  * > {
- * >   "error": { "message": "Message d'erreur", "status": 500 }
+ * >   "success": false
  * > }
  *  ```
  */
@@ -569,7 +566,8 @@ export function createSiameseModel({
  * @example
  * > **Successful result:**
  * > ```json
- * > { "siameseModel": "model",
+ * > {
+ * >   "siameseModel": "model",
  * >   "featureExtractor": "extractor",
  * >   "isInitialized": true
  * > }
@@ -577,7 +575,10 @@ export function createSiameseModel({
  * > **Error case:**
  * > ```json
  * > {
- * >   "error": { "message": "Error message", "status": 500 }
+ * >   "error": {
+ * >     "status": 500,
+ * >     "message": "Feature extraction failed"
+ * >   }
  * > }
  *  ```
  */
@@ -804,7 +805,10 @@ function isTensor4D(tensor: unknown): tensor is tf.Tensor4D {
  * > **Error case:**
  * > ```json
  * > {
- * >   "error": { "message": "Message d'erreur", "status": 500 }
+ * >   "error": {
+ * >     "status": 404,
+ * >     "message": "Siamese model not found"
+ * >   }
  * > }
  * ```
  */
@@ -903,35 +907,49 @@ export async function compareImages({
  * > **Error case:**
  * > ```json
  * > {
- * >   "status": 500,
- * >   "message": "Erreur lors de la sauvegarde des paires d'entraînement"
+ * >   "error": {
+ * >     "status": 404,
+ * >     "message": "Aucune paire d'entraînement à sauvegarder"
+ * >   }
  * > }
  * ```
  */
-export function saveTrainingPairs({
-    config,
-    status,
-}: SaveTrainingPairsProps): SaveModelAsLocalResults {
-    try {
-        localStorage.setItem(
-            config.localStorageKey,
-            JSON.stringify(status.pairsArrayForSaving)
-        );
-        return {
-            status: 200,
-            message: 'Sauvegarde locale des paires d’entraînement réussie',
-        };
-    } catch (error) {
-        return {
-            error: {
-                status: (error as CustomError).cause?.status || 500,
-                message:
-                    (error as CustomError).message ||
-                    "Erreur lors de la sauvegarde des paires d'entraînement",
-            },
-        };
-    }
-}
+// export function saveTrainingPairs({
+//     config,
+//     status,
+// }: SaveTrainingPairsProps): SaveModelAsLocalResults {
+//     try {
+//         if (
+//             !status.pairsArrayForSaving ||
+//             status.pairsArrayForSaving.length === 0
+//         ) {
+//             throw new Error("Aucune paire d'entraînement à sauvegarder", {
+//                 cause: {
+//                     status: 404,
+//                     message: 'No training pairs to save were found',
+//                 },
+//             });
+//         }
+
+//         localStorage.setItem(
+//             config.localStorageKey,
+//             JSON.stringify(status.pairsArrayForSaving)
+//         );
+//         return {
+//             status: 200,
+//             message: 'Sauvegarde locale des paires d’entraînement réussie',
+//         };
+//     } catch (error) {
+//         return {
+//             error: {
+//                 status: (error as CustomError).cause?.status || 500,
+//                 message:
+//                     (error as CustomError).cause?.message ||
+//                     "Erreur lors de la sauvegarde des paires d'entraînement",
+//             },
+//         };
+//     }
+// }
 
 /**
  * Save model artifacts to a specified location.
@@ -955,18 +973,17 @@ export async function saveModelArtifacts({
 }
 
 /**
- * Save the model as a JSON file.
- * 
+ * Save training pairs to local storage.
+ *
  * @description This function saves the model as a JSON file,
- * including metadata and model artifacts. 
+ * including metadata and model artifacts.
  * It also saves the training pairs to local storage.
- * 
- * @param name - The name of the model to be saved.
+ *
  * @param status - The current status of the model, including training pairs and comparisons.
  * @param model - The model object containing the Siamese model and feature extractor.
  * @param config - The configuration object for the model, including task name and image size.
-
- * @returns A promise that resolves to the result of the save operation.
+ *
+ * @returns An object containing the status and message of the save operation.
  * @example
  * > **Successful result:**
  * > ```json
@@ -975,24 +992,67 @@ export async function saveModelArtifacts({
  * >   "message": "Modèle sauvegardé avec succès"
  * > }
  * > ```
- * 
+ *
  * > **Error case:**
  * > ```json
  * > {
- * >   "status": 500,
- * >   "message": "Erreur lors de la sauvegarde du modèle"
+ * >   "error": {
+ * >     "status": 404,
+ * >     "message": "Aucune paire d'entraînement à sauvegarder"
+ * >   }
  * > }
  * ```
  */
-export async function saveModelAsLocal({
-    name = 'IAModelSave',
+export function saveModelAsLocal({
     status,
     model,
     config,
-}: SaveModelAsLocalProps): Promise<SaveModelAsLocalResults> {
+}: SaveModelAsLocalProps): SaveModelAsLocalResults {
     try {
         // Throws error if model is not initialized
-        // or models are not found
+        checkIfInitialized(model.isInitialized);
+
+        if (
+            !status.pairsArrayForSaving ||
+            status.pairsArrayForSaving.length === 0
+        ) {
+            throw new Error("Aucune paire d'entraînement à sauvegarder", {
+                cause: {
+                    status: 404,
+                    message: 'No training pairs to save were found',
+                },
+            });
+        }
+
+        localStorage.setItem(
+            config.localStorageKey,
+            JSON.stringify(status.pairsArrayForSaving)
+        );
+
+        return {
+            status: 200,
+            message: "Sauvegarde locale des paires d'entraînement réussie",
+        };
+    } catch (error) {
+        console.log(error);
+        return {
+            error: {
+                status: (error as CustomError).cause?.status || 500,
+                message:
+                    (error as CustomError).cause?.message ||
+                    'Erreur lors de la sauvegarde du modèle',
+            },
+        };
+    }
+}
+
+export async function saveModelToFile({
+    status,
+    name = 'IAModelSave',
+    model,
+    config,
+}: SaveModelToFileProps): Promise<SaveModelToFileResults> {
+    try {
         checkIfInitialized(model.isInitialized);
         checkIfModelsFound({
             siameseModel: model.siameseModel,
@@ -1033,41 +1093,20 @@ export async function saveModelAsLocal({
                 },
             });
         }
-        // // Créer et télécharger le fichier JSON
-        // const jsonString = JSON.stringify(modelData, null, 2);
-        // const blob = new Blob([jsonString], { type: 'application/json' });
-        // const url = URL.createObjectURL(blob);
 
-        // const a = document.createElement('a');
-        // a.href = url;
-        // a.download = `${modelName}.json`;
-        // document.body.appendChild(a);
-        // a.click();
-        // document.body.removeChild(a);
-        // URL.revokeObjectURL(url);
-
-        // Save the model to local storage for quick access
-        const results = saveTrainingPairs({ config, status });
-
-        if ('error' in results) {
-            throw new Error(results.message, {
-                cause: {
-                    status: results.error?.status,
-                    message: results.error?.message,
-                },
-            });
-        }
-        console.log(`💾 Modèle sauvegardé localement: ${modelName}.json`);
-        console.log(
-            '📁 Le fichier sera téléchargé dans votre dossier de téléchargements'
-        );
-        return results;
+        return {
+            modelData,
+            status: 200,
+            message: 'Modèle sauvegardé avec succès',
+            type: 'savingToFile',
+        };
     } catch (error) {
         return {
             error: {
+                type: 'savingToFile',
                 status: (error as CustomError).cause?.status || 500,
                 message:
-                    (error as CustomError).message ||
+                    (error as CustomError).cause?.message ||
                     'Erreur lors de la sauvegarde du modèle',
             },
         };
@@ -1223,7 +1262,7 @@ export async function checkForErrorAndUpdateState<
     if ('error' in results) {
         // Ensure the loader can be displayed
         // in certain circumstances
-        // await wait(100);
+        await wait(100);
         updateState(
             {
                 ...results,
