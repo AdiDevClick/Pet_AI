@@ -1,5 +1,10 @@
+import type {
+    ARTIFACTS_PROPERTIES_FROM_ARTIFACTS,
+    METADATA_PROPERTIES_FROM_CONFIG,
+} from '@/configs/file.config.ts';
 import type { CustomError } from '@/mainTypes.ts';
 import * as tf from '@tensorflow/tfjs';
+import type { Dispatch, SetStateAction } from 'react';
 
 export interface AnimalIdentification {
     model: ModelTypes;
@@ -47,6 +52,7 @@ export type LoadingStateIsLoading =
     | 'comparison'
     | 'done'
     | 'adding'
+    | 'savingToFile'
     | '';
 
 export type StatusTypes = {
@@ -59,7 +65,7 @@ export type StatusTypes = {
     featureExtractorInitialized: boolean;
     localStorageDataLoaded: boolean;
     trainingPairs: TrainingPair[];
-    comparisonsCount: number;
+    comparisonCount: number;
     accuracy: number | string;
     pairsArrayForSaving: PairArrayForSaving[];
     balance: { positive: number; negative: number; total: number };
@@ -181,7 +187,7 @@ export type TrainModelProps = {
     initializeModel: () => void;
 };
 
-export interface TrainModelResults {
+export interface TrainModelResults extends Record<string, unknown> {
     loadingState?: {
         message: string;
         isLoading: 'done';
@@ -203,3 +209,99 @@ export type CompareImagesResults =
           confidence: number;
       }
     | { error: StatusTypes['error'] };
+
+export type SaveTrainingPairsProps = {
+    config: ConfigTypes;
+    status: StatusTypes;
+};
+// export type SaveModelAsLocalResults = Record<string, unknown> & {
+//     success: boolean;
+//     message?: string;
+//     error?: {
+//         status: string | number;
+//         message: string;
+//     };
+// };
+export interface SaveModelAsLocalResults extends Record<string, unknown> {
+    status?: number;
+    message?: string;
+    error?: StatusTypes['error'];
+}
+// export type SaveTrainingPairsResults = Record<string, unknown> & {
+//     trainingPair?: TrainingPair[];
+//     pairArrayForSaving?: PairArrayForSaving[];
+//     error?: {
+//         status: string;
+//         message: string;
+//     };
+// };
+
+export type SaveModelAsLocalProps = {
+    name?: string | null;
+    status: StatusTypes;
+    model: ModelTypes;
+    config: ConfigTypes;
+};
+
+export type SaveModelArtifactsProps = {
+    modelTosave: tf.LayersModel;
+};
+
+// export type SaveAsFileResults = SaveModelAsLocalResults;
+
+export type CheckIfModelsFoundProps = {
+    siameseModel: ModelTypes['siameseModel'];
+    featureExtractor: ModelTypes['featureExtractor'];
+};
+
+export type CreateCompleteDataStructureProps = {
+    modelName: string;
+    siameseArtifacts: tf.io.ModelArtifacts;
+    featureArtifacts: tf.io.ModelArtifacts;
+    config: ConfigTypes;
+    status: StatusTypes;
+};
+export type MetadataProperties = {
+    name: string;
+    timestamp: string;
+    trainingPairsCount: number;
+    comparisonCount: number;
+} & Pick<
+    Partial<ConfigTypes>,
+    (typeof METADATA_PROPERTIES_FROM_CONFIG)[number]
+>;
+
+export type ArtifactProperties = {
+    weightData: string;
+} & Pick<
+    tf.io.ModelArtifacts,
+    (typeof ARTIFACTS_PROPERTIES_FROM_ARTIFACTS)[number]
+>;
+
+export type CreateCompleteDataStructureResults =
+    | {
+          metadata: MetadataProperties;
+          siameseModel: ArtifactProperties;
+          featureExtractor: ArtifactProperties;
+      }
+    | {
+          error: {
+              message: string;
+              status: number;
+          };
+      };
+
+export type CreatePropertiesFromItemProps = {
+    item: ConfigTypes | tf.io.ModelArtifacts;
+    configVariable: ReadonlyArray<
+        keyof tf.io.ModelArtifacts | keyof MetadataProperties
+    >;
+};
+
+export type CheckForErrorAndUpdateStateProps<
+    T extends Record<string, unknown>
+> = {
+    results: T;
+    setStatus: Dispatch<SetStateAction<StatusTypes>>;
+    newValues?: Partial<StatusTypes>;
+};
