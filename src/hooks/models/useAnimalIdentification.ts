@@ -15,7 +15,9 @@ import type {
     CompareImagesProps,
     ConfigTypes,
     ModelTypes,
+    PairArrayForSaving,
     StatusTypes,
+    TrainingPair,
 } from '@/hooks/models/useAnimalIdentificationTypes.ts';
 import { updateState, wait } from '@/lib/utils.ts';
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -74,38 +76,38 @@ export function useAnimalIdentification(): AnimalIdentification {
      * Update the status state with new values.
      * @description This function merges the new status
      */
-    const updateStatus = useCallback((newStatus: Partial<StatusTypes>) => {
-        setStatus((prev) => {
-            return Object.entries(newStatus).reduce(
-                (acc, [key, value]) => {
-                    const k = key as keyof StatusTypes;
-                    // The preview key is not an array
-                    // we simply assign the new value
-                    if (!Array.isArray(prev[k])) {
-                        return {
-                            ...acc,
-                            [k]: value,
-                        };
-                    }
-                    // If the previous value is an array
-                    // We spread it
-                    if (Array.isArray(value)) {
-                        return {
-                            ...acc,
-                            [k]: [...prev[k], ...value],
-                        };
-                    }
-                    // If the new value is not an array
-                    // We simply push it to the array
-                    return {
-                        ...acc,
-                        [k]: [...prev[k], value],
-                    };
-                },
-                { ...prev }
-            );
-        });
-    }, []);
+    // const updateStatus = useCallback((newStatus: Partial<StatusTypes>) => {
+    //     setStatus((prev) => {
+    //         return Object.entries(newStatus).reduce(
+    //             (acc, [key, value]) => {
+    //                 const k = key as keyof StatusTypes;
+    //                 // The preview key is not an array
+    //                 // we simply assign the new value
+    //                 if (!Array.isArray(prev[k])) {
+    //                     return {
+    //                         ...acc,
+    //                         [k]: value,
+    //                     };
+    //                 }
+    //                 // If the previous value is an array
+    //                 // We spread it
+    //                 if (Array.isArray(value)) {
+    //                     return {
+    //                         ...acc,
+    //                         [k]: [...prev[k], ...value],
+    //                     };
+    //                 }
+    //                 // If the new value is not an array
+    //                 // We simply push it to the array
+    //                 return {
+    //                     ...acc,
+    //                     [k]: [...prev[k], value],
+    //                 };
+    //             },
+    //             { ...prev }
+    //         );
+    //     });
+    // }, []);
 
     /**
      * Initialize the animal identification model.
@@ -180,7 +182,6 @@ export function useAnimalIdentification(): AnimalIdentification {
 
         const result = await trainModel({
             status: statusRef.current,
-            // setStatus,
             model,
             config: configRef.current,
             initializeModel,
@@ -225,16 +226,18 @@ export function useAnimalIdentification(): AnimalIdentification {
      */
     const compareAnimals = useCallback(
         async (imagesArray: CompareImagesProps['imageArray']) => {
-            updateState(
-                {
-                    loadingState: {
-                        message: 'Comparaison des images...',
-                        isLoading: 'comparison',
-                        type: 'comparison',
+            if (statusRef.current.loadingState.isLoading !== 'training') {
+                updateState(
+                    {
+                        loadingState: {
+                            message: 'Comparaison des images...',
+                            isLoading: 'comparison',
+                            type: 'comparison',
+                        },
                     },
-                },
-                setStatus
-            );
+                    setStatus
+                );
+            }
             // Avoid the first lag
             if (statusRef.current.comparisonsCount === 0) await wait(100);
             // try {
@@ -402,8 +405,9 @@ export function useAnimalIdentification(): AnimalIdentification {
                 }
                 updateState(
                     {
-                        trainingPairs: pair.trainingPairs,
-                        pairsArrayForSaving: pair.pairsArrayForSaving,
+                        trainingPairs: pair.trainingPair as TrainingPair[],
+                        pairsArrayForSaving:
+                            pair.pairArrayForSaving as PairArrayForSaving[],
                         loadingState: {
                             message: "Paire d'entraînement ajoutée avec succès",
                             isLoading: 'done',
