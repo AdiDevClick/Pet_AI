@@ -216,13 +216,13 @@ export function addTrainingPairToModel({
         const img2 = preprocessImage({ imageElement: imgArray[1], config });
         const label = isSameAnimal ? 1 : 0;
         return {
-            pairsArrayForSaving: {
+            pairArrayForSaving: {
                 image1Url: imgArray[0].src,
                 image2Url: imgArray[1].src,
                 isSameAnimal,
             },
 
-            trainingPairs: { image1: img1, image2: img2, label: label },
+            trainingPair: { image1: img1, image2: img2, label: label },
         };
     } catch (error) {
         return {
