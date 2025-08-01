@@ -53,6 +53,8 @@ export type LoadingStateIsLoading =
     | 'done'
     | 'adding'
     | 'savingToFile'
+    | 'savingToLocalStorage'
+    | 'prepareForExport'
     | '';
 
 export type StatusTypes = {
@@ -77,6 +79,7 @@ export type StatusTypes = {
     error: {
         status: string | number;
         message: string;
+        type?: string;
     };
 };
 
@@ -222,7 +225,7 @@ export type SaveTrainingPairsProps = {
 //         message: string;
 //     };
 // };
-export interface SaveModelAsLocalResults extends Record<string, unknown> {
+export interface SaveModelAsLocalResults {
     status?: number;
     message?: string;
     error?: StatusTypes['error'];
@@ -237,7 +240,6 @@ export interface SaveModelAsLocalResults extends Record<string, unknown> {
 // };
 
 export type SaveModelAsLocalProps = {
-    name?: string | null;
     status: StatusTypes;
     model: ModelTypes;
     config: ConfigTypes;
@@ -305,3 +307,18 @@ export type CheckForErrorAndUpdateStateProps<
     setStatus: Dispatch<SetStateAction<StatusTypes>>;
     newValues?: Partial<StatusTypes>;
 };
+
+export type SaveModelToFileProps = {
+    status: StatusTypes;
+    name: string;
+    model: ModelTypes;
+    config: ConfigTypes;
+};
+
+export interface SaveModelToFileResults extends Record<string, unknown> {
+    message?: string;
+    type?: Extract<LoadingStateIsLoading, 'savingToFile'>;
+    modelData?: Omit<CreateCompleteDataStructureResults, 'error'>;
+    status?: number;
+    error?: StatusTypes['error'];
+}
