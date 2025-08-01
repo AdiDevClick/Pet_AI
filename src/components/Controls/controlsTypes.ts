@@ -3,7 +3,7 @@ import type { Dispatch, MouseEvent, SetStateAction } from 'react';
 
 export type LoadModelTypes = {
     e: MouseEvent<HTMLButtonElement>;
-    setIsSuccess: ControlsFunctionPropsTypes['setIsSuccess'];
+    setButtonState: ControlsFunctionPropsTypes['setButtonState'];
 };
 
 export type ControlsClickableButtonTypes<T> = {
@@ -11,11 +11,13 @@ export type ControlsClickableButtonTypes<T> = {
 };
 
 export interface ControlsFunctionPropsTypes extends contextTypes {
-    setIsSuccess: Dispatch<SetStateAction<ControlsStateTypes>>;
+    setButtonState: Dispatch<SetStateAction<ControlsStateTypes>>;
 }
 
 export type ControlsStateTypes = {
     status: boolean;
     id: string | null;
     error: string | null;
+    openModal: boolean;
+    download: { state: boolean; data: null };
 };
