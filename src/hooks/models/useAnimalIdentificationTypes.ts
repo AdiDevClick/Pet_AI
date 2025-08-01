@@ -177,9 +177,18 @@ export type TrainModelProps = {
     model: ModelTypes;
     status: StatusTypes;
     config?: Partial<ConfigTypes>;
-    updateStatus: (status: Partial<StatusTypes>) => void;
+    onEpochEnd: (epoch: number, logs: { loss?: number; acc?: number }) => void;
     initializeModel: () => void;
 };
+
+export interface TrainModelResults {
+    loadingState?: {
+        message: string;
+        isLoading: 'done';
+        type: 'training';
+    };
+    error?: StatusTypes['error'];
+}
 
 export type CompareImagesProps = {
     imageArray: HTMLImageElement[];
