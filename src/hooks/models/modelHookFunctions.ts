@@ -20,6 +20,7 @@ import type {
     PreprocessImageResults,
     TrainingPair,
     TrainModelProps,
+    TrainModelResults,
 } from '@/hooks/models/useAnimalIdentificationTypes.ts';
 import type { CustomError } from '@/mainTypes.ts';
 
@@ -635,42 +636,43 @@ export function initialize({
  * @param model - The model object containing the Siamese model and its initialization status.
  * @param status - The current `Status` State of the model, including training pairs and loading state.
  * @param config - The configuration object for the model, including training parameters.
- * @param updateStatus - A function to update the `Status` State of the model.
+ * @param setStatus - Setter for the `Status` State of the model.
  * @param initializeModel - A function to initialize the model if it is not already initialized.
  */
 export async function trainModel({
     status,
     model,
     config = {},
-    updateStatus,
     initializeModel,
-}: TrainModelProps) {
+    onEpochEnd,
+}: TrainModelProps): Promise<TrainModelResults> {
     try {
         if (status.trainingPairs.length < 4) {
             throw new Error("Pas assez de paires pour l'entraînement", {
                 cause: {
                     status: 404,
-                    message: 'Not Found',
+                    message:
+                        'Not enough training pairs. At least 4 pairs are required',
                 },
             });
         }
-
         if (status.loadingState.isLoading === 'training') {
-            throw new Error('⚠️ Entraînement déjà en cours', {
+            throw new Error('Entraînement déjà en cours', {
                 cause: {
-                    status: 500,
+                    status: 409,
                     message: 'Training already in progress',
                 },
             });
         }
-
-        // Initialiser les modèles s'ils ne sont pas créés
+        // No models found, initialize them
         if (
             !model.siameseModel ||
             !model.isInitialized ||
             !model.featureExtractor
         ) {
+            // Try to initialize models
             initializeModel();
+            // Throw error if not initialized
             checkIfInitialized(model.isInitialized);
         }
 
@@ -723,17 +725,7 @@ export async function trainModel({
             verbose: 1,
             callbacks: {
                 onEpochEnd: (epoch, logs) => {
-                    console.log(
-                        `Epoch ${epoch + 1}: loss=${logs?.loss?.toFixed(
-                            4
-                        )}, accuracy=${logs?.acc?.toFixed(4)}`
-                    );
-                    updateStatus({
-                        trainEpochCount: epoch + 1,
-                        loss: logs?.loss,
-                        accuracy:
-                            (logs && (logs.acc * 100).toFixed(1)) || 'N/A',
-                    });
+                    if (logs) onEpochEnd(epoch, logs);
                 },
             },
         });
@@ -742,27 +734,22 @@ export async function trainModel({
         xs2.dispose();
         ys.dispose();
 
-        updateStatus({
+        return {
             loadingState: {
                 message: 'Entraînement du modèle terminé',
                 isLoading: 'done',
                 type: 'training',
             },
-        });
+        };
     } catch (error) {
-        updateStatus({
+        return {
             error: {
                 message:
-                    "Erreur lors de l'entraînement \n" +
+                    (error as CustomError).cause?.message ||
                     (error as Error).message,
                 status: (error as CustomError).cause?.status || 500,
             },
-            loadingState: {
-                message: '',
-                isLoading: '',
-                type: '',
-            },
-        });
+        };
     }
 }
 
