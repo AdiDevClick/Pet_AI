@@ -1,3 +1,4 @@
+import { MODEL_LOADER_ID } from '@/configs/toaster.config.ts';
 import {
     addTrainingPairToModel,
     checkForErrorAndUpdateState,
@@ -7,6 +8,7 @@ import {
     loadModelFromData,
     loadStorageData,
     saveModelAsLocal,
+    saveModelToFile,
     trainModel,
 } from '@/hooks/models/modelHookFunctions.ts';
 import type {
@@ -296,25 +298,106 @@ export function useAnimalIdentification(): AnimalIdentification {
      *
      * @description This will create a JSON compatible array
      */
-    const saveModelToLocalStorage = useCallback(
-        async (name = null) => {
+    const saveModelToLocalStorage = useCallback(async () => {
+        updateState(
+            {
+                loadingState: {
+                    message: 'Sauvegarde locale du modèle...',
+                    isLoading: 'savingToLocalStorage',
+                    type: 'savingToLocalStorage',
+                },
+            },
+            setStatus
+        );
+
+        // Ensure the loader can be displayed
+        // then removed properly
+        // await wait(100);
+
+        const results = saveModelAsLocal({
+            status: statusRef.current,
+            model,
+            config: configRef.current,
+        });
+
+        if (results) {
+            await wait(100);
+
+            checkForErrorAndUpdateState({
+                results,
+                setStatus,
+                newValues: {
+                    loadingState: {
+                        message: 'Sauvegarde locale effectuée',
+                        isLoading: 'done',
+                        type: 'savingToLocalStorage',
+                    },
+                },
+            });
+        }
+
+        return results;
+    }, [model]);
+
+    /**
+     * Prepare the model for saving.
+     *
+     * @description It will save the model to local storage first,
+     * then prepare the model data to be saved as a file.
+     *
+     * @param name - **@default=`configRef.current.taskName`** The name of the model to be saved.
+     *
+     * @returns The prepared model data with the status
+     * @example
+     * ```ts
+     *  const modelData = await saveModelAsFile({ name: 'myModel' });
+     * ```
+     *
+     * **Success**
+     * ```ts
+     *  {
+     *    status: 200,
+     *    message: 'Model saved successfully',
+     *    modelData: {
+     *      featureExtractor: tf.LayersModel,
+     *      siameseModel: tf.LayersModel,
+     *      metadata: MetadataProperties
+     *  }
+     *  fileName: 'myModel.json'
+     * ```
+     *
+     * **Error**
+     * ```ts
+     *  {
+     *    error: {
+     *      status: 409,
+     *      message: 'Model already exists'
+     *    }
+     *  }
+     * ```
+     */
+    const saveModelAsFile = useCallback(
+        async ({ name = configRef.current.taskName }) => {
             console.log('Sauvegarde du modèle en cours...');
+
+            const localSaveResult = await saveModelToLocalStorage();
+
+            if ('error' in localSaveResult) {
+                return localSaveResult;
+            }
+            await wait(100);
             updateState(
                 {
                     loadingState: {
-                        message: 'Sauvegarde locale du modèle...',
-                        isLoading: 'savingToFile',
-                        type: 'savingToFile',
+                        message: 'Préparation du modèle pour exportation...',
+                        isLoading: 'prepareForExport',
+                        type: 'prepareForExport',
                     },
                 },
                 setStatus
             );
 
-            // Ensure the loader can be displayed
-            // then removed properly
-            // await wait(100);
-
-            const results = await saveModelAsLocal({
+            const results = await saveModelToFile({
                 name,
                 status: statusRef.current,
                 model,
@@ -322,20 +405,29 @@ export function useAnimalIdentification(): AnimalIdentification {
             });
 
             if (results) {
-                await wait(100);
-
                 checkForErrorAndUpdateState({
                     results,
                     setStatus,
                     newValues: {
                         loadingState: {
-                            message: 'Succès de la sauvegarde locale',
+                            message: 'Préparation du modèle terminée',
                             isLoading: 'done',
-                            type: 'savingToFile',
+                            type: 'prepareForExport',
                         },
                     },
                 });
             }
+
+            updateState(
+                {
+                    loadingState: {
+                        message: 'Exportation du modèle en cours...',
+                        isLoading: 'savingToFile',
+                        type: 'savingToFile',
+                    },
+                },
+                setStatus
+            );
 
             return results;
         },
@@ -430,9 +522,8 @@ export function useAnimalIdentification(): AnimalIdentification {
         )
             return;
 
-        const trainingPairs = JSON.parse(
-            localStorage.getItem(configRef.current.localStorageKey)
-        );
+        const item = localStorage.getItem(configRef.current.localStorageKey);
+        const trainingPairs = item ? JSON.parse(item) : [];
 
         const results = await loadStorageData({
             isInitialized: model.isInitialized,
@@ -471,8 +562,7 @@ export function useAnimalIdentification(): AnimalIdentification {
         if (status.error.message) {
             const currentType = status.loadingState.type;
             const message = status.error.message;
-            const toastId = `loading-${currentType}`;
-            console.log(`error loading-${currentType}`);
+            const toastId = `${MODEL_LOADER_ID}${currentType}`;
 
             if (status.error.status.toString() === '409') {
                 toast.warning(message, {
@@ -555,7 +645,7 @@ export function useAnimalIdentification(): AnimalIdentification {
         // }
         if (status.loadingState.isLoading) {
             const type = status.loadingState.type;
-            const toastId = `loading-${type}`;
+            const toastId = `${MODEL_LOADER_ID}${type}`;
             const message = status.loadingState.message;
 
             // Show success message when loading is done
@@ -578,10 +668,10 @@ export function useAnimalIdentification(): AnimalIdentification {
             if (status.loadingState.isLoading !== 'done') {
                 console.log('object : ', type);
                 // toast.dismiss();
-                // toast.dismiss(`loading-${status.loadingState.type}`);
+                // toast.dismiss(`${MODEL_LOADER_ID}${status.loadingState.type}`);
                 toast.loading(message, {
                     position: 'top-right',
-                    id: `loading-${type}`,
+                    id: `${MODEL_LOADER_ID}${type}`,
                 });
             }
         }
@@ -620,6 +710,7 @@ export function useAnimalIdentification(): AnimalIdentification {
         addTrainingPair,
         startModelTraining,
         compareAnimals,
+        saveModelAsFile,
         // findMatches,
         resetModel,
         saveModelToLocalStorage,
