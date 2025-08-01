@@ -23,6 +23,7 @@ export const AnimalModelProvider = ({ children }: AnimalModelProviderProps) => {
             addTrainingPair: animalModel.addTrainingPair,
             startModelTraining: animalModel.startModelTraining,
             saveModelToLocalStorage: animalModel.saveModelToLocalStorage,
+            saveModelAsFile: animalModel.saveModelAsFile,
         }),
         [animalModel.model]
     );
