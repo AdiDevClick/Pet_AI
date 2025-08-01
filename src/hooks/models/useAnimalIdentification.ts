@@ -17,7 +17,7 @@ import type {
     ModelTypes,
     StatusTypes,
 } from '@/hooks/models/useAnimalIdentificationTypes.ts';
-import { wait } from '@/lib/utils.ts';
+import { updateState, wait } from '@/lib/utils.ts';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 
@@ -58,7 +58,7 @@ export function useAnimalIdentification(): AnimalIdentification {
         imageSize: 224,
         localStorageKey: 'pair-array',
         augment: true,
-        epochs: 100,
+        epochs: 10,
         batchSize: 4,
         validationSplit: 0.2,
         learningRate: 0.001,
@@ -71,49 +71,40 @@ export function useAnimalIdentification(): AnimalIdentification {
     const statusRef = useRef(status);
 
     /**
-     * Update the status reference whenever the status changes.
-     * Used to avoid unnecessary re-renders due
-     * to closures in callbacks.
+     * Update the status state with new values.
+     * @description This function merges the new status
      */
-    useEffect(() => {
-        statusRef.current = status;
-    }, [status]);
-
     const updateStatus = useCallback((newStatus: Partial<StatusTypes>) => {
         setStatus((prev) => {
-            const merged = { ...prev };
-            Object.entries(newStatus).forEach(([key, value]) => {
-                // Si la propriété existe et est un tableau, et la nouvelle valeur est aussi un tableau
-                if (Array.isArray(prev[key])) {
-                    merged[key] = [
-                        ...prev[key],
-                        ...(Array.isArray(value) ? value : [value]),
-                    ];
-                } else {
-                    merged[key] = value;
-                }
-            });
-
-            return merged;
+            return Object.entries(newStatus).reduce(
+                (acc, [key, value]) => {
+                    const k = key as keyof StatusTypes;
+                    // The preview key is not an array
+                    // we simply assign the new value
+                    if (!Array.isArray(prev[k])) {
+                        return {
+                            ...acc,
+                            [k]: value,
+                        };
+                    }
+                    // If the previous value is an array
+                    // We spread it
+                    if (Array.isArray(value)) {
+                        return {
+                            ...acc,
+                            [k]: [...prev[k], ...value],
+                        };
+                    }
+                    // If the new value is not an array
+                    // We simply push it to the array
+                    return {
+                        ...acc,
+                        [k]: [...prev[k], value],
+                    };
+                },
+                { ...prev }
+            );
         });
-        // setStatus((prev) => {
-        // const merged = { ...prev };
-        // Object.entries(newStatus).forEach(([key, value]) => {
-        //     // Spread uniquement pour les propriétés tableau
-        //     if (
-        //         (key === 'trainingPairs' || key === 'pairsArrayForSaving') &&
-        //         Array.isArray(prev[key])
-        //     ) {
-        //         merged[key] = [
-        //             ...prev[key],
-        //             ...(Array.isArray(value) ? value : [value]),
-        //         ];
-        //     } else {
-        //         merged[key] = value;
-        //     }
-        // });
-        // return merged;
-        // });
     }, []);
 
     /**
@@ -127,9 +118,12 @@ export function useAnimalIdentification(): AnimalIdentification {
             });
             if (results) {
                 if ('error' in results) {
-                    updateStatus({
-                        ...results,
-                    });
+                    updateState(
+                        {
+                            ...results,
+                        },
+                        setStatus
+                    );
                     return;
                 }
 
@@ -137,49 +131,87 @@ export function useAnimalIdentification(): AnimalIdentification {
                     ...prev,
                     ...results,
                 }));
-                updateStatus({
-                    siameseModelInitialized: true,
-                    featureExtractorInitialized: true,
-                    loadingState: {
-                        message: 'Modèle initialisé',
-                        isLoading: 'done',
-                        type: 'initializing',
+                updateState(
+                    {
+                        siameseModelInitialized: true,
+                        featureExtractorInitialized: true,
+                        loadingState: {
+                            message: 'Modèle initialisé',
+                            isLoading: 'done',
+                            type: 'initializing',
+                        },
                     },
-                });
+                    setStatus
+                );
             }
         }
     }, [model.isInitialized]);
 
     /**
      * This will start training the model.
-     * It checks if the model is initialized and if the training state is not already 'training
+     * It checks if the model is initialized and if the training state is not already training
      */
-    const startModelTraining = useCallback(() => {
+    const startModelTraining = useCallback(async () => {
         if (!model.isInitialized) {
-            updateStatus({
-                error: {
-                    status: 'error',
-                    message: "Le modèle n'est pas initialisé",
+            updateState(
+                {
+                    error: {
+                        status: 'error',
+                        message: "Le modèle n'est pas initialisé",
+                    },
                 },
-            });
+                setStatus
+            );
             return;
         }
 
         if (statusRef.current.loadingState.isLoading !== 'training') {
-            updateStatus({
-                loadingState: {
-                    message: "Début de l'entraînement...",
-                    isLoading: 'training',
-                    type: 'training',
+            updateState(
+                {
+                    loadingState: {
+                        message: "Début de l'entraînement...",
+                        isLoading: 'training',
+                        type: 'training',
+                    },
                 },
-            });
-            trainModel({
-                status: statusRef.current,
-                updateStatus,
-                model,
-                config: configRef.current,
-                initializeModel,
-            });
+                setStatus
+            );
+        }
+
+        const result = await trainModel({
+            status: statusRef.current,
+            // setStatus,
+            model,
+            config: configRef.current,
+            initializeModel,
+            onEpochEnd: (epoch, logs) => {
+                console.log(
+                    `Epoch ${epoch + 1}: loss=${logs.loss?.toFixed(
+                        4
+                    )}, accuracy=${logs.acc?.toFixed(4)}`
+                );
+                updateState(
+                    {
+                        trainEpochCount: epoch + 1,
+                        loss: logs.loss,
+                        accuracy:
+                            typeof logs.acc === 'number'
+                                ? (logs.acc * 100).toFixed(1)
+                                : 'N/A',
+                    },
+                    setStatus
+                );
+            },
+        });
+
+        if (result) {
+            updateState(
+                {
+                    ...result,
+                },
+                setStatus
+            );
+            return;
         }
     }, [model]);
 
@@ -193,13 +225,16 @@ export function useAnimalIdentification(): AnimalIdentification {
      */
     const compareAnimals = useCallback(
         async (imagesArray: CompareImagesProps['imageArray']) => {
-            updateStatus({
-                loadingState: {
-                    message: 'Comparaison des images...',
-                    isLoading: 'comparison',
-                    type: 'comparison',
+            updateState(
+                {
+                    loadingState: {
+                        message: 'Comparaison des images...',
+                        isLoading: 'comparison',
+                        type: 'comparison',
+                    },
                 },
-            });
+                setStatus
+            );
             // Avoid the first lag
             if (statusRef.current.comparisonsCount === 0) await wait(100);
             // try {
@@ -212,23 +247,29 @@ export function useAnimalIdentification(): AnimalIdentification {
             });
 
             if ('error' in results) {
-                updateStatus({
-                    ...results,
-                });
+                updateState(
+                    {
+                        ...results,
+                    },
+                    setStatus
+                );
                 return results;
             }
 
-            updateStatus({
-                comparisonsCount: statusRef.current.comparisonsCount + 1,
-                ...results,
-                loadingState: {
-                    message: `Comparaison ${
-                        statusRef.current.comparisonsCount + 1
-                    } terminée`,
-                    isLoading: 'done',
-                    type: 'comparison',
+            updateState(
+                {
+                    comparisonsCount: statusRef.current.comparisonsCount + 1,
+                    ...results,
+                    loadingState: {
+                        message: `Comparaison ${
+                            statusRef.current.comparisonsCount + 1
+                        } terminée`,
+                        isLoading: 'done',
+                        type: 'comparison',
+                    },
                 },
-            });
+                setStatus
+            );
             return results;
             // } catch (error) {
             //     updateStatus({
@@ -252,19 +293,25 @@ export function useAnimalIdentification(): AnimalIdentification {
                 if (pair.image2) pair.image2.dispose();
             });
             // setLastResult(null);
-            updateStatus({
-                trainingPairs: [],
-                comparisonCount: 0,
-            });
+            updateState(
+                {
+                    trainingPairs: [],
+                    comparisonCount: 0,
+                },
+                setStatus
+            );
 
             initializeModel();
         } catch (error) {
-            updateStatus({
-                error: {
-                    status: 'error',
-                    message: `Erreur lors de la réinitialisation: ${error.message}`,
+            updateState(
+                {
+                    error: {
+                        status: 'error',
+                        message: `Erreur lors de la réinitialisation: ${error.message}`,
+                    },
                 },
-            });
+                setStatus
+            );
         }
     }, [model.isInitialized, statusRef.current.trainingPairs]);
 
@@ -276,17 +323,20 @@ export function useAnimalIdentification(): AnimalIdentification {
                 save({
                     name,
                     status: statusRef.current,
-                    updateStatus,
+                    setStatus,
                     model,
                     config: configRef.current,
                 });
             } catch (error) {
-                updateStatus({
-                    error: {
-                        status: 'error',
-                        message: `Erreur lors de la sauvegarde: ${error.message}`,
+                updateState(
+                    {
+                        error: {
+                            status: 'error',
+                            message: `Erreur lors de la sauvegarde: ${error.message}`,
+                        },
                     },
-                });
+                    setStatus
+                );
             }
         },
         [
@@ -303,7 +353,7 @@ export function useAnimalIdentification(): AnimalIdentification {
             modelData,
             setModel,
             config: configRef.current,
-            updateStatus,
+            setStatus,
         });
     }, []);
 
@@ -322,13 +372,16 @@ export function useAnimalIdentification(): AnimalIdentification {
             isSameAnimal,
             count,
         }: AddTrainingPairCallBackProps) => {
-            updateStatus({
-                loadingState: {
-                    message: "Ajout de la paire d'entraînement...",
-                    isLoading: 'adding',
-                    type: 'adding',
+            updateState(
+                {
+                    loadingState: {
+                        message: "Ajout de la paire d'entraînement...",
+                        isLoading: 'adding',
+                        type: 'adding',
+                    },
                 },
-            });
+                setStatus
+            );
             // Avoid the first lag
             if (count === 0) await wait(100);
             const pair = addTrainingPairToModel({
@@ -339,20 +392,26 @@ export function useAnimalIdentification(): AnimalIdentification {
             });
             if (pair) {
                 if ('error' in pair) {
-                    updateStatus({
-                        ...pair,
-                    });
+                    updateState(
+                        {
+                            ...pair,
+                        },
+                        setStatus
+                    );
                     return;
                 }
-                updateStatus({
-                    trainingPairs: pair.trainingPairs,
-                    pairsArrayForSaving: pair.pairsArrayForSaving,
-                    loadingState: {
-                        message: "Paire d'entraînement ajoutée avec succès",
-                        isLoading: 'done',
-                        type: 'adding',
+                updateState(
+                    {
+                        trainingPairs: pair.trainingPairs,
+                        pairsArrayForSaving: pair.pairsArrayForSaving,
+                        loadingState: {
+                            message: "Paire d'entraînement ajoutée avec succès",
+                            isLoading: 'done',
+                            type: 'adding',
+                        },
                     },
-                });
+                    setStatus
+                );
             }
         },
         [model.isInitialized]
@@ -389,21 +448,27 @@ export function useAnimalIdentification(): AnimalIdentification {
             ) {
                 // Helps the toaster to be able to show the message
                 await wait(100);
-                updateStatus({
-                    ...results,
-                    localStorageDataLoaded: true,
-                });
+                updateState(
+                    {
+                        ...results,
+                        localStorageDataLoaded: true,
+                    },
+                    setStatus
+                );
                 return;
             }
-            updateStatus({
-                ...results,
-                loadingState: {
-                    message: 'Données image chargées',
-                    isLoading: 'done',
-                    type: 'storage',
+            updateState(
+                {
+                    ...results,
+                    loadingState: {
+                        message: 'Données image chargées',
+                        isLoading: 'done',
+                        type: 'storage',
+                    },
+                    localStorageDataLoaded: true,
                 },
-                localStorageDataLoaded: true,
-            });
+                setStatus
+            );
         }
     }, [
         model.isInitialized,
@@ -413,6 +478,58 @@ export function useAnimalIdentification(): AnimalIdentification {
         statusRef.current.loadingState.message,
     ]);
 
+    /**
+     * Error Toaster Handler
+     *
+     * @description This will show an error message
+     * if there is an error in the statusRef.current.
+     */
+    useEffect(() => {
+        if (status.error.message) {
+            const currentType = status.loadingState.type;
+            const message = status.error.message;
+            const toastId = `loading-${currentType}`;
+            console.log(`error loading-${currentType}`);
+
+            if (status.error.status.toString() === '409') {
+                toast.warning(message, {
+                    position: 'top-right',
+                });
+
+                updateState(
+                    {
+                        error: { status: '', message: '' },
+                    },
+                    setStatus
+                );
+                return;
+            }
+            toast.dismiss(toastId);
+
+            // toast.getHistory().forEach((t) => {
+            //     if (t.type === 'loading') toast.dismiss(t.id);
+            // });
+            toast.error(message, {
+                position: 'top-right',
+            });
+            updateState(
+                {
+                    error: { status: '', message: '' },
+                    loadingState: { message: '', isLoading: '', type: '' },
+                },
+                setStatus
+            );
+        }
+    }, [status.error.message, status.loadingState.type]);
+
+    /**
+     * Update the status reference whenever the status changes.
+     * Used to avoid unnecessary re-renders due
+     * to closures in callbacks.
+     */
+    useEffect(() => {
+        statusRef.current = status;
+    }, [status]);
     /**
      * Initialized the feature extractor and Siamese model.
      * This will be called on component mount.
@@ -427,13 +544,16 @@ export function useAnimalIdentification(): AnimalIdentification {
      */
     useEffect(() => {
         if (!model.isInitialized || status.localStorageDataLoaded) return;
-        updateStatus({
-            loadingState: {
-                message: 'Chargement des données images...',
-                isLoading: 'storage',
-                type: 'storage',
+        updateState(
+            {
+                loadingState: {
+                    message: 'Chargement des données images...',
+                    isLoading: 'storage',
+                    type: 'storage',
+                },
             },
-        });
+            setStatus
+        );
         loadFromStorageData();
     }, [
         model.isInitialized,
@@ -442,68 +562,43 @@ export function useAnimalIdentification(): AnimalIdentification {
     ]);
 
     /**
-     * Error Toaster Handler
-     * @description This will show an error message
-     * if there is an error in the statusRef.current.
-     */
-    useEffect(() => {
-        if (status.error.message) {
-            // toast.dismiss();
-            toast.dismiss(`loading-${status.loadingState.type}`);
-
-            // toast.getHistory().forEach((t) => {
-            //     if (t.type === 'loading') toast.dismiss(t.id);
-            // });
-            toast.error(status.error.message, {
-                position: 'top-right',
-            });
-            updateStatus({
-                error: { status: '', message: '' },
-                loadingState: { message: '', isLoading: '', type: '' },
-            });
-        }
-    }, [
-        status.error.message,
-        status.loadingState.type,
-        // statusRef.current.error,
-    ]);
-
-    /**
      * Toaster Handler
      * @description Triggers a toaster notification when
      * the loadingstate changes.
      */
     useEffect(() => {
-        if (status.error.message || !status.loadingState.message) {
-            return;
-        }
+        // if (status.error.message || !status.loadingState.message) {
+        //     return;
+        // }
         if (status.loadingState.isLoading) {
-            console.log(
-                'jentre dans le toaster handler',
-                status.loadingState.type
-            );
+            const type = status.loadingState.type;
+            const toastId = `loading-${type}`;
+            const message = status.loadingState.message;
 
             // Show success message when loading is done
             if (status.loadingState.isLoading === 'done') {
-                console.log('done : ', status.loadingState.type);
-                toast.dismiss(`loading-${status.loadingState.type}`);
-                toast.success(status.loadingState.message, {
+                toast.dismiss(toastId);
+                toast.success(message, {
                     position: 'top-right',
                 });
-                updateStatus({
-                    loadingState: {
-                        message: '',
-                        isLoading: '',
-                        type: '',
+                updateState(
+                    {
+                        loadingState: {
+                            message: '',
+                            isLoading: '',
+                            type: '',
+                        },
                     },
-                });
+                    setStatus
+                );
             }
             if (status.loadingState.isLoading !== 'done') {
-                console.log('object : ', status.loadingState.type);
+                console.log('object : ', type);
+                // toast.dismiss();
                 // toast.dismiss(`loading-${status.loadingState.type}`);
-                toast.loading(status.loadingState.message, {
+                toast.loading(message, {
                     position: 'top-right',
-                    id: `loading-${status.loadingState.type}`,
+                    id: `loading-${type}`,
                 });
             }
         }
@@ -522,9 +617,12 @@ export function useAnimalIdentification(): AnimalIdentification {
         const results = getDataBalance({
             trainingPairs: status.trainingPairs,
         });
-        updateStatus({
-            balance: results,
-        });
+        updateState(
+            {
+                balance: results,
+            },
+            setStatus
+        );
     }, [status.trainingPairs]);
 
     // console.log('JE RERENDER LE HOOK USEANIMALIDENTIFICATION');
