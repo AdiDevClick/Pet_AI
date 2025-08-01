@@ -23,7 +23,7 @@ export const MemoizedControls = memo(function Controls({
     buttons = clickableButtons,
 }) {
     const context: contextTypes = useOutletContext();
-    const { startModelTraining } = use(AnimalActionsContext);
+    const contextActions = use(AnimalActionsContext);
 
     const [isSuccess, setIsSuccess] = useState<ControlsStateTypes>({
         status: false,
@@ -33,7 +33,7 @@ export const MemoizedControls = memo(function Controls({
     Object.assign(functionProps, {
         ...context,
         setIsSuccess,
-        startModelTraining,
+        ...contextActions,
     });
     return (
         <section className="controls">
