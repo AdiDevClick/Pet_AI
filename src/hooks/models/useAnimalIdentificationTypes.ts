@@ -61,7 +61,7 @@ export type StatusTypes = {
     trainingPairs: TrainingPair[];
     comparisonsCount: number;
     accuracy: number | string;
-    pairsArrayForSaving: PairsArrayForSaving[];
+    pairsArrayForSaving: PairArrayForSaving[];
     balance: { positive: number; negative: number; total: number };
     similarityScore: number;
     sameAnimal: boolean;
@@ -117,7 +117,7 @@ export type TrainingPair = {
     label: number;
 };
 
-export type PairsArrayForSaving = {
+export type PairArrayForSaving = {
     image1Url: HTMLImageElement['src'];
     image2Url: HTMLImageElement['src'];
     isSameAnimal: boolean;
@@ -125,8 +125,8 @@ export type PairsArrayForSaving = {
 
 export type AddTrainingPairToModelResults =
     | {
-          pairsArrayForSaving: PairsArrayForSaving;
-          trainingPairs: TrainingPair;
+          pairArrayForSaving: PairArrayForSaving | PairArrayForSaving[];
+          trainingPair: TrainingPair | TrainingPair[];
       }
     | { error: StatusTypes['error'] };
 
@@ -138,12 +138,12 @@ export type LoadImageElementResults = HTMLImageElement | PromiseRejectedResult;
 export type LoadStorageDataProps = {
     config: ConfigTypes;
     isInitialized: ModelTypes['isInitialized'];
-    trainingPairs?: PairsArrayForSaving[];
+    trainingPairs?: PairArrayForSaving[];
 };
 
 export type LoadStorageDataResults =
     | {
-          pairsArrayForSaving: PairsArrayForSaving[];
+          pairsArrayForSaving: PairArrayForSaving[];
           trainingPairs: TrainingPair[];
       }
     | { error?: StatusTypes['error'] };
