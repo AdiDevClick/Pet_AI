@@ -1048,6 +1048,59 @@ export function saveModelAsLocal({
     }
 }
 
+/**
+ * Prepares the model data structure for saving to a file.
+ *
+ * @description This function creates a complete data structure for the model,
+ * including metadata, model artifacts, and training pairs.
+ *
+ * @param config - The configuration object for the model, including task name and image size.
+ * @param status - The current status of the model, including training pairs and comparisons.
+ * @param name - The name of the model to be saved.
+ * @param model - The model object containing the Siamese model and feature extractor.
+ * @returns A promise that resolves to the model data structure ready for saving.
+ * @throws {Error} If the model is not initialized or if an error occurs while saving artifacts.
+ * @example
+ *
+ * >**Successful result:**
+ * >```ts
+ * > {
+ * >    "modelData": {
+ * >      "metadata": {
+ * >        "name": "IAModelSave",
+ * >        "timestamp": "2023-10-01T12:00:00Z",
+ * >        "trainingPairsCount": 10,
+ * >        "imageSize": 224,
+ * >        "taskName": "Animal Identification",
+ * >        "comparisonCount": 5
+ * >      },
+ * >      "siameseModel": {
+ * >        "weightData": "base64_encoded_data",
+ * >        "modelTopology": {},
+ * >        "weightSpecs": []
+ * >      },
+ * >      "featureExtractor": {
+ * >        "weightData": "base64_encoded_data",
+ * >        "modelTopology": {},
+ * >        "weightSpecs": []
+ * >      }
+ * >    },
+ * >    "status": 200,
+ * >    "message": "Modèle sauvegardé avec succès",
+ * >    "type": "savingToFile"
+ * > }
+ *
+ * >**Error case:**
+ * >```ts
+ * > {
+ * >   "error": {
+ * >     "status": 404,
+ * >     "message": "Aucune paire d'entraînement à sauvegarder",
+ * >     "type": "savingToFile"
+ * >   }
+ * > }
+ * ```
+ */
 export async function saveModelToFile({
     status,
     name = 'IAModelSave',
