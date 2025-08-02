@@ -25,7 +25,14 @@ import { updateState, wait } from '@/lib/utils.ts';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 
-// Hook personnalisé pour l'identification d'animaux
+/**
+ * Custom hook for animal identification functionality.
+ *
+ * @description Provides methods to initialize the model, add training pairs, train the model,
+ * compare animals, find matches, reset the model, save and load the model.
+ *
+ * @returns {AnimalIdentification} The animal identification model and its methods.
+ */
 export function useAnimalIdentification(): AnimalIdentification {
     const [model, setModel] = useState<ModelTypes>({
         isInitialized: false,
@@ -137,6 +144,7 @@ export function useAnimalIdentification(): AnimalIdentification {
             );
         }
 
+        // onEpochEnd will update the state on each epoch end
         const result = await trainModel({
             status: statusRef.current,
             model,
@@ -261,46 +269,50 @@ export function useAnimalIdentification(): AnimalIdentification {
      *
      * @description This will create a JSON compatible array
      */
-    const saveModelToLocalStorage = useCallback(async () => {
-        updateState(
-            {
-                loadingState: {
-                    message: 'Sauvegarde locale du modèle...',
-                    isLoading: 'savingToLocalStorage',
-                    type: 'savingToLocalStorage',
-                },
-            },
-            setStatus
-        );
-
-        // Ensure the loader can be displayed
-        // then removed properly
-        // await wait(100);
-
-        const results = saveModelAsLocal({
-            status: statusRef.current,
-            model,
-            config: configRef.current,
-        });
-
-        if (results) {
-            await wait(100);
-
-            checkForErrorAndUpdateState({
-                results,
-                setStatus,
-                newValues: {
+    const saveModelToLocalStorage = useCallback(
+        async ({ silentSave = false }) => {
+            updateState(
+                {
                     loadingState: {
-                        message: 'Sauvegarde locale effectuée',
-                        isLoading: 'done',
+                        message: 'Sauvegarde locale du modèle...',
+                        isLoading: 'savingToLocalStorage',
                         type: 'savingToLocalStorage',
                     },
                 },
-            });
-        }
+                setStatus
+            );
 
-        return results;
-    }, [model]);
+            // Ensure the loader can be displayed
+            // then removed properly
+            // await wait(100);
+
+            const results = saveModelAsLocal({
+                status: statusRef.current,
+                model,
+                config: configRef.current,
+                silentSave,
+            });
+
+            if (results) {
+                await wait(100);
+
+                checkForErrorAndUpdateState({
+                    results,
+                    setStatus,
+                    newValues: {
+                        loadingState: {
+                            message: 'Sauvegarde locale effectuée',
+                            isLoading: 'done',
+                            type: 'savingToLocalStorage',
+                        },
+                    },
+                });
+            }
+
+            return results;
+        },
+        [model]
+    );
 
     /**
      * Prepare the model for saving.
@@ -343,7 +355,9 @@ export function useAnimalIdentification(): AnimalIdentification {
         async ({ name = configRef.current.taskName }) => {
             console.log('Sauvegarde du modèle en cours...');
 
-            const localSaveResult = await saveModelToLocalStorage();
+            const localSaveResult = await saveModelToLocalStorage({
+                silentSave: true,
+            });
 
             if ('error' in localSaveResult) {
                 return localSaveResult;
