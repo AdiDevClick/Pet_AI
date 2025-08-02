@@ -75,43 +75,6 @@ export function useAnimalIdentification(): AnimalIdentification {
     const statusRef = useRef(status);
 
     /**
-     * Update the status state with new values.
-     * @description This function merges the new status
-     */
-    // const updateStatus = useCallback((newStatus: Partial<StatusTypes>) => {
-    //     setStatus((prev) => {
-    //         return Object.entries(newStatus).reduce(
-    //             (acc, [key, value]) => {
-    //                 const k = key as keyof StatusTypes;
-    //                 // The preview key is not an array
-    //                 // we simply assign the new value
-    //                 if (!Array.isArray(prev[k])) {
-    //                     return {
-    //                         ...acc,
-    //                         [k]: value,
-    //                     };
-    //                 }
-    //                 // If the previous value is an array
-    //                 // We spread it
-    //                 if (Array.isArray(value)) {
-    //                     return {
-    //                         ...acc,
-    //                         [k]: [...prev[k], ...value],
-    //                     };
-    //                 }
-    //                 // If the new value is not an array
-    //                 // We simply push it to the array
-    //                 return {
-    //                     ...acc,
-    //                     [k]: [...prev[k], value],
-    //                 };
-    //             },
-    //             { ...prev }
-    //         );
-    //     });
-    // }, []);
-
-    /**
      * Initialize the animal identification model.
      */
     const initializeModel = useCallback(() => {

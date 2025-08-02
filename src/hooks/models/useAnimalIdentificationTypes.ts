@@ -225,7 +225,7 @@ export type SaveTrainingPairsProps = {
 //         message: string;
 //     };
 // };
-export interface SaveModelAsLocalResults {
+export interface SaveModelAsLocalResults extends Record<string, unknown> {
     status?: number;
     message?: string;
     error?: StatusTypes['error'];

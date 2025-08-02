@@ -1,5 +1,5 @@
 import type { IconPropsTypes } from '@/components/Social/socialTypes.ts';
-import { useDynamicSVGImport } from '@/hooks/useDynamicSVGImport';
+import { useDynamicSVGImport } from '@/hooks/imports/svgs/useDynamicSVGImport';
 
 /**
  * Renders an SVG icon.
