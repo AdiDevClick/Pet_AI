@@ -243,6 +243,7 @@ export type SaveModelAsLocalProps = {
     status: StatusTypes;
     model: ModelTypes;
     config: ConfigTypes;
+    silentSave?: boolean;
 };
 
 export type SaveModelArtifactsProps = {
