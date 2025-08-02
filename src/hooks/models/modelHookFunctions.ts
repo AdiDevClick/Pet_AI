@@ -1007,14 +1007,16 @@ export function saveModelAsLocal({
     status,
     model,
     config,
+    silentSave = false,
 }: SaveModelAsLocalProps): SaveModelAsLocalResults {
     try {
         // Throws error if model is not initialized
         checkIfInitialized(model.isInitialized);
 
         if (
-            !status.pairsArrayForSaving ||
-            status.pairsArrayForSaving.length === 0
+            !silentSave &&
+            (!status.pairsArrayForSaving ||
+                status.pairsArrayForSaving.length === 0)
         ) {
             throw new Error("Aucune paire d'entraînement à sauvegarder", {
                 cause: {
