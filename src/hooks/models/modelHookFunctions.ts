@@ -1,43 +1,44 @@
 import * as tf from '@tensorflow/tfjs';
 import type {
-    AddTrainingPairToModelProps,
-    AddTrainingPairToModelResults,
-    ArtifactProperties,
-    CheckForErrorAndUpdateStateProps,
-    CheckIfModelsFoundProps,
-    CompareImagesProps,
-    CompareImagesResults,
-    CreateCompleteDataStructureProps,
-    CreateCompleteDataStructureResults,
-    CreateFeatureExtractorProps,
-    CreateFeatureExtractorResult,
-    CreatePropertiesFromItemProps,
-    CreateSiameseModelProps,
-    CreateSiameseModelResults,
-    GetDataBalanceProps,
-    GetDataBalanceResults,
-    InitializeProps,
-    InitializeResults,
-    LoadImageElementProps,
-    LoadStorageDataProps,
-    LoadStorageDataResults,
-    MetadataProperties,
-    PairArrayForSaving,
-    PreprocessImageProps,
-    PreprocessImageResults,
-    SaveModelArtifactsProps,
-    SaveModelAsLocalProps,
-    SaveModelAsLocalResults,
-    SaveModelToFileProps,
-    SaveModelToFileResults,
-    TrainingPair,
-    TrainModelProps,
-    TrainModelResults,
+   AddTrainingPairToModelProps,
+   AddTrainingPairToModelResults,
+   ArtifactProperties,
+   CheckForErrorAndUpdateStateProps,
+   CheckIfModelsFoundProps,
+   CompareImagesProps,
+   CompareImagesResults,
+   CreateCompleteDataStructureProps,
+   CreateCompleteDataStructureResults,
+   CreateFeatureExtractorProps,
+   CreateFeatureExtractorResult,
+   CreateFeatureHandlerProps,
+   CreatePropertiesFromItemProps,
+   CreateSiameseModelProps,
+   CreateSiameseModelResults,
+   GetDataBalanceProps,
+   GetDataBalanceResults,
+   InitializeProps,
+   InitializeResults,
+   LoadImageElementProps,
+   LoadStorageDataProps,
+   LoadStorageDataResults,
+   MetadataProperties,
+   PairArrayForSaving,
+   PreprocessImageProps,
+   PreprocessImageResults,
+   SaveModelArtifactsProps,
+   SaveModelAsLocalProps,
+   SaveModelAsLocalResults,
+   SaveModelToFileProps,
+   SaveModelToFileResults,
+   TrainingPair,
+   TrainModelProps,
+   TrainModelResults,
 } from '@/hooks/models/useAnimalIdentificationTypes.ts';
 import type { CustomError } from '@/mainTypes.ts';
 import {
-    ARTIFACTS_PROPERTIES_FROM_ARTIFACTS,
-    METADATA_PROPERTIES_FROM_CONFIG,
+   ARTIFACTS_PROPERTIES_FROM_ARTIFACTS,
+   METADATA_PROPERTIES_FROM_CONFIG,
 } from '@/configs/file.config.ts';
 import { updateState, wait } from '@/lib/utils.ts';
 
@@ -57,23 +58,23 @@ import { updateState, wait } from '@/lib/utils.ts';
  * ```
  */
 export function getDataBalance({
-    trainingPairs,
+   trainingPairs,
 }: GetDataBalanceProps): GetDataBalanceResults {
-    let positive = 0;
-    let negative = 0;
-    let total = 0;
+   let positive = 0;
+   let negative = 0;
+   let total = 0;
 
-    if (trainingPairs && trainingPairs.length > 0) {
-        positive = trainingPairs.filter((pair) => pair.label === 1).length;
-        negative = trainingPairs.filter((pair) => pair.label === 0).length;
-        total = trainingPairs.length;
-    }
+   if (trainingPairs && trainingPairs.length > 0) {
+      positive = trainingPairs.filter((pair) => pair.label === 1).length;
+      negative = trainingPairs.filter((pair) => pair.label === 0).length;
+      total = trainingPairs.length;
+   }
 
-    return {
-        positive,
-        negative,
-        total,
-    };
+   return {
+      positive,
+      negative,
+      total,
+   };
 }
 
 /**
@@ -116,71 +117,67 @@ export function getDataBalance({
  * }
  */
 export async function loadStorageData({
-    isInitialized,
-    config,
-    trainingPairs = [],
+   isInitialized,
+   config,
+   trainingPairs = [],
 }: LoadStorageDataProps): Promise<LoadStorageDataResults> {
-    const tensorPairs: TrainingPair[] = [];
-    const savingPairs: PairArrayForSaving[] = [];
-    try {
-        if (!trainingPairs || trainingPairs.length === 0) {
-            throw new Error(
-                "Aucune paire d'entraînement trouvée dans le stockage local",
-                {
-                    cause: {
-                        status: 404,
-                        message: 'No training pairs found',
-                    },
-                }
-            );
-        }
+   const tensorPairs: TrainingPair[] = [];
+   const savingPairs: PairArrayForSaving[] = [];
+   try {
+      if (!trainingPairs || trainingPairs.length === 0) {
+         throw new Error(
+            "Aucune paire d'entraînement trouvée dans le stockage local",
+            {
+               cause: {
+                  status: 404,
+                  message: 'No training pairs found',
+               },
+            }
+         );
+      }
 
-        await Promise.all(
-            trainingPairs.map(async (element) => {
-                const { image1Url, image2Url, isSameAnimal } = element;
-                const img1 = await loadImageElement({ imageUrl: image1Url });
-                const img2 = await loadImageElement({ imageUrl: image2Url });
+      await Promise.all(
+         trainingPairs.map(async (element) => {
+            const { image1Url, image2Url, isSameAnimal } = element;
+            const img1 = await loadImageElement({ imageUrl: image1Url });
+            const img2 = await loadImageElement({ imageUrl: image2Url });
 
-                const pairs = addTrainingPairToModel({
-                    imgArray: [img1, img2],
-                    isSameAnimal,
-                    config,
-                    isInitialized,
-                });
+            const pairs = addTrainingPairToModel({
+               imgArray: [img1, img2],
+               isSameAnimal,
+               config,
+               isInitialized,
+            });
 
-                if ('error' in pairs) {
-                    return Promise.reject(
-                        new Error("Erreur d'ajout de tensor paires", {
-                            cause: {
-                                status: pairs.error.status || 500,
-                                message:
-                                    pairs.error.message ||
-                                    'Error loading pairs',
-                            },
-                        })
-                    );
-                }
-                tensorPairs.push(pairs.trainingPair as TrainingPair);
-                savingPairs.push(
-                    pairs.pairArrayForSaving as PairArrayForSaving
-                );
-            })
-        );
+            if ('error' in pairs) {
+               return Promise.reject(
+                  new Error("Erreur d'ajout de tensor paires", {
+                     cause: {
+                        status: pairs.error.status || 500,
+                        message: pairs.error.message || 'Error loading pairs',
+                     },
+                  })
+               );
+            }
+            tensorPairs.push(pairs.trainingPair as TrainingPair);
+            savingPairs.push(pairs.pairArrayForSaving as PairArrayForSaving);
+         })
+      );
 
-        return {
-            pairsArrayForSaving: savingPairs,
-            trainingPairs: tensorPairs,
-        };
-    } catch (error) {
-        return {
-            error: {
-                message:
-                    (error as CustomError).cause?.message ||
-                    (error as Error).message,
-                status: (error as CustomError).cause?.status || 500,
-            },
-        };
-    }
+      return {
+         pairsArrayForSaving: savingPairs,
+         trainingPairs: tensorPairs,
+      };
+   } catch (error) {
+      return {
+         error: {
+            message:
+               (error as CustomError).cause?.message ||
+               (error as Error).message,
+            status: (error as CustomError).cause?.status || 500,
+         },
+      };
+   }
 }
 
 /**
@@ -193,17 +190,17 @@ export async function loadStorageData({
  * @returns A promise that resolves to the loaded image element.
  */
 export function loadImageElement({
-    imageUrl,
+   imageUrl,
 }: LoadImageElementProps): Promise<HTMLImageElement> {
-    return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.src = imageUrl;
+   return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = imageUrl;
 
-        img.onload = () => resolve(img);
-        img.onerror = () =>
-            reject(new Error(`Failed to load image: ${imageUrl}`));
-    });
+      img.onload = () => resolve(img);
+      img.onerror = () =>
+         reject(new Error(`Failed to load image: ${imageUrl}`));
+   });
 }
 
 /**
@@ -223,36 +220,36 @@ export function loadImageElement({
  * @throws {Error} If the model is not initialized or if image preprocessing fails.
  */
 export function addTrainingPairToModel({
-    imgArray,
-    isSameAnimal,
-    config,
-    isInitialized,
+   imgArray,
+   isSameAnimal,
+   config,
+   isInitialized,
 }: AddTrainingPairToModelProps): AddTrainingPairToModelResults {
-    try {
-        checkIfInitialized(isInitialized);
+   try {
+      checkIfInitialized(isInitialized);
 
-        const img1 = preprocessImage({ imageElement: imgArray[0], config });
-        const img2 = preprocessImage({ imageElement: imgArray[1], config });
-        const label = isSameAnimal ? 1 : 0;
-        return {
-            pairArrayForSaving: {
-                image1Url: imgArray[0].src,
-                image2Url: imgArray[1].src,
-                isSameAnimal,
-            },
+      const img1 = preprocessImage({ imageElement: imgArray[0], config });
+      const img2 = preprocessImage({ imageElement: imgArray[1], config });
+      const label = isSameAnimal ? 1 : 0;
+      return {
+         pairArrayForSaving: {
+            image1Url: imgArray[0].src,
+            image2Url: imgArray[1].src,
+            isSameAnimal,
+         },
 
-            trainingPair: { image1: img1, image2: img2, label: label },
-        };
-    } catch (error) {
-        return {
-            error: {
-                status: (error as CustomError).cause?.status || '500',
-                message:
-                    (error as CustomError).cause?.message ||
-                    (error as Error).message,
-            },
-        };
-    }
+         trainingPair: { image1: img1, image2: img2, label: label },
+      };
+   } catch (error) {
+      return {
+         error: {
+            status: (error as CustomError).cause?.status || '500',
+            message:
+               (error as CustomError).cause?.message ||
+               (error as Error).message,
+         },
+      };
+   }
 }
 
 /**
@@ -267,85 +264,81 @@ export function addTrainingPairToModel({
  * @throws {Error} If the image preprocessing fails.
  */
 export function preprocessImage({
-    imageElement,
-    config,
+   imageElement,
+   config,
 }: PreprocessImageProps): PreprocessImageResults {
-    const { imageSize, augment } = config;
-    return tf.tidy(() => {
-        try {
-            let tensor3d: tf.Tensor3D | tf.Tensor4D =
-                tf.browser.fromPixels(imageElement);
+   const { imageSize, augment } = config;
+   return tf.tidy(() => {
+      try {
+         let tensor3d: tf.Tensor3D | tf.Tensor4D =
+            tf.browser.fromPixels(imageElement);
 
-            tensor3d = tf.image.resizeBilinear(tensor3d, [
-                imageSize,
-                imageSize,
-            ]);
+         tensor3d = tf.image.resizeBilinear(tensor3d, [imageSize, imageSize]);
 
-            tensor3d = tensor3d.toFloat();
+         tensor3d = tensor3d.toFloat();
 
-            // Augmentation simple si demandée
-            if (augment) {
-                if (tensor3d.rank === 3) {
-                    tensor3d = tensor3d.expandDims(0);
-                }
-                // Flip horizontal (déjà présent)
-                if (Math.random() < 0.5) {
-                    tensor3d = tf.image.flipLeftRight(tensor3d as tf.Tensor4D);
-                }
-                // Flip vertical (rare mais possible)
-                if (Math.random() < 0.1) {
-                    tensor3d = tensor3d.reverse(1);
-                }
-                // Rotation légère (±15°)
-                if (Math.random() < 0.2) {
-                    const angle = (Math.random() - 0.5) * (Math.PI / 6); // -15° à +15°
-                    tensor3d = tf.image.rotateWithOffset(
-                        tensor3d as tf.Tensor4D,
-                        angle,
-                        0
-                    );
-                }
-                // Décalage (translation) légère
-                if (Math.random() < 0.2) {
-                    const dx = Math.floor((Math.random() - 0.5) * 10); // -5 à +5 px
-                    const dy = Math.floor((Math.random() - 0.5) * 10);
-                    const transformMatrix = [[1, 0, dx, 0, 1, dy, 0, 0]];
-                    tensor3d = tf.image.transform(
-                        tensor3d as tf.Tensor4D,
-                        transformMatrix
-                    );
-                }
-                // Variation de luminosité
-                if (Math.random() < 0.2) {
-                    const brightnessDelta = (Math.random() - 0.5) * 0.2;
-                    tensor3d = tensor3d.add(brightnessDelta);
-                }
-                // Variation de contraste
-                if (Math.random() < 0.2) {
-                    const contrastFactor = 1 + (Math.random() - 0.5) * 0.3;
-                    const mean = tensor3d.mean();
-                    tensor3d = tensor3d.sub(mean).mul(contrastFactor).add(mean);
-                }
-                tensor3d = tensor3d.squeeze([0]);
+         // Augmentation simple si demandée
+         if (augment) {
+            if (tensor3d.rank === 3) {
+               tensor3d = tensor3d.expandDims(0);
             }
+            // Flip horizontal (déjà présent)
+            if (Math.random() < 0.5) {
+               tensor3d = tf.image.flipLeftRight(tensor3d as tf.Tensor4D);
+            }
+            // Flip vertical (rare mais possible)
+            if (Math.random() < 0.1) {
+               tensor3d = tensor3d.reverse(1);
+            }
+            // Rotation légère (±15°)
+            if (Math.random() < 0.2) {
+               const angle = (Math.random() - 0.5) * (Math.PI / 6); // -15° à +15°
+               tensor3d = tf.image.rotateWithOffset(
+                  tensor3d as tf.Tensor4D,
+                  angle,
+                  0
+               );
+            }
+            // Décalage (translation) légère
+            if (Math.random() < 0.2) {
+               const dx = Math.floor((Math.random() - 0.5) * 10); // -5 à +5 px
+               const dy = Math.floor((Math.random() - 0.5) * 10);
+               const transformMatrix = [[1, 0, dx, 0, 1, dy, 0, 0]];
+               tensor3d = tf.image.transform(
+                  tensor3d as tf.Tensor4D,
+                  transformMatrix
+               );
+            }
+            // Variation de luminosité
+            if (Math.random() < 0.2) {
+               const brightnessDelta = (Math.random() - 0.5) * 0.2;
+               tensor3d = tensor3d.add(brightnessDelta);
+            }
+            // Variation de contraste
+            if (Math.random() < 0.2) {
+               const contrastFactor = 1 + (Math.random() - 0.5) * 0.3;
+               const mean = tensor3d.mean();
+               tensor3d = tensor3d.sub(mean).mul(contrastFactor).add(mean);
+            }
+            tensor3d = tensor3d.squeeze([0]);
+         }
 
-            // Normalisation
-            tensor3d = tensor3d.div(255.0);
-            tensor3d = tensor3d.sub([0.485, 0.456, 0.406]);
-            tensor3d = tensor3d.div([0.229, 0.224, 0.225]);
+         // Normalisation
+         tensor3d = tensor3d.div(255.0);
+         tensor3d = tensor3d.sub([0.485, 0.456, 0.406]);
+         tensor3d = tensor3d.div([0.229, 0.224, 0.225]);
 
-            return tensor3d.expandDims(0) as tf.Tensor4D;
-        } catch (error) {
-            throw new Error("Erreur de prétraitement de l'image", {
-                cause: {
-                    status: 500,
-                    message:
-                        (error as Error).message ||
-                        'Image preprocessing failed',
-                },
-            });
-        }
-    });
+         return tensor3d.expandDims(0) as tf.Tensor4D;
+      } catch (error) {
+         throw new Error("Erreur de prétraitement de l'image", {
+            cause: {
+               status: 500,
+               message:
+                  (error as Error).message || 'Image preprocessing failed',
+            },
+         });
+      }
+   });
 }
 
 /**
@@ -369,67 +362,67 @@ export function preprocessImage({
  *  ```
  */
 export function createFeatureExtractor({
-    config = { imageSize: 224, featureSize: 256 },
+   config = { imageSize: 224, featureSize: 256 },
 }: CreateFeatureExtractorProps): CreateFeatureExtractorResult {
-    try {
-        const featureExtractor = tf.sequential({
-            layers: [
-                tf.layers.conv2d({
-                    inputShape: [config.imageSize, config.imageSize, 3],
-                    filters: 32,
-                    kernelSize: 3,
-                    activation: 'relu',
-                    padding: 'same',
-                }),
-                tf.layers.maxPooling2d({ poolSize: 2 }),
-                tf.layers.dropout({ rate: 0.1 }),
+   try {
+      const featureExtractor = tf.sequential({
+         layers: [
+            tf.layers.conv2d({
+               inputShape: [config.imageSize, config.imageSize, 3],
+               filters: 32,
+               kernelSize: 3,
+               activation: 'relu',
+               padding: 'same',
+            }),
+            tf.layers.maxPooling2d({ poolSize: 2 }),
+            tf.layers.dropout({ rate: 0.1 }),
 
-                tf.layers.conv2d({
-                    filters: 64,
-                    kernelSize: 3,
-                    activation: 'relu',
-                    padding: 'same',
-                }),
-                tf.layers.maxPooling2d({ poolSize: 2 }),
-                tf.layers.dropout({ rate: 0.15 }),
+            tf.layers.conv2d({
+               filters: 64,
+               kernelSize: 3,
+               activation: 'relu',
+               padding: 'same',
+            }),
+            tf.layers.maxPooling2d({ poolSize: 2 }),
+            tf.layers.dropout({ rate: 0.15 }),
 
-                tf.layers.conv2d({
-                    filters: 128,
-                    kernelSize: 3,
-                    activation: 'relu',
-                    padding: 'same',
-                }),
-                tf.layers.maxPooling2d({ poolSize: 2 }),
-                tf.layers.dropout({ rate: 0.2 }),
+            tf.layers.conv2d({
+               filters: 128,
+               kernelSize: 3,
+               activation: 'relu',
+               padding: 'same',
+            }),
+            tf.layers.maxPooling2d({ poolSize: 2 }),
+            tf.layers.dropout({ rate: 0.2 }),
 
-                tf.layers.conv2d({
-                    filters: 256,
-                    kernelSize: 3,
-                    activation: 'relu',
-                    padding: 'same',
-                }),
-                tf.layers.globalAveragePooling2d({
-                    dataFormat: 'channelsLast',
-                }),
+            tf.layers.conv2d({
+               filters: 256,
+               kernelSize: 3,
+               activation: 'relu',
+               padding: 'same',
+            }),
+            tf.layers.globalAveragePooling2d({
+               dataFormat: 'channelsLast',
+            }),
 
-                tf.layers.dense({
-                    units: 512,
-                    activation: 'relu',
-                }),
-                tf.layers.dropout({ rate: 0.3 }),
+            tf.layers.dense({
+               units: 512,
+               activation: 'relu',
+            }),
+            tf.layers.dropout({ rate: 0.3 }),
 
-                tf.layers.dense({
-                    units: config.featureSize,
-                    activation: 'tanh',
-                    name: 'feature_embedding',
-                }),
-            ],
-        });
+            tf.layers.dense({
+               units: config.featureSize,
+               activation: 'tanh',
+               name: 'feature_embedding',
+            }),
+         ],
+      });
 
-        return { extractor: featureExtractor, success: true };
-    } catch {
-        return { success: false };
-    }
+      return { extractor: featureExtractor, success: true };
+   } catch {
+      return { success: false };
+   }
 }
 
 /**
@@ -439,14 +432,14 @@ export function createFeatureExtractor({
  * otherwise it falls back to 'cpu'.
  */
 export function setupOptimalBackend() {
-    // try {
-    if (tf.getBackend() === 'webgl') {
-        return;
-    }
-    tf.setBackend('webgl');
-    // } catch (error) {
-    //     tf.setBackend('cpu');
-    // }
+   // try {
+   if (tf.getBackend() === 'webgl') {
+      return;
+   }
+   tf.setBackend('webgl');
+   // } catch (error) {
+   //     tf.setBackend('cpu');
+   // }
 }
 
 /**
@@ -472,85 +465,85 @@ export function setupOptimalBackend() {
  *  ```
  */
 export function createSiameseModel({
-    config,
-    featureExtractor,
+   config,
+   featureExtractor,
 }: CreateSiameseModelProps): CreateSiameseModelResults {
-    try {
-        const inputA = tf.input({
-            shape: [config.imageSize, config.imageSize, 3],
-            name: 'image_a',
-        });
-        const inputB = tf.input({
-            shape: [config.imageSize, config.imageSize, 3],
-            name: 'image_b',
-        });
+   try {
+      const inputA = tf.input({
+         shape: [config.imageSize, config.imageSize, 3],
+         name: 'image_a',
+      });
+      const inputB = tf.input({
+         shape: [config.imageSize, config.imageSize, 3],
+         name: 'image_b',
+      });
 
-        // Extraire les features des deux images
-        const featuresA = featureExtractor.apply(inputA) as tf.SymbolicTensor;
-        const featuresB = featureExtractor.apply(inputB) as tf.SymbolicTensor;
+      // Extraire les features des deux images
+      const featuresA = featureExtractor.apply(inputA) as tf.SymbolicTensor;
+      const featuresB = featureExtractor.apply(inputB) as tf.SymbolicTensor;
 
-        // Concaténer les features des deux images
-        const concatenated = tf.layers
-            .concatenate({
-                name: 'features_concat',
-            })
-            .apply([featuresA, featuresB]);
+      // Concaténer les features des deux images
+      const concatenated = tf.layers
+         .concatenate({
+            name: 'features_concat',
+         })
+         .apply([featuresA, featuresB]);
 
-        // Réseau de décision pour déterminer la similarité
-        let decision = tf.layers
-            .dense({
-                units: 256,
-                activation: 'relu',
-                name: 'main_decision',
-            })
-            .apply(concatenated);
+      // Réseau de décision pour déterminer la similarité
+      let decision = tf.layers
+         .dense({
+            units: 256,
+            activation: 'relu',
+            name: 'main_decision',
+         })
+         .apply(concatenated);
 
-        decision = tf.layers
-            .dropout({ rate: 0.3, name: 'main_dropout' })
-            .apply(decision);
+      decision = tf.layers
+         .dropout({ rate: 0.3, name: 'main_dropout' })
+         .apply(decision);
 
-        decision = tf.layers
-            .dense({
-                units: 128,
-                activation: 'relu',
-                name: 'secondary_decision',
-            })
-            .apply(decision);
+      decision = tf.layers
+         .dense({
+            units: 128,
+            activation: 'relu',
+            name: 'secondary_decision',
+         })
+         .apply(decision);
 
-        decision = tf.layers
-            .dropout({ rate: 0.2, name: 'secondary_dropout' })
-            .apply(decision);
+      decision = tf.layers
+         .dropout({ rate: 0.2, name: 'secondary_dropout' })
+         .apply(decision);
 
-        decision = tf.layers
-            .dense({
-                units: 64,
-                activation: 'relu',
-                name: 'tertiary_decision',
-            })
-            .apply(decision);
+      decision = tf.layers
+         .dense({
+            units: 64,
+            activation: 'relu',
+            name: 'tertiary_decision',
+         })
+         .apply(decision);
 
-        const prediction = tf.layers
-            .dense({
-                units: 1,
-                activation: 'sigmoid',
-                name: 'final_prediction',
-            })
-            .apply(decision);
-        const siameseModel = tf.model({
-            inputs: [inputA, inputB],
-            outputs: prediction as tf.SymbolicTensor,
-            name: 'siamese_network',
-        });
+      const prediction = tf.layers
+         .dense({
+            units: 1,
+            activation: 'sigmoid',
+            name: 'final_prediction',
+         })
+         .apply(decision);
+      const siameseModel = tf.model({
+         inputs: [inputA, inputB],
+         outputs: prediction as tf.SymbolicTensor,
+         name: 'siamese_network',
+      });
 
-        siameseModel.compile({
-            optimizer: config.optimizer || tf.train.adam(0.0001),
-            loss: config.loss || 'binaryCrossentropy',
-            metrics: config.metrics || ['accuracy'],
-        });
-        return { siameseModel: siameseModel, success: true };
-    } catch {
-        return { success: false };
-    }
+      siameseModel.compile({
+         optimizer: config.optimizer || tf.train.adam(0.0001),
+         loss: config.loss || 'binaryCrossentropy',
+         metrics: config.metrics || ['accuracy'],
+      });
+      return { siameseModel: siameseModel, success: true };
+   } catch {
+      return { success: false };
+   }
 }
 
 /**
@@ -583,66 +576,66 @@ export function createSiameseModel({
  *  ```
  */
 export function initialize({
-    isInitialized,
-    config,
+   isInitialized,
+   config,
 }: InitializeProps): InitializeResults {
-    try {
-        if (isInitialized) {
-            throw new Error("Le système d'identification est déjà initialisé", {
-                cause: {
-                    status: 400,
-                    message: 'Already initialized',
-                },
-            });
-        }
-
-        tf.ready();
-
-        // Backend setup
-        setupOptimalBackend();
-
-        const feature = createFeatureExtractor({
-            config,
-        });
-
-        if (!feature.success || !('extractor' in feature)) {
-            throw new Error(`Échec de l'initialisation: ${feature.success}`, {
-                cause: {
-                    status: 500,
-                    message: 'Feature extraction failed',
-                },
-            });
-        }
-
-        const siamese = createSiameseModel({
-            config,
-            featureExtractor: feature.extractor,
-        });
-
-        if (!siamese.success || !('siameseModel' in siamese)) {
-            throw new Error(`Échec de l'initialisation: ${siamese}`, {
-                cause: {
-                    status: 500,
-                    message: 'Siamese model initialization failed',
-                },
-            });
-        }
-
-        return {
-            siameseModel: siamese.siameseModel,
-            featureExtractor: feature.extractor,
-            isInitialized: siamese.success,
-        };
-    } catch (error) {
-        return {
-            error: {
-                message:
-                    (error as CustomError).cause?.message ||
-                    (error as Error).message,
-                status: (error as CustomError).cause?.status || 500,
+   try {
+      if (isInitialized) {
+         throw new Error("Le système d'identification est déjà initialisé", {
+            cause: {
+               status: 400,
+               message: 'Already initialized',
             },
-        };
-    }
+         });
+      }
+
+      tf.ready();
+
+      // Backend setup
+      setupOptimalBackend();
+
+      const feature = createFeatureExtractor({
+         config,
+      });
+
+      if (!feature.success || !('extractor' in feature)) {
+         throw new Error(`Échec de l'initialisation: ${feature.success}`, {
+            cause: {
+               status: 500,
+               message: 'Feature extraction failed',
+            },
+         });
+      }
+
+      const siamese = createSiameseModel({
+         config,
+         featureExtractor: feature.extractor,
+      });
+
+      if (!siamese.success || !('siameseModel' in siamese)) {
+         throw new Error(`Échec de l'initialisation: ${siamese}`, {
+            cause: {
+               status: 500,
+               message: 'Siamese model initialization failed',
+            },
+         });
+      }
+
+      return {
+         siameseModel: siamese.siameseModel,
+         featureExtractor: feature.extractor,
+         isInitialized: siamese.success,
+      };
+   } catch (error) {
+      return {
+         error: {
+            message:
+               (error as CustomError).cause?.message ||
+               (error as Error).message,
+            status: (error as CustomError).cause?.status || 500,
+         },
+      };
+   }
 }
 
 /**
@@ -659,117 +652,117 @@ export function initialize({
  * @param initializeModel - A function to initialize the model if it is not already initialized.
  */
 export async function trainModel({
-    status,
-    model,
-    config = {},
-    initializeModel,
-    onEpochEnd,
+   status,
+   model,
+   config = {},
+   initializeModel,
+   onEpochEnd,
 }: TrainModelProps): Promise<TrainModelResults> {
-    try {
-        if (status.trainingPairs.length < 4) {
-            throw new Error("Pas assez de paires pour l'entraînement", {
-                cause: {
-                    status: 404,
-                    message:
-                        'Not enough training pairs. At least 4 pairs are required',
-                },
-            });
-        }
-        if (status.loadingState.isLoading === 'training') {
-            throw new Error('Entraînement déjà en cours', {
-                cause: {
-                    status: 409,
-                    message: 'Training already in progress',
-                },
-            });
-        }
-        // No models found, initialize them
-        if (
-            !model.siameseModel ||
-            !model.isInitialized ||
-            !model.featureExtractor
-        ) {
-            // Try to initialize models
-            initializeModel();
-            // Throw error if not initialized
-            checkIfInitialized(model.isInitialized);
-        }
+   try {
+      if (status.trainingPairs.length < 4) {
+         throw new Error("Pas assez de paires pour l'entraînement", {
+            cause: {
+               status: 404,
+               message:
+                  'Not enough training pairs. At least 4 pairs are required',
+            },
+         });
+      }
+      if (status.loadingState.isLoading === 'training') {
+         throw new Error('Entraînement déjà en cours', {
+            cause: {
+               status: 409,
+               message: 'Training already in progress',
+            },
+         });
+      }
+      // No models found, initialize them
+      if (
+         !model.siameseModel ||
+         !model.isInitialized ||
+         !model.featureExtractor
+      ) {
+         // Try to initialize models
+         initializeModel();
+         // Throw error if not initialized
+         checkIfInitialized(model.isInitialized);
+      }
 
-        if (
-            status.balance.positive > status.balance.negative * 1.2 ||
-            status.balance.negative > status.balance.positive * 1.2
-        ) {
-            throw new Error(
-                `Déséquilibre des données : ${status.balance.positive} positives, ${status.balance.negative} négatives`,
-                {
-                    cause: {
-                        status: 500,
-                        message: 'Data imbalance detected',
-                    },
-                }
-            );
-        }
-
-        const images1: TrainingPair['image1'][] = [];
-        const images2: TrainingPair['image2'][] = [];
-        const labels: TrainingPair['label'][] = [];
-
-        status.trainingPairs.forEach((pair) => {
-            if (isTensor4D(pair.image1) && isTensor4D(pair.image2)) {
-                images1.push(pair.image1);
-                images2.push(pair.image2);
-                labels.push(pair.label);
+      if (
+         status.balance.positive > status.balance.negative * 1.2 ||
+         status.balance.negative > status.balance.positive * 1.2
+      ) {
+         throw new Error(
+            `Déséquilibre des données : ${status.balance.positive} positives, ${status.balance.negative} négatives`,
+            {
+               cause: {
+                  status: 500,
+                  message: 'Data imbalance detected',
+               },
             }
-        });
+         );
+      }
 
-        const xs1 = tf.concat(images1 as tf.Tensor4D[]);
-        const xs2 = tf.concat(images2 as tf.Tensor4D[]);
+      const images1: TrainingPair['image1'][] = [];
+      const images2: TrainingPair['image2'][] = [];
+      const labels: TrainingPair['label'][] = [];
 
-        const ys = tf.tensor1d(labels, 'float32');
+      status.trainingPairs.forEach((pair) => {
+         if (isTensor4D(pair.image1) && isTensor4D(pair.image2)) {
+            images1.push(pair.image1);
+            images2.push(pair.image2);
+            labels.push(pair.label);
+         }
+      });
 
-        if (!model.siameseModel) {
-            throw new Error('Le modèle Siamese non initialisé', {
-                cause: {
-                    status: 500,
-                    message: 'Siamese model is not found',
-                },
-            });
-        }
+      const xs1 = tf.concat(images1 as tf.Tensor4D[]);
+      const xs2 = tf.concat(images2 as tf.Tensor4D[]);
 
-        await model.siameseModel.fit([xs1, xs2], ys, {
-            epochs: config.epochs,
-            batchSize: config.batchSize,
-            validationSplit: config.validationSplit,
-            shuffle: true,
-            verbose: 1,
-            callbacks: {
-                onEpochEnd: (epoch, logs) => {
-                    if (logs) onEpochEnd(epoch, logs);
-                },
+      const ys = tf.tensor1d(labels, 'float32');
+
+      if (!model.siameseModel) {
+         throw new Error('Le modèle Siamese non initialisé', {
+            cause: {
+               status: 500,
+               message: 'Siamese model is not found',
             },
-        });
+         });
+      }
 
-        xs1.dispose();
-        xs2.dispose();
-        ys.dispose();
+      await model.siameseModel.fit([xs1, xs2], ys, {
+         epochs: config.epochs,
+         batchSize: config.batchSize,
+         validationSplit: config.validationSplit,
+         shuffle: true,
+         verbose: 1,
+         callbacks: {
+            onEpochEnd: (epoch, logs) => {
+               if (logs) onEpochEnd(epoch, logs);
+            },
+         },
+      });
 
-        return {
-            loadingState: {
-                message: 'Entraînement du modèle terminé',
-                isLoading: 'done',
-                type: 'training',
-            },
-        };
-    } catch (error) {
-        return {
-            error: {
-                message:
-                    (error as CustomError).cause?.message ||
-                    (error as Error).message,
-                status: (error as CustomError).cause?.status || 500,
-            },
-        };
-    }
+      xs1.dispose();
+      xs2.dispose();
+      ys.dispose();
+
+      return {
+         loadingState: {
+            message: 'Entraînement du modèle terminé',
+            isLoading: 'done',
+            type: 'training',
+         },
+      };
+   } catch (error) {
+      return {
+         error: {
+            message:
+               (error as CustomError).cause?.message ||
+               (error as Error).message,
+            status: (error as CustomError).cause?.status || 500,
+         },
+      };
+   }
 }
 
 /**
@@ -782,7 +775,7 @@ export async function trainModel({
  * @returns True if the tensor is a 4D tensor, false otherwise.
  */
 function isTensor4D(tensor: unknown): tensor is tf.Tensor4D {
-    return tensor instanceof tf.Tensor && tensor.rank === 4;
+   return tensor instanceof tf.Tensor && tensor.rank === 4;
 }
 
 /**
@@ -813,77 +806,73 @@ function isTensor4D(tensor: unknown): tensor is tf.Tensor4D {
  * ```
  */
 export async function compareImages({
-    imageArray,
-    config,
-    model,
-    initializeModel,
+   imageArray,
+   config,
+   model,
+   initializeModel,
 }: CompareImagesProps): Promise<CompareImagesResults> {
-    try {
-        if (!model.isInitialized) {
-            initializeModel();
-            checkIfInitialized(model.isInitialized);
-        }
+   try {
+      if (!model.isInitialized) {
+         initializeModel();
+         checkIfInitialized(model.isInitialized);
+      }
 
-        if (imageArray.length !== 2) {
-            throw new Error(
-                'Deux images sont nécessaires pour la comparaison',
-                {
-                    cause: {
-                        status: 400,
-                        message: 'Bad Request, you need two images',
-                    },
-                }
-            );
-        }
-
-        const img1 = preprocessImage({ imageElement: imageArray[0], config });
-        const img2 = preprocessImage({ imageElement: imageArray[1], config });
-
-        if (!model.siameseModel) {
-            throw new Error('Modèle Siamese non trouvé', {
-                cause: {
-                    status: 404,
-                    message: 'Siamese model not found',
-                },
-            });
-        }
-
-        if (!isTensor4D(img1) || !isTensor4D(img2)) {
-            throw new Error('Erreur de prétraitement des images', {
-                cause: {
-                    status: 500,
-                    message:
-                        'Image preprocessing failed, ensure images are tensors',
-                },
-            });
-        }
-
-        const predictionRaw = model.siameseModel.predict([img1, img2]);
-        const prediction = Array.isArray(predictionRaw)
-            ? predictionRaw[0]
-            : predictionRaw;
-        const similarity = await prediction.data();
-
-        img1.dispose();
-        img2.dispose();
-        prediction.dispose();
-
-        const score = similarity[0];
-        return {
-            sameAnimal: score > config.predictionThreshold,
-            confidence: Math.abs(score - 0.5) * 2,
-            similarityScore: score,
-        };
-    } catch (error) {
-        return {
-            error: {
-                message:
-                    (error as CustomError).cause?.message ||
-                    (error as Error).message,
-                status: (error as CustomError).cause?.status || 500,
+      if (imageArray.length !== 2) {
+         throw new Error('Deux images sont nécessaires pour la comparaison', {
+            cause: {
+               status: 400,
+               message: 'Bad Request, you need two images',
             },
-        };
-    }
+         });
+      }
+
+      const img1 = preprocessImage({ imageElement: imageArray[0], config });
+      const img2 = preprocessImage({ imageElement: imageArray[1], config });
+
+      if (!model.siameseModel) {
+         throw new Error('Modèle Siamese non trouvé', {
+            cause: {
+               status: 404,
+               message: 'Siamese model not found',
+            },
+         });
+      }
+
+      if (!isTensor4D(img1) || !isTensor4D(img2)) {
+         throw new Error('Erreur de prétraitement des images', {
+            cause: {
+               status: 500,
+               message: 'Image preprocessing failed, ensure images are tensors',
+            },
+         });
+      }
+
+      const predictionRaw = model.siameseModel.predict([img1, img2]);
+      const prediction = Array.isArray(predictionRaw)
+         ? predictionRaw[0]
+         : predictionRaw;
+      const similarity = await prediction.data();
+
+      img1.dispose();
+      img2.dispose();
+      prediction.dispose();
+
+      const score = similarity[0];
+      return {
+         sameAnimal: score > config.predictionThreshold,
+         confidence: Math.abs(score - 0.5) * 2,
+         similarityScore: score,
+      };
+   } catch (error) {
+      return {
+         error: {
+            message:
+               (error as CustomError).cause?.message ||
+               (error as Error).message,
+            status: (error as CustomError).cause?.status || 500,
+         },
+      };
+   }
 }
 
 /**
@@ -952,24 +941,24 @@ export async function compareImages({
 // }
 
 /**
- * Save model artifacts to a specified location.
+ * Capture model data artifacts.
  *
- * @param modelTosave - The parameters for saving model artifacts.
- * @returns A promise that resolves to the saved model artifacts.
+ * @param modelTosave - The model for capturing model data artifacts.
+ * @returns A promise that resolves to the captured model data artifacts.
  */
-export async function saveModelArtifacts({
-    modelTosave,
+export async function captureModelArtifacts({
+   modelTosave,
 }: SaveModelArtifactsProps): Promise<tf.io.ModelArtifacts> {
-    const handler = tf.io.withSaveHandler(
-        async (artifacts: tf.io.ModelArtifacts) => ({
-            modelArtifactsInfo: {
-                dateSaved: new Date(),
-                modelTopologyType: 'JSON',
-            },
-            ...artifacts,
-        })
-    );
-    return (await modelTosave.save(handler)) as tf.io.ModelArtifacts;
+   const handler = tf.io.withSaveHandler(
+      async (artifacts: tf.io.ModelArtifacts) => ({
+         modelArtifactsInfo: {
+            dateSaved: new Date(),
+            modelTopologyType: 'JSON',
+         },
+         ...artifacts,
+      })
+   );
+   return (await modelTosave.save(handler)) as tf.io.ModelArtifacts;
 }
 
 /**
@@ -1004,48 +993,48 @@ export async function saveModelArtifacts({
  * ```
  */
 export function saveModelAsLocal({
-    status,
-    model,
-    config,
-    silentSave = false,
+   status,
+   model,
+   config,
+   silentSave = false,
 }: SaveModelAsLocalProps): SaveModelAsLocalResults {
-    try {
-        // Throws error if model is not initialized
-        checkIfInitialized(model.isInitialized);
+   try {
+      // Throws error if model is not initialized
+      checkIfInitialized(model.isInitialized);
 
-        if (
-            !silentSave &&
-            (!status.pairsArrayForSaving ||
-                status.pairsArrayForSaving.length === 0)
-        ) {
-            throw new Error("Aucune paire d'entraînement à sauvegarder", {
-                cause: {
-                    status: 404,
-                    message: 'No training pairs to save were found',
-                },
-            });
-        }
-
-        localStorage.setItem(
-            config.localStorageKey,
-            JSON.stringify(status.pairsArrayForSaving)
-        );
-
-        return {
-            status: 200,
-            message: "Sauvegarde locale des paires d'entraînement réussie",
-        };
-    } catch (error) {
-        console.log(error);
-        return {
-            error: {
-                status: (error as CustomError).cause?.status || 500,
-                message:
-                    (error as CustomError).cause?.message ||
-                    'Erreur lors de la sauvegarde du modèle',
+      if (
+         !silentSave &&
+         (!status.pairsArrayForSaving ||
+            status.pairsArrayForSaving.length === 0)
+      ) {
+         throw new Error("Aucune paire d'entraînement à sauvegarder", {
+            cause: {
+               status: 404,
+               message: 'No training pairs to save were found',
             },
-        };
-    }
+         });
+      }
+
+      localStorage.setItem(
+         config.localStorageKey,
+         JSON.stringify(status.pairsArrayForSaving)
+      );
+
+      return {
+         status: 200,
+         message: "Sauvegarde locale des paires d'entraînement réussie",
+      };
+   } catch (error) {
+      console.log(error);
+      return {
+         error: {
+            status: (error as CustomError).cause?.status || 500,
+            message:
+               (error as CustomError).cause?.message ||
+               'Erreur lors de la sauvegarde du modèle',
+         },
+      };
+   }
 }
 
 /**
@@ -1102,70 +1091,70 @@ export function saveModelAsLocal({
  * ```
  */
 export async function saveModelToFile({
-    status,
-    name = 'IAModelSave',
-    model,
-    config,
+   status,
+   name = 'IAModelSave',
+   model,
+   config,
 }: SaveModelToFileProps): Promise<SaveModelToFileResults> {
-    try {
-        checkIfInitialized(model.isInitialized);
-        checkIfModelsFound({
-            siameseModel: model.siameseModel,
-            featureExtractor: model.featureExtractor,
-        });
+   try {
+      checkIfInitialized(model.isInitialized);
+      checkIfModelsFound({
+         siameseModel: model.siameseModel,
+         featureExtractor: model.featureExtractor,
+      });
 
-        const modelName = name || config.taskName;
+      const modelName = name || config.taskName;
 
-        // Data capture for the models
-        const siameseArtifacts = await saveModelArtifacts({
-            modelTosave: model.siameseModel!,
-        });
-        const featureArtifacts = await saveModelArtifacts({
-            modelTosave: model.featureExtractor!,
-        });
-        if (!siameseArtifacts || !featureArtifacts) {
-            throw new Error('Échec de la sauvegarde des artefacts du modèle', {
-                cause: {
-                    status: 500,
-                    message: 'Failed to save model artifacts',
-                },
-            });
-        }
-        // Create object to save
-        const modelData = createCompleteDataStructure({
-            siameseArtifacts,
-            featureArtifacts,
-            config,
-            status,
-            modelName,
-        });
-
-        if ('error' in modelData) {
-            throw new Error('Échec de la création de la structure de données', {
-                cause: {
-                    status: 500,
-                    message: 'Failed to create model data structure',
-                },
-            });
-        }
-
-        return {
-            modelData,
-            status: 200,
-            message: 'Modèle sauvegardé avec succès',
-            type: 'savingToFile',
-        };
-    } catch (error) {
-        return {
-            error: {
-                type: 'savingToFile',
-                status: (error as CustomError).cause?.status || 500,
-                message:
-                    (error as CustomError).cause?.message ||
-                    'Erreur lors de la sauvegarde du modèle',
+      // Data capture for the models
+      const siameseArtifacts = await captureModelArtifacts({
+         modelTosave: model.siameseModel!,
+      });
+      const featureArtifacts = await captureModelArtifacts({
+         modelTosave: model.featureExtractor!,
+      });
+      if (!siameseArtifacts || !featureArtifacts) {
+         throw new Error('Échec de la sauvegarde des artefacts du modèle', {
+            cause: {
+               status: 500,
+               message: 'Failed to save model artifacts',
             },
-        };
-    }
+         });
+      }
+      // Create object to save
+      const modelData = createCompleteDataStructure({
+         siameseArtifacts,
+         featureArtifacts,
+         config,
+         status,
+         modelName,
+      });
+
+      if ('error' in modelData) {
+         throw new Error('Échec de la création de la structure de données', {
+            cause: {
+               status: 500,
+               message: 'Failed to create model data structure',
+            },
+         });
+      }
+
+      return {
+         modelData,
+         status: 200,
+         message: 'Modèle sauvegardé avec succès',
+         type: 'savingToFile',
+      };
+   } catch (error) {
+      return {
+         error: {
+            type: 'savingToFile',
+            status: (error as CustomError).cause?.status || 500,
+            message:
+               (error as CustomError).cause?.message ||
+               'Erreur lors de la sauvegarde du modèle',
+         },
+      };
+   }
 }
 
 /**
@@ -1183,76 +1172,78 @@ export async function saveModelToFile({
  * @returns The complete data structure for the model.
  */
 function createCompleteDataStructure({
-    siameseArtifacts,
-    featureArtifacts,
-    config,
-    status,
-    modelName,
+   siameseArtifacts,
+   featureArtifacts,
+   config,
+   status,
+   modelName,
 }: CreateCompleteDataStructureProps): CreateCompleteDataStructureResults {
-    try {
-        const metadataProperties = createPropertiesFromItem({
-            item: config,
-            configVariable: METADATA_PROPERTIES_FROM_CONFIG,
-        });
-        const siameseProperties = createPropertiesFromItem({
-            item: siameseArtifacts,
-            configVariable: ARTIFACTS_PROPERTIES_FROM_ARTIFACTS,
-        });
-        const featureProperties = createPropertiesFromItem({
-            item: featureArtifacts,
-            configVariable: ARTIFACTS_PROPERTIES_FROM_ARTIFACTS,
-        });
-        const modelData = {
-            metadata: {
-                name: modelName,
-                timestamp: new Date().toISOString(),
-                trainingPairsCount: status.trainingPairs.length,
-                comparisonCount: status.comparisonCount,
-                ...metadataProperties,
-            },
-            siameseModel: {
-                weightData: arrayBufferToBase64(
-                    siameseArtifacts.weightData as ArrayBuffer
-                ),
-                // weightData: Array.from(
-                //     new Uint8Array(siameseArtifacts.weightData)
-                // ),
-                // weightData: btoa(
-                //     String.fromCharCode(
-                //         ...new Uint8Array(
-                //             siameseArtifacts.weightData as ArrayBuffer
-                //         )
-                //     )
-                // ),
-                ...siameseProperties,
-            },
-            featureExtractor: {
-                weightData: arrayBufferToBase64(
-                    featureArtifacts.weightData as ArrayBuffer
-                ),
+   try {
+      // Attributes to save
+      const metadataProperties = createPropertiesFromItem({
+         item: config,
+         configVariable: METADATA_PROPERTIES_FROM_CONFIG,
+      });
+      const siameseProperties = createPropertiesFromItem({
+         item: siameseArtifacts,
+         configVariable: ARTIFACTS_PROPERTIES_FROM_ARTIFACTS,
+      });
+      const featureProperties = createPropertiesFromItem({
+         item: featureArtifacts,
+         configVariable: ARTIFACTS_PROPERTIES_FROM_ARTIFACTS,
+      });
 
-                // weightData: Array.from(
-                //     new Uint8Array(featureArtifacts.weightData)
-                // ),
-                // weightData: btoa(
-                //     String.fromCharCode(
-                //         ...new Uint8Array(
-                //             featureArtifacts.weightData as ArrayBuffer
-                //         )
-                //     )
-                // ),
-                ...featureProperties,
-            },
-        };
-        return modelData;
-    } catch (error) {
-        return {
-            error: {
-                message: (error as CustomError).message || 'Erreur inconnue',
-                status: 500,
-            },
-        };
-    }
+      const modelData = {
+         metadata: {
+            name: modelName,
+            timestamp: new Date().toISOString(),
+            trainingPairsCount: status.trainingPairs.length,
+            comparisonCount: status.comparisonCount,
+            ...metadataProperties,
+         },
+         siameseModel: {
+            weightData: arrayBufferToBase64(
+               siameseArtifacts.weightData as ArrayBuffer
+            ),
+            // weightData: Array.from(
+            //     new Uint8Array(siameseArtifacts.weightData)
+            // ),
+            // weightData: btoa(
+            //     String.fromCharCode(
+            //         ...new Uint8Array(
+            //             siameseArtifacts.weightData as ArrayBuffer
+            //         )
+            //     )
+            // ),
+            ...siameseProperties,
+         },
+         featureExtractor: {
+            weightData: arrayBufferToBase64(
+               featureArtifacts.weightData as ArrayBuffer
+            ),
+
+            // weightData: Array.from(
+            //     new Uint8Array(featureArtifacts.weightData)
+            // ),
+            // weightData: btoa(
+            //     String.fromCharCode(
+            //         ...new Uint8Array(
+            //             featureArtifacts.weightData as ArrayBuffer
+            //         )
+            //     )
+            // ),
+            ...featureProperties,
+         },
+      };
+      return modelData;
+   } catch (error) {
+      return {
+         error: {
+            message: (error as CustomError).message || 'Erreur inconnue',
+            status: 500,
+         },
+      };
+   }
 }
 
 /**
@@ -1262,16 +1253,16 @@ function createCompleteDataStructure({
  * @returns The Base64 string representation of the ArrayBuffer.
  */
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
-    let binary = '';
-    const bytes = new Uint8Array(buffer);
-    const chunkSize = 0x8000; // 32k
-    for (let i = 0; i < bytes.length; i += chunkSize) {
-        binary += String.fromCharCode.apply(
-            null,
-            Array.from(bytes.subarray(i, i + chunkSize))
-        );
-    }
-    return btoa(binary);
+   let binary = '';
+   const bytes = new Uint8Array(buffer);
+   const chunkSize = 0x8000; // 32k
+   for (let i = 0; i < bytes.length; i += chunkSize) {
+      binary += String.fromCharCode.apply(
+         null,
+         Array.from(bytes.subarray(i, i + chunkSize))
+      );
+   }
+   return btoa(binary);
 }
 
 /**
@@ -1284,16 +1275,16 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
  * @returns A record containing the filtered properties.
  */
 function createPropertiesFromItem({
-    item,
-    configVariable,
+   item,
+   configVariable,
 }: CreatePropertiesFromItemProps): Partial<
-    ArtifactProperties | MetadataProperties
+   ArtifactProperties | MetadataProperties
 > {
-    return Object.fromEntries(
-        Object.entries(item).filter(([key]) =>
-            configVariable.includes(key as (typeof configVariable)[number])
-        )
-    );
+   return Object.fromEntries(
+      Object.entries(item).filter(([key]) =>
+         configVariable.includes(key as (typeof configVariable)[number])
+      )
+   );
 }
 
 /**
@@ -1308,31 +1299,31 @@ function createPropertiesFromItem({
  * @returns A promise that resolves when the state is updated.
  */
 export async function checkForErrorAndUpdateState<
-    T extends Record<string, unknown>
+   T extends Record<string, unknown>
 >({
-    results,
-    setStatus,
-    newValues = {},
+   results,
+   setStatus,
+   newValues = {},
 }: CheckForErrorAndUpdateStateProps<T>): Promise<void> {
-    if ('error' in results) {
-        // Ensure the loader can be displayed
-        // in certain circumstances
-        await wait(100);
-        updateState(
-            {
-                ...results,
-            },
-            setStatus
-        );
-        return;
-    }
-    updateState(
-        {
+   if ('error' in results) {
+      // Ensure the loader can be displayed
+      // in certain circumstances
+      await wait(100);
+      updateState(
+         {
             ...results,
-            ...newValues,
-        },
-        setStatus
-    );
+         },
+         setStatus
+      );
+      return;
+   }
+   updateState(
+      {
+         ...results,
+         ...newValues,
+      },
+      setStatus
+   );
 }
 
 // export function reset({ status, setStatus }) {
@@ -1370,14 +1361,14 @@ export async function checkForErrorAndUpdateState<
  * @throwsError `400` If the model is not initialized.
  */
 export function checkIfInitialized(isInitialized = false) {
-    if (!isInitialized) {
-        throw new Error("Système d'identification non initialisé", {
-            cause: {
-                status: 400,
-                message: 'System not initialized',
-            },
-        });
-    }
+   if (!isInitialized) {
+      throw new Error("Système d'identification non initialisé", {
+         cause: {
+            status: 400,
+            message: 'System not initialized',
+         },
+      });
+   }
 }
 
 /**
@@ -1388,114 +1379,147 @@ export function checkIfInitialized(isInitialized = false) {
  * @throwsError `404` If the models are not found.
  */
 export function checkIfModelsFound({
-    siameseModel,
-    featureExtractor,
+   siameseModel,
+   featureExtractor,
 }: CheckIfModelsFoundProps) {
-    if (!siameseModel || !featureExtractor) {
-        throw new Error('Modèles non trouvés', {
-            cause: {
-                status: 404,
-                message: 'Models not found',
-            },
-        });
-    }
+   if (!siameseModel || !featureExtractor) {
+      throw new Error('Modèles non trouvés', {
+         cause: {
+            status: 404,
+            message: 'Models not found',
+         },
+      });
+   }
 }
 
-export async function loadModelFromData({
-    modelData,
-    config,
-    updateStatus,
-    setModel,
-}) {
-    try {
-        // Vérifier la structure des données
-        checkIfModelsFound({
-            siameseModel: modelData.siameseModel,
-            featureExtractor: modelData.featureExtractor,
-        });
+export async function loadModelFromData({ data, config, setStatus, setModel }) {
+   try {
+      // Vérifier la structure des données
+      checkIfModelsFound({
+         siameseModel: data.siameseModel,
+         featureExtractor: data.featureExtractor,
+      });
 
-        // Restaurer les métadonnées si disponibles
-        if (modelData.metadata) {
-            config.taskName = modelData.metadata.taskName || config.taskName;
-            config.imageSize = modelData.metadata.imageSize || config.imageSize;
-            config.featureSize =
-                modelData.metadata.featureSize || config.featureSize;
-            // Reconvertir les données de poids
-            function base64ToArrayBuffer(base64: string): ArrayBuffer {
-                const binaryString = atob(base64);
-                const len = binaryString.length;
-                const bytes = new Uint8Array(len);
-                for (let i = 0; i < len; i++) {
-                    bytes[i] = binaryString.charCodeAt(i);
-                }
-                return bytes.buffer;
-            }
-            const siameseWeightData = base64ToArrayBuffer(
-                modelData.siameseModel.weightData
-            );
-            const featureWeightData = base64ToArrayBuffer(
-                modelData.featureExtractor.weightData
-            );
+      // Restaurer les métadonnées si disponibles
+      if (data.metadata) {
+         config.current.taskName =
+            data.metadata.taskName || config.current.taskName;
+         config.current.imageSize =
+            data.metadata.imageSize || config.current.imageSize;
+         config.current.featureSize =
+            data.metadata.featureSize || config.current.featureSize;
 
-            // Créer des IOHandlers personnalisés pour le chargement
-            const featureHandler = {
-                load: async () => ({
-                    modelTopology: modelData.featureExtractor.modelTopology,
-                    weightSpecs: modelData.featureExtractor.weightSpecs,
-                    weightData: featureWeightData,
-                    format: 'layers-model',
-                    generatedBy: 'TensorFlow.js',
-                    convertedBy: 'useAnimalIdentificationHook',
-                    userDefinedMetadata: {},
-                }),
-            };
+         const siameseWeightData = base64ToArrayBuffer(
+            data.siameseModel.weightData
+         );
+         const featureWeightData = base64ToArrayBuffer(
+            data.featureExtractor.weightData
+         );
 
-            const siameseHandler = {
-                load: async () => ({
-                    modelTopology: modelData.siameseModel.modelTopology,
-                    weightSpecs: modelData.siameseModel.weightSpecs,
-                    weightData: siameseWeightData,
-                    format: 'layers-model',
-                    generatedBy: 'TensorFlow.js',
-                    convertedBy: 'useAnimalIdentificationHook',
-                    userDefinedMetadata: {},
-                }),
-            };
+         // Créer des IOHandlers personnalisés pour le chargement
+         const featureHandler = createFeatureHandler({
+            weightData: featureWeightData,
+            data: data.featureExtractor,
+            metadata: data.metadata,
+         });
+         const siameseHandler = createFeatureHandler({
+            weightData: siameseWeightData,
+            data: data.siameseModel,
+            metadata: data.metadata,
+         });
 
-            console.log('🔄 Chargement du feature extractor...');
+         console.log('🔄 Chargement du feature extractor...');
 
-            const featureExtractor = await tf.loadLayersModel(featureHandler);
-            console.log('✅ Feature extractor chargé');
+         const featureExtractor = await tf.loadLayersModel(featureHandler);
+         console.log('✅ Feature extractor chargé');
 
-            console.log('🔄 Chargement du modèle siamois...');
-            const siameseModel = await tf.loadLayersModel(siameseHandler);
-            console.log('✅ Modèle siamois chargé');
+         console.log('🔄 Chargement du modèle siamois...');
+         const siameseModel = await tf.loadLayersModel(siameseHandler);
+         console.log('✅ Modèle siamois chargé');
 
-            siameseModel.compile({
-                optimizer: config.optimizer || tf.train.adam(0.0001),
-                loss: config.loss || 'binaryCrossentropy',
-                metrics: config.metrics || ['accuracy'],
-            });
-            setModel(async (prev) => ({
-                ...prev,
-                siameseModel,
-                isInitialized: true,
-                featureExtractor,
-            }));
-            const modelName = modelData.metadata?.name || 'modèle-chargé';
+         siameseModel.compile({
+            optimizer: config.optimizer || tf.train.adam(0.0001),
+            loss: config.loss || 'binaryCrossentropy',
+            metrics: config.metrics || ['accuracy'],
+         });
+         // setModel(async (prev) => ({
+         //     ...prev,
+         //     siameseModel,
+         //     isInitialized: true,
+         //     featureExtractor,
+         // }));
+         const modelName = data.metadata?.name || 'modèle-chargé';
 
-            // this.loadData();
+         // this.loadData();
 
-            console.log(`📂 Modèle chargé avec succès: ${modelName}`);
-            return true;
-        }
-    } catch (error) {
-        updateStatus({
-            error: {
-                message: `❌ Erreur lors du chargement du modèle: ${error.message}`,
-                status: error.cause?.status || 500,
-            },
-        });
-        return false;
-    }
+         console.log(`📂 Modèle chargé avec succès: ${modelName}`);
+         return {
+            status: 200,
+            message: 'Modèle chargé avec succès',
+            siameseModel,
+            featureExtractor,
+            modelName,
+         };
+      }
+   } catch (error) {
+      return {
+         error: {
+            message:
+               (error as CustomError).cause?.message ||
+               `Erreur lors du chargement du modèle: ${
+                  error as Error
+               }.message}`,
+            status: (error as CustomError).cause?.status || 500,
+         },
+      };
+   }
+}
+
+/**
+ * Converts a Base64 string to an ArrayBuffer.
+ *
+ * @description This is used to convert the weight data from Base64 to ArrayBuffer format.
+ *
+ * @param base64 - The Base64 string to convert.
+ * @returns The converted ArrayBuffer.
+ */
+function base64ToArrayBuffer(base64: string): ArrayBuffer {
+   const binaryString = atob(base64);
+   // const len = binaryString.length;
+   const bytes = new Uint8Array(binaryString.length);
+   // for (let i = 0; i < len; i++) {
+   //     bytes[i] = binaryString.charCodeAt(i);
+   // }
+   bytes.forEach((byte, i) => {
+      byte = binaryString.charCodeAt(i);
+   });
+   return bytes.buffer;
+}
+
+/**
+ * Creates a feature handler for loading the feature extractor model.
+ *
+ * @param featureArtifacts - The artifacts of the feature extractor model.
+ * @param data - The data containing the feature extractor model topology and weight specs.
+ * @description This function creates a feature handler for loading the feature extractor model.
+ * @returns
+ */
+function createFeatureHandler({
+   weightData,
+   data,
+   metadata = {},
+}: CreateFeatureHandlerProps): tf.io.IOHandler | void {
+   if ('error' in data) return;
+
+   return {
+      load: async () => ({
+         modelTopology: data.modelTopology,
+         weightSpecs: data.weightSpecs,
+         weightData: weightData,
+         format: 'layers-model',
+         generatedBy: 'TensorFlow.js',
+         convertedBy: 'useAnimalIdentificationHook',
+         userDefinedMetadata: { ...metadata },
+      }),
+   };
 }
