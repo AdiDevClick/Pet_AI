@@ -1,4 +1,4 @@
-import * as tf from '@tensorflow/tfjs';
+import * as tf from "@tensorflow/tfjs";
 import type {
    AddTrainingPairToModelProps,
    AddTrainingPairToModelResults,
@@ -20,6 +20,8 @@ import type {
    InitializeProps,
    InitializeResults,
    LoadImageElementProps,
+   LoadModelFromDataProps,
+   LoadModelFromDataResults,
    LoadStorageDataProps,
    LoadStorageDataResults,
    MetadataProperties,
@@ -34,13 +36,13 @@ import type {
    TrainingPair,
    TrainModelProps,
    TrainModelResults,
-} from '@/hooks/models/useAnimalIdentificationTypes.ts';
-import type { CustomError } from '@/mainTypes.ts';
+} from "@/hooks/models/useAnimalIdentificationTypes.ts";
+import type { CustomError } from "@/mainTypes.ts";
 import {
    ARTIFACTS_PROPERTIES_FROM_ARTIFACTS,
    METADATA_PROPERTIES_FROM_CONFIG,
-} from '@/configs/file.config.ts';
-import { updateState, wait } from '@/lib/utils.ts';
+} from "@/configs/file.config.ts";
+import { updateState, wait } from "@/lib/utils.ts";
 
 /**
  * Get the data balance of the training pairs.
@@ -130,7 +132,7 @@ export async function loadStorageData({
             {
                cause: {
                   status: 404,
-                  message: 'No training pairs found',
+                  message: "No training pairs found",
                },
             }
          );
@@ -149,12 +151,12 @@ export async function loadStorageData({
                isInitialized,
             });
 
-            if ('error' in pairs) {
+            if ("error" in pairs) {
                return Promise.reject(
                   new Error("Erreur d'ajout de tensor paires", {
                      cause: {
                         status: pairs.error.status || 500,
-                        message: pairs.error.message || 'Error loading pairs',
+                        message: pairs.error.message || "Error loading pairs",
                      },
                   })
                );
@@ -194,7 +196,7 @@ export function loadImageElement({
 }: LoadImageElementProps): Promise<HTMLImageElement> {
    return new Promise((resolve, reject) => {
       const img = new Image();
-      img.crossOrigin = 'anonymous';
+      img.crossOrigin = "anonymous";
       img.src = imageUrl;
 
       img.onload = () => resolve(img);
@@ -243,7 +245,7 @@ export function addTrainingPairToModel({
    } catch (error) {
       return {
          error: {
-            status: (error as CustomError).cause?.status || '500',
+            status: (error as CustomError).cause?.status || "500",
             message:
                (error as CustomError).cause?.message ||
                (error as Error).message,
@@ -334,7 +336,7 @@ export function preprocessImage({
             cause: {
                status: 500,
                message:
-                  (error as Error).message || 'Image preprocessing failed',
+                  (error as Error).message || "Image preprocessing failed",
             },
          });
       }
@@ -371,8 +373,8 @@ export function createFeatureExtractor({
                inputShape: [config.imageSize, config.imageSize, 3],
                filters: 32,
                kernelSize: 3,
-               activation: 'relu',
-               padding: 'same',
+               activation: "relu",
+               padding: "same",
             }),
             tf.layers.maxPooling2d({ poolSize: 2 }),
             tf.layers.dropout({ rate: 0.1 }),
@@ -380,8 +382,8 @@ export function createFeatureExtractor({
             tf.layers.conv2d({
                filters: 64,
                kernelSize: 3,
-               activation: 'relu',
-               padding: 'same',
+               activation: "relu",
+               padding: "same",
             }),
             tf.layers.maxPooling2d({ poolSize: 2 }),
             tf.layers.dropout({ rate: 0.15 }),
@@ -389,8 +391,8 @@ export function createFeatureExtractor({
             tf.layers.conv2d({
                filters: 128,
                kernelSize: 3,
-               activation: 'relu',
-               padding: 'same',
+               activation: "relu",
+               padding: "same",
             }),
             tf.layers.maxPooling2d({ poolSize: 2 }),
             tf.layers.dropout({ rate: 0.2 }),
@@ -398,23 +400,23 @@ export function createFeatureExtractor({
             tf.layers.conv2d({
                filters: 256,
                kernelSize: 3,
-               activation: 'relu',
-               padding: 'same',
+               activation: "relu",
+               padding: "same",
             }),
             tf.layers.globalAveragePooling2d({
-               dataFormat: 'channelsLast',
+               dataFormat: "channelsLast",
             }),
 
             tf.layers.dense({
                units: 512,
-               activation: 'relu',
+               activation: "relu",
             }),
             tf.layers.dropout({ rate: 0.3 }),
 
             tf.layers.dense({
                units: config.featureSize,
-               activation: 'tanh',
-               name: 'feature_embedding',
+               activation: "tanh",
+               name: "feature_embedding",
             }),
          ],
       });
@@ -433,10 +435,10 @@ export function createFeatureExtractor({
  */
 export function setupOptimalBackend() {
    // try {
-   if (tf.getBackend() === 'webgl') {
+   if (tf.getBackend() === "webgl") {
       return;
    }
-   tf.setBackend('webgl');
+   tf.setBackend("webgl");
    // } catch (error) {
    //     tf.setBackend('cpu');
    // }
@@ -471,11 +473,11 @@ export function createSiameseModel({
    try {
       const inputA = tf.input({
          shape: [config.imageSize, config.imageSize, 3],
-         name: 'image_a',
+         name: "image_a",
       });
       const inputB = tf.input({
          shape: [config.imageSize, config.imageSize, 3],
-         name: 'image_b',
+         name: "image_b",
       });
 
       // Extraire les features des deux images
@@ -485,7 +487,7 @@ export function createSiameseModel({
       // Concaténer les features des deux images
       const concatenated = tf.layers
          .concatenate({
-            name: 'features_concat',
+            name: "features_concat",
          })
          .apply([featuresA, featuresB]);
 
@@ -493,52 +495,52 @@ export function createSiameseModel({
       let decision = tf.layers
          .dense({
             units: 256,
-            activation: 'relu',
-            name: 'main_decision',
+            activation: "relu",
+            name: "main_decision",
          })
          .apply(concatenated);
 
       decision = tf.layers
-         .dropout({ rate: 0.3, name: 'main_dropout' })
+         .dropout({ rate: 0.3, name: "main_dropout" })
          .apply(decision);
 
       decision = tf.layers
          .dense({
             units: 128,
-            activation: 'relu',
-            name: 'secondary_decision',
+            activation: "relu",
+            name: "secondary_decision",
          })
          .apply(decision);
 
       decision = tf.layers
-         .dropout({ rate: 0.2, name: 'secondary_dropout' })
+         .dropout({ rate: 0.2, name: "secondary_dropout" })
          .apply(decision);
 
       decision = tf.layers
          .dense({
             units: 64,
-            activation: 'relu',
-            name: 'tertiary_decision',
+            activation: "relu",
+            name: "tertiary_decision",
          })
          .apply(decision);
 
       const prediction = tf.layers
          .dense({
             units: 1,
-            activation: 'sigmoid',
-            name: 'final_prediction',
+            activation: "sigmoid",
+            name: "final_prediction",
          })
          .apply(decision);
       const siameseModel = tf.model({
          inputs: [inputA, inputB],
          outputs: prediction as tf.SymbolicTensor,
-         name: 'siamese_network',
+         name: "siamese_network",
       });
 
       siameseModel.compile({
          optimizer: config.optimizer || tf.train.adam(0.0001),
-         loss: config.loss || 'binaryCrossentropy',
-         metrics: config.metrics || ['accuracy'],
+         loss: config.loss || "binaryCrossentropy",
+         metrics: config.metrics || ["accuracy"],
       });
       return { siameseModel: siameseModel, success: true };
    } catch {
@@ -584,7 +586,7 @@ export function initialize({
          throw new Error("Le système d'identification est déjà initialisé", {
             cause: {
                status: 400,
-               message: 'Already initialized',
+               message: "Already initialized",
             },
          });
       }
@@ -598,11 +600,11 @@ export function initialize({
          config,
       });
 
-      if (!feature.success || !('extractor' in feature)) {
+      if (!feature.success || !("extractor" in feature)) {
          throw new Error(`Échec de l'initialisation: ${feature.success}`, {
             cause: {
                status: 500,
-               message: 'Feature extraction failed',
+               message: "Feature extraction failed",
             },
          });
       }
@@ -612,11 +614,11 @@ export function initialize({
          featureExtractor: feature.extractor,
       });
 
-      if (!siamese.success || !('siameseModel' in siamese)) {
+      if (!siamese.success || !("siameseModel" in siamese)) {
          throw new Error(`Échec de l'initialisation: ${siamese}`, {
             cause: {
                status: 500,
-               message: 'Siamese model initialization failed',
+               message: "Siamese model initialization failed",
             },
          });
       }
@@ -664,15 +666,15 @@ export async function trainModel({
             cause: {
                status: 404,
                message:
-                  'Not enough training pairs. At least 4 pairs are required',
+                  "Not enough training pairs. At least 4 pairs are required",
             },
          });
       }
-      if (status.loadingState.isLoading === 'training') {
-         throw new Error('Entraînement déjà en cours', {
+      if (status.loadingState.isLoading === "training") {
+         throw new Error("Entraînement déjà en cours", {
             cause: {
                status: 409,
-               message: 'Training already in progress',
+               message: "Training already in progress",
             },
          });
       }
@@ -697,15 +699,15 @@ export async function trainModel({
             {
                cause: {
                   status: 500,
-                  message: 'Data imbalance detected',
+                  message: "Data imbalance detected",
                },
             }
          );
       }
 
-      const images1: TrainingPair['image1'][] = [];
-      const images2: TrainingPair['image2'][] = [];
-      const labels: TrainingPair['label'][] = [];
+      const images1: TrainingPair["image1"][] = [];
+      const images2: TrainingPair["image2"][] = [];
+      const labels: TrainingPair["label"][] = [];
 
       status.trainingPairs.forEach((pair) => {
          if (isTensor4D(pair.image1) && isTensor4D(pair.image2)) {
@@ -718,13 +720,13 @@ export async function trainModel({
       const xs1 = tf.concat(images1 as tf.Tensor4D[]);
       const xs2 = tf.concat(images2 as tf.Tensor4D[]);
 
-      const ys = tf.tensor1d(labels, 'float32');
+      const ys = tf.tensor1d(labels, "float32");
 
       if (!model.siameseModel) {
-         throw new Error('Le modèle Siamese non initialisé', {
+         throw new Error("Le modèle Siamese non initialisé", {
             cause: {
                status: 500,
-               message: 'Siamese model is not found',
+               message: "Siamese model is not found",
             },
          });
       }
@@ -748,9 +750,9 @@ export async function trainModel({
 
       return {
          loadingState: {
-            message: 'Entraînement du modèle terminé',
-            isLoading: 'done',
-            type: 'training',
+            message: "Entraînement du modèle terminé",
+            isLoading: "done",
+            type: "training",
          },
       };
    } catch (error) {
@@ -818,10 +820,10 @@ export async function compareImages({
       }
 
       if (imageArray.length !== 2) {
-         throw new Error('Deux images sont nécessaires pour la comparaison', {
+         throw new Error("Deux images sont nécessaires pour la comparaison", {
             cause: {
                status: 400,
-               message: 'Bad Request, you need two images',
+               message: "Bad Request, you need two images",
             },
          });
       }
@@ -830,19 +832,19 @@ export async function compareImages({
       const img2 = preprocessImage({ imageElement: imageArray[1], config });
 
       if (!model.siameseModel) {
-         throw new Error('Modèle Siamese non trouvé', {
+         throw new Error("Modèle Siamese non trouvé", {
             cause: {
                status: 404,
-               message: 'Siamese model not found',
+               message: "Siamese model not found",
             },
          });
       }
 
       if (!isTensor4D(img1) || !isTensor4D(img2)) {
-         throw new Error('Erreur de prétraitement des images', {
+         throw new Error("Erreur de prétraitement des images", {
             cause: {
                status: 500,
-               message: 'Image preprocessing failed, ensure images are tensors',
+               message: "Image preprocessing failed, ensure images are tensors",
             },
          });
       }
@@ -953,7 +955,7 @@ export async function captureModelArtifacts({
       async (artifacts: tf.io.ModelArtifacts) => ({
          modelArtifactsInfo: {
             dateSaved: new Date(),
-            modelTopologyType: 'JSON',
+            modelTopologyType: "JSON",
          },
          ...artifacts,
       })
@@ -1010,7 +1012,7 @@ export function saveModelAsLocal({
          throw new Error("Aucune paire d'entraînement à sauvegarder", {
             cause: {
                status: 404,
-               message: 'No training pairs to save were found',
+               message: "No training pairs to save were found",
             },
          });
       }
@@ -1031,7 +1033,7 @@ export function saveModelAsLocal({
             status: (error as CustomError).cause?.status || 500,
             message:
                (error as CustomError).cause?.message ||
-               'Erreur lors de la sauvegarde du modèle',
+               "Erreur lors de la sauvegarde du modèle",
          },
       };
    }
@@ -1092,7 +1094,7 @@ export function saveModelAsLocal({
  */
 export async function saveModelToFile({
    status,
-   name = 'IAModelSave',
+   name = "IAModelSave",
    model,
    config,
 }: SaveModelToFileProps): Promise<SaveModelToFileResults> {
@@ -1113,10 +1115,10 @@ export async function saveModelToFile({
          modelTosave: model.featureExtractor!,
       });
       if (!siameseArtifacts || !featureArtifacts) {
-         throw new Error('Échec de la sauvegarde des artefacts du modèle', {
+         throw new Error("Échec de la sauvegarde des artefacts du modèle", {
             cause: {
                status: 500,
-               message: 'Failed to save model artifacts',
+               message: "Failed to save model artifacts",
             },
          });
       }
@@ -1129,11 +1131,11 @@ export async function saveModelToFile({
          modelName,
       });
 
-      if ('error' in modelData) {
-         throw new Error('Échec de la création de la structure de données', {
+      if ("error" in modelData) {
+         throw new Error("Échec de la création de la structure de données", {
             cause: {
                status: 500,
-               message: 'Failed to create model data structure',
+               message: "Failed to create model data structure",
             },
          });
       }
@@ -1141,17 +1143,17 @@ export async function saveModelToFile({
       return {
          modelData,
          status: 200,
-         message: 'Modèle sauvegardé avec succès',
-         type: 'savingToFile',
+         message: "Modèle sauvegardé avec succès",
+         type: "savingToFile",
       };
    } catch (error) {
       return {
          error: {
-            type: 'savingToFile',
+            type: "savingToFile",
             status: (error as CustomError).cause?.status || 500,
             message:
                (error as CustomError).cause?.message ||
-               'Erreur lors de la sauvegarde du modèle',
+               "Erreur lors de la sauvegarde du modèle",
          },
       };
    }
@@ -1239,7 +1241,7 @@ function createCompleteDataStructure({
    } catch (error) {
       return {
          error: {
-            message: (error as CustomError).message || 'Erreur inconnue',
+            message: (error as CustomError).message || "Erreur inconnue",
             status: 500,
          },
       };
@@ -1253,7 +1255,7 @@ function createCompleteDataStructure({
  * @returns The Base64 string representation of the ArrayBuffer.
  */
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
-   let binary = '';
+   let binary = "";
    const bytes = new Uint8Array(buffer);
    const chunkSize = 0x8000; // 32k
    for (let i = 0; i < bytes.length; i += chunkSize) {
@@ -1305,7 +1307,7 @@ export async function checkForErrorAndUpdateState<
    setStatus,
    newValues = {},
 }: CheckForErrorAndUpdateStateProps<T>): Promise<void> {
-   if ('error' in results) {
+   if ("error" in results) {
       // Ensure the loader can be displayed
       // in certain circumstances
       await wait(100);
@@ -1365,7 +1367,7 @@ export function checkIfInitialized(isInitialized = false) {
       throw new Error("Système d'identification non initialisé", {
          cause: {
             status: 400,
-            message: 'System not initialized',
+            message: "System not initialized",
          },
       });
    }
@@ -1382,85 +1384,79 @@ export function checkIfModelsFound({
    siameseModel,
    featureExtractor,
 }: CheckIfModelsFoundProps) {
+   console.log(siameseModel, featureExtractor);
    if (!siameseModel || !featureExtractor) {
-      throw new Error('Modèles non trouvés', {
+      throw new Error("Modèles non trouvés", {
          cause: {
             status: 404,
-            message: 'Models not found',
+            message: "Models not found",
          },
       });
    }
 }
 
-export async function loadModelFromData({ data, config, setStatus, setModel }) {
+export async function loadModelFromData({
+   data,
+   config,
+}: LoadModelFromDataProps): Promise<LoadModelFromDataResults> {
    try {
+      // Restaurer les métadonnées si disponibles
+      if (!("metadata" in data)) {
+         throw new Error("Aucune métadonnée trouvée dans les données", {
+            cause: {
+               status: 404,
+               message: "Metadata not found",
+            },
+         });
+      }
+
       // Vérifier la structure des données
       checkIfModelsFound({
          siameseModel: data.siameseModel,
          featureExtractor: data.featureExtractor,
       });
 
-      // Restaurer les métadonnées si disponibles
-      if (data.metadata) {
-         config.current.taskName =
-            data.metadata.taskName || config.current.taskName;
-         config.current.imageSize =
-            data.metadata.imageSize || config.current.imageSize;
-         config.current.featureSize =
-            data.metadata.featureSize || config.current.featureSize;
+      config.taskName = data.metadata.taskName || config.taskName;
+      config.imageSize = data.metadata.imageSize || config.imageSize;
+      config.featureSize = data.metadata.featureSize || config.featureSize;
 
-         const siameseWeightData = base64ToArrayBuffer(
-            data.siameseModel.weightData
-         );
-         const featureWeightData = base64ToArrayBuffer(
-            data.featureExtractor.weightData
-         );
+      const siameseWeightData = base64ToArrayBuffer(
+         data.siameseModel.weightData
+      );
+      const featureWeightData = base64ToArrayBuffer(
+         data.featureExtractor.weightData
+      );
 
-         // Créer des IOHandlers personnalisés pour le chargement
-         const featureHandler = createFeatureHandler({
-            weightData: featureWeightData,
-            data: data.featureExtractor,
-            metadata: data.metadata,
-         });
-         const siameseHandler = createFeatureHandler({
-            weightData: siameseWeightData,
-            data: data.siameseModel,
-            metadata: data.metadata,
-         });
+      // Créer des IOHandlers personnalisés pour le chargement
+      const featureHandler = createFeatureHandler({
+         weightData: featureWeightData,
+         data: data.featureExtractor,
+         metadata: data.metadata,
+      });
+      const siameseHandler = createFeatureHandler({
+         weightData: siameseWeightData,
+         data: data.siameseModel,
+         metadata: data.metadata,
+      });
 
-         console.log('🔄 Chargement du feature extractor...');
+      const featureExtractor = await tf.loadLayersModel(featureHandler);
+      const siameseModel = await tf.loadLayersModel(siameseHandler);
 
-         const featureExtractor = await tf.loadLayersModel(featureHandler);
-         console.log('✅ Feature extractor chargé');
+      siameseModel.compile({
+         optimizer: config.optimizer || tf.train.adam(0.0001),
+         loss: config.loss || "binaryCrossentropy",
+         metrics: config.metrics || ["accuracy"],
+      });
 
-         console.log('🔄 Chargement du modèle siamois...');
-         const siameseModel = await tf.loadLayersModel(siameseHandler);
-         console.log('✅ Modèle siamois chargé');
+      const modelName = data.metadata?.name || "modèle-chargé";
 
-         siameseModel.compile({
-            optimizer: config.optimizer || tf.train.adam(0.0001),
-            loss: config.loss || 'binaryCrossentropy',
-            metrics: config.metrics || ['accuracy'],
-         });
-         // setModel(async (prev) => ({
-         //     ...prev,
-         //     siameseModel,
-         //     isInitialized: true,
-         //     featureExtractor,
-         // }));
-         const modelName = data.metadata?.name || 'modèle-chargé';
-
-         // this.loadData();
-
-         console.log(`📂 Modèle chargé avec succès: ${modelName}`);
-         return {
-            status: 200,
-            message: 'Modèle chargé avec succès',
-            siameseModel,
-            featureExtractor,
-            modelName,
-         };
-      }
+      return {
+         status: 200,
+         message: "Modèle chargé avec succès",
+         siameseModel,
+         featureExtractor,
+         modelName,
+      };
    } catch (error) {
       return {
          error: {
@@ -1483,17 +1479,8 @@ export async function loadModelFromData({ data, config, setStatus, setModel }) {
  * @param base64 - The Base64 string to convert.
  * @returns The converted ArrayBuffer.
  */
-function base64ToArrayBuffer(base64: string): ArrayBuffer {
-   const binaryString = atob(base64);
-   // const len = binaryString.length;
-   const bytes = new Uint8Array(binaryString.length);
-   // for (let i = 0; i < len; i++) {
-   //     bytes[i] = binaryString.charCodeAt(i);
-   // }
-   bytes.forEach((byte, i) => {
-      byte = binaryString.charCodeAt(i);
-   });
-   return bytes.buffer;
+function base64ToArrayBuffer(base64: number[]): ArrayBuffer {
+   return new Uint8Array(base64).buffer;
 }
 
 /**
@@ -1509,16 +1496,16 @@ function createFeatureHandler({
    data,
    metadata = {},
 }: CreateFeatureHandlerProps): tf.io.IOHandler | void {
-   if ('error' in data) return;
+   if ("error" in data) return;
 
    return {
       load: async () => ({
          modelTopology: data.modelTopology,
          weightSpecs: data.weightSpecs,
          weightData: weightData,
-         format: 'layers-model',
-         generatedBy: 'TensorFlow.js',
-         convertedBy: 'useAnimalIdentificationHook',
+         format: "layers-model",
+         generatedBy: "TensorFlow.js",
+         convertedBy: "useAnimalIdentificationHook",
          userDefinedMetadata: { ...metadata },
       }),
    };
