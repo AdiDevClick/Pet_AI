@@ -20,7 +20,7 @@ export interface AnimalIdentification {
    // findMatches,
    resetModel: () => Promise<void>;
    saveModel: () => Promise<void>;
-   loadModel: () => Promise<void>;
+   loadModel: (modelJSONData: string) => Promise<ModelTypes>;
 }
 
 export type ConfigTypes = {
@@ -328,4 +328,17 @@ export interface SaveModelToFileResults extends Record<string, unknown> {
 export interface CreateFeatureHandlerProps {
    featureArtifacts: MetadataProperties & ArtifactProperties;
    data: CreateCompleteDataStructureResults;
+}
+
+export type LoadModelFromDataProps = {
+   data: Exclude<CreateCompleteDataStructureResults, "error">;
+   config: ConfigTypes;
+};
+
+export interface LoadModelFromDataResults
+   extends Partial<CheckIfModelsFoundProps> {
+   modelName?: string;
+   status?: number;
+   message?: string;
+   error?: StatusTypes["error"];
 }
