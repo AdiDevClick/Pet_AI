@@ -1,9 +1,10 @@
+import { defaultState } from "@/components/Controls/Controls.tsx";
 import type {
    LoadModelTypes,
    TrainModelPropsTypes,
 } from "@/components/Controls/controlsTypes";
 import { MODEL_LOADER_ID } from "@/configs/toaster.config.ts";
-import { wait } from "@/lib/utils.ts";
+import { updateState, wait } from "@/lib/utils.ts";
 import type { CustomError } from "@/mainTypes.ts";
 import { toast } from "sonner";
 
@@ -103,25 +104,34 @@ export async function loadDefaultDataArray({ e }) {
  *
  * @trigger The `setButtonState` setter with error and button id.
  */
-export async function loadModel({ e, setButtonState }: LoadModelTypes) {
+export async function loadThisModel({ data, callFunc }: LoadModelTypes) {
+   const success = await callFunc(data);
+   return await {
+      ...success,
+   };
+}
+
+export async function openFileExplorer({
+   e,
+   ...functionProps
+}: LoadModelTypes) {
    e.preventDefault();
    const element = e.target as HTMLElement;
-   const success = await window.animalIdentifier.loadModel();
 
-   if (!success.status) {
-      toast.error("Erreur de chargement du modèle", {
-         position: "top-right",
-      });
-   } else {
-      toast.success("Modèle chargé avec succès!", {
-         position: "top-right",
-      });
+   if (
+      functionProps.buttonState.id !== element.id ||
+      !functionProps.buttonState.upload.state
+   ) {
+      updateState(
+         {
+            ...defaultState,
+            id: element.id,
+            upload: { state: true, data: null },
+         },
+         functionProps.setButtonState
+      );
+      return;
    }
-
-   return setButtonState({
-      ...success,
-      id: element.id,
-   });
 }
 
 export async function resetSystem({ e, ...functionProps }) {
