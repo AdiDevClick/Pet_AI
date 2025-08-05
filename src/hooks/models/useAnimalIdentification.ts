@@ -409,9 +409,16 @@ export function useAnimalIdentification(): AnimalIdentification {
       [model.featureExtractor, model.siameseModel, status, model.isInitialized]
    );
 
-   // Charger un modèle
-   const loadModel = useCallback(async (modelJSONData = null) => {
-      if (!modelJSONData) return;
+   /**
+    * Load a model from JSON data.
+    *
+    * @description This will only accept parsed JSON data.
+    * It will update the model state with the loaded model data.
+    *
+    * @param modelJSONData - The JSON data of the model to be loaded.
+    * @returns The loaded model data with the status.
+    */
+   const loadModel = useCallback(async (modelJSONData: string) => {
       updateState(
          {
             loadingState: {
@@ -422,11 +429,10 @@ export function useAnimalIdentification(): AnimalIdentification {
          },
          setStatus
       );
+
       const results = await loadModelFromData({
          data: modelJSONData,
-         setModel,
          config: configRef.current,
-         setStatus,
       });
 
       if (results) {
@@ -447,6 +453,7 @@ export function useAnimalIdentification(): AnimalIdentification {
                },
             },
          });
+         return results;
       }
    }, []);
 
