@@ -1,16 +1,16 @@
-import type { AlertDialogButtonProps } from '@/components/Alerts/alertsTypes.ts';
+import type { AlertDialogButtonProps } from "@/components/Alerts/alertsTypes.ts";
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogOverlay,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from '@/components/ui/alert-dialog.tsx';
+   AlertDialog,
+   AlertDialogAction,
+   AlertDialogCancel,
+   AlertDialogContent,
+   AlertDialogDescription,
+   AlertDialogFooter,
+   AlertDialogHeader,
+   AlertDialogOverlay,
+   AlertDialogTitle,
+   AlertDialogTrigger,
+} from "@/components/ui/alert-dialog.tsx";
 
 /**
  * Modal dialog button component.
@@ -23,34 +23,37 @@ import {
  * @param props - Additional properties for the AlertDialog component.
  */
 export function AlertDialogButton({
-    children,
-    ...props
+   children,
+   ...props
 }: AlertDialogButtonProps) {
-    return (
-        <AlertDialog {...props}>
-            <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
-            <AlertDialogOverlay />
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>
-                        {props.context?.title || 'Titre par défaut'}
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                        {props.context?.error || 'Message par défaut'}
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                    {props.context?.cancelable && (
-                        <>
-                            <AlertDialogCancel {...props.context.functions}>
-                                {props.context.retryButtonText}
-                            </AlertDialogCancel>
-                            <AlertDialogCancel>Annuler</AlertDialogCancel>
-                        </>
-                    )}
-                    <AlertDialogAction>Ok</AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
-    );
+   return (
+      <AlertDialog {...props}>
+         <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
+         <AlertDialogOverlay />
+         <AlertDialogContent>
+            <AlertDialogHeader>
+               <AlertDialogTitle>
+                  {props.context?.title || "Titre par défaut"}
+               </AlertDialogTitle>
+               <AlertDialogDescription>
+                  {props.context?.message || "Message par défaut"}
+               </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+               {props.context?.cancelable && (
+                  <>
+                     <AlertDialogCancel
+                        id={props.context.id}
+                        {...props.context.functions}
+                     >
+                        {props.context.retryButtonText}
+                     </AlertDialogCancel>
+                     <AlertDialogCancel>Annuler</AlertDialogCancel>
+                  </>
+               )}
+               <AlertDialogAction>Ok</AlertDialogAction>
+            </AlertDialogFooter>
+         </AlertDialogContent>
+      </AlertDialog>
+   );
 }
