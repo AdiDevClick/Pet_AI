@@ -1,5 +1,5 @@
-import type { ButtonProps } from '@/components/Buttons/buttonTypes.ts';
-import '@css/button.scss';
+import type { ButtonProps } from "@/components/Buttons/buttonTypes.ts";
+import "@css/button.scss";
 
 /**
  * Generic Button Component that renders a styled button element.
@@ -12,17 +12,17 @@ import '@css/button.scss';
  * It can include event handlers, styles, and other attributes.
  */
 export function Button<T>({
-    children,
-    type = 'button',
-    ...props
+   children,
+   type = "button",
+   ...props
 }: ButtonProps<T>) {
-    return (
-        <button
-            {...props}
-            className={`btn ${props.className ? props.className : ''}`}
-            type={type}
-        >
-            {children}
-        </button>
-    );
+   return (
+      <button
+         {...props}
+         className={`btn ${props.className ? props.className : ""}`}
+         type={type}
+      >
+         {children}
+      </button>
+   );
 }
