@@ -4,13 +4,28 @@ import {
 } from "@/api/context/animalContext/AnimalModelContext.tsx";
 import { AlertDialogButton } from "@/components/Alerts/AlertDialogButton";
 import { Button } from "@/components/Buttons/Button";
-import type { ControlsStateTypes } from "@/components/Controls/controlsTypes.ts";
+import type {
+   ControlsPropsTypes,
+   ControlsStateTypes,
+} from "@/components/Controls/controlsTypes.ts";
 import { clickableButtons, functionProps } from "@/configs/controls.config.ts";
 import { useDownloadFileFromData } from "@/hooks/download/useDownloadFileFromData.ts";
+import { useUploadAFile } from "@/hooks/upload/useUploadAFile.ts";
 import type { contextTypes } from "@/mainTypes.ts";
 import "@css/controls.scss";
-import { memo, use, useState } from "react";
+import { memo, use, useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
+
+export const defaultState = {
+   status: false,
+   openModal: false,
+   download: { state: false, data: null },
+   upload: { state: false, data: null },
+   id: null,
+   error: null,
+} as const;
+
+Object.freeze(defaultState);
 
 /**
  * Controls component for rendering action buttons.
@@ -22,15 +37,13 @@ import { useOutletContext } from "react-router-dom";
  */
 export const MemoizedControls = memo(function Controls({
    buttons = clickableButtons,
-}) {
-   const [buttonState, setButtonState] = useState<ControlsStateTypes>({
-      status: false,
-      openModal: false,
-      download: { state: false, data: null },
-      id: null,
-      error: null,
-   });
+}: ControlsPropsTypes) {
+   const [buttonState, setButtonState] =
+      useState<
+         ControlsStateTypes<{ status: string | number; message: string } | null>
+      >(defaultState);
 
+   // Grab all contexts functions and properties
    const context: contextTypes = useOutletContext();
    const contextActions = use(AnimalActionsContext);
 
@@ -40,31 +53,62 @@ export const MemoizedControls = memo(function Controls({
       fileName: "Animal.json",
    });
 
+   const { fileError, fileResults } = useUploadAFile({
+      exploreFiles: buttonState.upload,
+      functionToCall: contextActions.loadModel,
+   });
+   // Assign all contexts and setState to functionProps
+   // This will be used in all buttons functions
    Object.assign(functionProps, {
       ...context,
       setButtonState,
+      buttonState,
       ...contextActions,
    });
+
+   useEffect(() => {
+      if (fileResults) {
+         setButtonState(defaultState);
+      }
+   }, [fileResults]);
+
+   /**
+    * This handles any errors that occur during file reading.
+    * It updates the state with the error message and resets the upload state.
+    */
+   useEffect(() => {
+      if (fileError) {
+         setButtonState((prev) => ({
+            ...prev,
+            upload: { state: false, data: null },
+            openModal: true,
+            error: fileError,
+         }));
+      }
+   }, [fileError]);
 
    return (
       <section className="controls">
          {buttons.map((button, index) => (
             <AlertDialogButton
                key={`alert-${index}`}
-               open={!buttonState.openModal && buttonState.id === button.id}
-               onOpenChange={() =>
-                  setButtonState((prev) => ({
-                     ...prev,
-                     openModal: !prev.openModal,
-                  }))
+               open={
+                  buttonState.openModal &&
+                  (buttonState.id === button.id ||
+                     buttonState.id === `retry-${button.id}`)
                }
+               onOpenChange={() => setButtonState(defaultState)}
                context={
-                  "context" in button && button.context && button.context.error
+                  "context" in button && button.context.error
                      ? {
                           ...button.context.error,
+                          functions: button.functions,
+                          ...buttonState.error,
+                          id: `retry-${button.id}`,
+                       }
+                     : {
                           error: buttonState.error,
                        }
-                     : { error: buttonState.error }
                }
             >
                <Button
