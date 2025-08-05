@@ -10,8 +10,9 @@ export interface AlertDialogButtonProps extends AlertDialogProps {
    context?: Partial<
       Extract<AllButtons, { context?: unknown }>["context"]["error"]
    > & {
-      error: ControlsStateTypes["error"];
+      error?: ControlsStateTypes["error"];
       id?: string;
-      functions: AllButtons extends { functions: infer F } ? F : never;
+      //   functions?: AllButtons["functions"];
+      functions?: AllButtons extends { functions: infer F } ? F : never;
    };
 }
