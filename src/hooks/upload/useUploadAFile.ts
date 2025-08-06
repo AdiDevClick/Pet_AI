@@ -62,7 +62,6 @@ export function useUploadAFile<K, T extends Record<string, unknown>>({
       (e: ProgressEvent<FileReader>) => {
          try {
             const fileContent = e.target?.result;
-
             if (!fileContent || typeof fileContent !== "string") {
                throw new Error("Ce fichier n'est pas compatible JSON", {
                   cause: {
@@ -71,9 +70,10 @@ export function useUploadAFile<K, T extends Record<string, unknown>>({
                   },
                });
             }
+            const parsedContent = JSON.parse(fileContent);
             setFileState((prev) => ({
                ...prev,
-               fileContent: fileContent,
+               fileContent: parsedContent,
             }));
          } catch (error) {
             setFileState({
@@ -81,7 +81,7 @@ export function useUploadAFile<K, T extends Record<string, unknown>>({
                error: {
                   message:
                      (error as CustomError).cause?.message ||
-                     "Erreur lors de la lecture du fichier",
+                     "Erreur lors de la lecture du fichier, veuillez vérifier le format JSON.",
                   status: (error as CustomError).cause?.status || 500,
                },
             });
@@ -97,6 +97,11 @@ export function useUploadAFile<K, T extends Record<string, unknown>>({
    const onChange = useCallback(
       (e: Event) => {
          const target = e.target as HTMLInputElement;
+         // if (!target.files || target.files.length === 0) {
+         //    setFileState({ ...defaultState, fileCancelled: true });
+         //    uploadInput.remove();
+         //    return;
+         // }
          setFileState((prev) => ({
             ...prev,
             file: target.files && target.files[0],
@@ -136,8 +141,7 @@ export function useUploadAFile<K, T extends Record<string, unknown>>({
     */
    useEffect(() => {
       if (fileState.fileContent) {
-         const parsedContent = JSON.parse(fileState.fileContent);
-         callThisFunction(parsedContent);
+         callThisFunction(fileState.fileContent as K);
       }
    }, [fileState.fileContent]);
 
