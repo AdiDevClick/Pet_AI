@@ -39,9 +39,7 @@ export const MemoizedControls = memo(function Controls({
    buttons = clickableButtons,
 }: ControlsPropsTypes) {
    const [buttonState, setButtonState] =
-      useState<
-         ControlsStateTypes<{ status: string | number; message: string } | null>
-      >(defaultState);
+      useState<ControlsStateTypes>(defaultState);
 
    // Grab all contexts functions and properties
    const context: contextTypes = useOutletContext();
