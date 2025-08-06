@@ -11,10 +11,9 @@ type ButtonError = AllButtons extends { context?: { error?: infer E } }
 
 export interface AlertDialogButtonProps extends AlertDialogProps {
    children: ReactNode;
-   context?:
-      | Partial<ButtonError> & {
-           error?: ControlsStateTypes["error"];
-           id?: string;
-           functions?: ButtonFunctions;
-        };
+   context?: Partial<ButtonError> &
+      ControlsStateTypes["error"] & {
+         id?: string;
+         functions?: ButtonFunctions;
+      };
 }
