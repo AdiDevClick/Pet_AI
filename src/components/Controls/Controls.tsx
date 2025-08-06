@@ -99,11 +99,11 @@ export const MemoizedControls = memo(function Controls({
                }
                onOpenChange={() => setButtonState(defaultState)}
                context={
-                  "context" in button && button.context.error
+                  "context" in button && button.context?.error
                      ? {
                           ...button.context.error,
                           functions: button.functions,
-                          ...buttonState.error,
+                          error: buttonState.error,
                           id: `retry-${button.id}`,
                        }
                      : {
