@@ -85,7 +85,6 @@ export const MemoizedControls = memo(function Controls({
          }));
       }
    }, [fileError]);
-
    return (
       <section className="controls">
          {buttons.map((button, index) => (
