@@ -11,6 +11,10 @@ export type LoadModelTypes = {
 export type ControlsClickableButtonTypes<T> = {
    [key: string]: T;
 };
+export type ControlsErrorType = {
+   status: string | number;
+   message: string;
+} | null;
 
 export interface ControlsFunctionPropsTypes
    extends contextTypes,
@@ -19,7 +23,7 @@ export interface ControlsFunctionPropsTypes
    setButtonState: Dispatch<SetStateAction<ControlsStateTypes>>;
 }
 
-export type ControlsStateTypes<E = string | null> = {
+export type ControlsStateTypes<E = ControlsErrorType> = {
    status: boolean;
    id: string | null;
    error: E;
