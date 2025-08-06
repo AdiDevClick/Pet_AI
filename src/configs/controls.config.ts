@@ -35,7 +35,7 @@ export const clickableButtons = [
          onClick: (e: MouseEvent<HTMLButtonElement>) =>
             loadNewImages({ e, ...functionProps }),
       },
-   },
+   } as const,
    {
       id: "controls-button-1",
       label: "🗑️ Réinitialiser",
@@ -44,7 +44,7 @@ export const clickableButtons = [
          onClick: (e: MouseEvent<HTMLButtonElement>) =>
             resetSystem({ e, ...functionProps }),
       },
-   },
+   } as const,
    {
       id: "controls-button-2",
       label: "✅ Valider toutes les Images",
@@ -53,7 +53,7 @@ export const clickableButtons = [
          onClick: (e: MouseEvent<HTMLButtonElement>) =>
             validateAllImages({ e, ...functionProps }),
       },
-   },
+   } as const,
    {
       id: "controls-button-3",
       label: "🔮 Prédire Tout",
@@ -71,7 +71,7 @@ export const clickableButtons = [
          onClick: (e: MouseEvent<HTMLButtonElement>) =>
             trainModel({ e, ...functionProps }),
       },
-   },
+   } as const,
    {
       id: "controls-button-5",
       label: "💾 Sauvegarder le modèle",
@@ -80,7 +80,7 @@ export const clickableButtons = [
          onClick: (e: MouseEvent<HTMLButtonElement>) =>
             saveModel({ e, ...functionProps }),
       },
-   },
+   } as const,
    {
       id: "controls-button-6",
       label: "📂 Charger le modèle",
@@ -97,7 +97,7 @@ export const clickableButtons = [
             message: "Aucun modèle sauvegardé trouvé",
          },
       },
-   },
+   } as const,
    {
       id: "controls-button-7",
       label: "💾 Sauvegarder les données",
@@ -105,7 +105,7 @@ export const clickableButtons = [
       functions: {
          onClick: (e: MouseEvent<HTMLButtonElement>) => saveData({ e }),
       },
-   },
+   } as const,
    {
       id: "controls-button-8",
       label: "📂 Charger les données de comparaison par défaut",
@@ -114,5 +114,5 @@ export const clickableButtons = [
          onClick: (e: MouseEvent<HTMLButtonElement>) =>
             loadDefaultDataArray({ e }),
       },
-   },
-] as const;
+   } as const,
+];
