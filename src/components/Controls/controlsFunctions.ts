@@ -117,11 +117,13 @@ export async function openFileExplorer({
 }: LoadModelTypes) {
    e.preventDefault();
    const element = e.target as HTMLElement;
+   functionProps.setButtonState(defaultState);
 
-   if (
-      functionProps.buttonState.id !== element.id ||
-      !functionProps.buttonState.upload.state
-   ) {
+   setTimeout(() => {
+      // if (
+      //    functionProps.buttonState.id !== element.id ||
+      //    !functionProps.buttonState.upload.state
+      // ) {
       updateState(
          {
             ...defaultState,
@@ -130,8 +132,9 @@ export async function openFileExplorer({
          },
          functionProps.setButtonState
       );
-      return;
-   }
+      // return;
+      // }
+   }, 0);
 }
 
 export async function resetSystem({ e, ...functionProps }) {
