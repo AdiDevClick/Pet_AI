@@ -1,3 +1,5 @@
+import type { defaultState } from "@/components/Controls/Controls.tsx";
+
 export interface UploadAFileTypes<K, T> {
    exploreFiles: {
       state: boolean;
@@ -12,7 +14,9 @@ export interface UploadAFile<T extends Record<string, unknown>> {
    fileResults: FileState<T>["results"];
 }
 
-export type FileState<T extends Record<string, unknown>> = {
+export type DefaultState = typeof defaultState;
+
+export type FileState<T = DefaultState> = {
    file: File | null;
    fileContent: string;
    results: T | null;
