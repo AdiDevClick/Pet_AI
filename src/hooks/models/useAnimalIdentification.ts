@@ -429,7 +429,6 @@ export function useAnimalIdentification(): AnimalIdentification {
          },
          setStatus
       );
-
       const results = await loadModelFromData({
          data: modelJSONData,
          config: configRef.current,
