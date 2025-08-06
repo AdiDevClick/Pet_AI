@@ -3,6 +3,7 @@ import {
    withAnimalModelContext,
 } from "@/api/context/animalContext/AnimalModelContext.tsx";
 import { AlertDialogButton } from "@/components/Alerts/AlertDialogButton";
+import type { AlertDialogButtonProps } from "@/components/Alerts/alertsTypes.ts";
 import { Button } from "@/components/Buttons/Button";
 import type {
    ControlsPropsTypes,
@@ -97,16 +98,16 @@ export const MemoizedControls = memo(function Controls({
                }
                onOpenChange={() => setButtonState(defaultState)}
                context={
-                  "context" in button && button.context?.error
+                  ("context" in button && button.context?.error
                      ? {
                           ...button.context.error,
-                          functions: button.functions,
-                          error: buttonState.error,
+                          ...buttonState.error,
                           id: `retry-${button.id}`,
+                          functions: button.functions,
                        }
                      : {
-                          error: buttonState.error,
-                       }
+                          ...buttonState.error,
+                       }) as AlertDialogButtonProps["context"]
                }
             >
                <Button
