@@ -37,12 +37,11 @@ import type {
    TrainModelProps,
    TrainModelResults,
 } from "@/hooks/models/useAnimalIdentificationTypes.ts";
-import type { CustomError } from "@/mainTypes.ts";
 import {
    ARTIFACTS_PROPERTIES_FROM_ARTIFACTS,
    METADATA_PROPERTIES_FROM_CONFIG,
 } from "@/configs/file.config.ts";
-import { updateState, wait } from "@/lib/utils.ts";
+import { genericErrorObject, updateState, wait } from "@/lib/utils.ts";
 
 /**
  * Get the data balance of the training pairs.
@@ -171,14 +170,7 @@ export async function loadStorageData({
          trainingPairs: tensorPairs,
       };
    } catch (error) {
-      return {
-         error: {
-            message:
-               (error as CustomError).cause?.message ||
-               (error as Error).message,
-            status: (error as CustomError).cause?.status || 500,
-         },
-      };
+      return genericErrorObject(error);
    }
 }
 
@@ -243,14 +235,7 @@ export function addTrainingPairToModel({
          trainingPair: { image1: img1, image2: img2, label: label },
       };
    } catch (error) {
-      return {
-         error: {
-            status: (error as CustomError).cause?.status || "500",
-            message:
-               (error as CustomError).cause?.message ||
-               (error as Error).message,
-         },
-      };
+      return genericErrorObject(error);
    }
 }
 
@@ -629,14 +614,7 @@ export function initialize({
          isInitialized: siamese.success,
       };
    } catch (error) {
-      return {
-         error: {
-            message:
-               (error as CustomError).cause?.message ||
-               (error as Error).message,
-            status: (error as CustomError).cause?.status || 500,
-         },
-      };
+      return genericErrorObject(error);
    }
 }
 
@@ -756,14 +734,7 @@ export async function trainModel({
          },
       };
    } catch (error) {
-      return {
-         error: {
-            message:
-               (error as CustomError).cause?.message ||
-               (error as Error).message,
-            status: (error as CustomError).cause?.status || 500,
-         },
-      };
+      return genericErrorObject(error);
    }
 }
 
@@ -866,14 +837,7 @@ export async function compareImages({
          similarityScore: score,
       };
    } catch (error) {
-      return {
-         error: {
-            message:
-               (error as CustomError).cause?.message ||
-               (error as Error).message,
-            status: (error as CustomError).cause?.status || 500,
-         },
-      };
+      return genericErrorObject(error);
    }
 }
 
@@ -1027,15 +991,7 @@ export function saveModelAsLocal({
          message: "Sauvegarde locale des paires d'entraînement réussie",
       };
    } catch (error) {
-      console.log(error);
-      return {
-         error: {
-            status: (error as CustomError).cause?.status || 500,
-            message:
-               (error as CustomError).cause?.message ||
-               "Erreur lors de la sauvegarde du modèle",
-         },
-      };
+      return genericErrorObject(error);
    }
 }
 
@@ -1147,15 +1103,7 @@ export async function saveModelToFile({
          type: "savingToFile",
       };
    } catch (error) {
-      return {
-         error: {
-            type: "savingToFile",
-            status: (error as CustomError).cause?.status || 500,
-            message:
-               (error as CustomError).cause?.message ||
-               "Erreur lors de la sauvegarde du modèle",
-         },
-      };
+      return genericErrorObject(error, { type: "savingToFile" });
    }
 }
 
@@ -1239,12 +1187,7 @@ function createCompleteDataStructure({
       };
       return modelData;
    } catch (error) {
-      return {
-         error: {
-            message: (error as CustomError).message || "Erreur inconnue",
-            status: 500,
-         },
-      };
+      return genericErrorObject(error);
    }
 }
 
@@ -1458,16 +1401,7 @@ export async function loadModelFromData({
          modelName,
       };
    } catch (error) {
-      return {
-         error: {
-            message:
-               (error as CustomError).cause?.message ||
-               `Erreur lors du chargement du modèle: ${
-                  error as Error
-               }.message}`,
-            status: (error as CustomError).cause?.status || 500,
-         },
-      };
+      return genericErrorObject(error);
    }
 }
 
