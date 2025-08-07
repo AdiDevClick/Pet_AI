@@ -1,23 +1,25 @@
-import { Button } from '@/components/Buttons/Button.tsx';
-import { GenericCard } from '@/components/Cards/GenericCard.tsx';
-import { MemoizedControls } from '@/components/Controls/Controls.tsx';
-import { GenericGrid } from '@/components/Grid/GenericGrid.tsx';
-import { ImageInput } from '@/components/Inputs/ImageInput.tsx';
-import { GenericDescription } from '@/components/Texts/GenericDescription.tsx';
-import { GenericTitle } from '@/components/Texts/GenericTitle.tsx';
-import { useRef, useState } from 'react';
+import { AnimalActionsContext } from "@/api/context/animalContext/AnimalModelContext.tsx";
+import { Button } from "@/components/Buttons/Button.tsx";
+import { GenericCard } from "@/components/Cards/GenericCard.tsx";
+import { MemoizedControls } from "@/components/Controls/Controls.tsx";
+import { GenericGrid } from "@/components/Grid/GenericGrid.tsx";
+import { ImageInput } from "@/components/Inputs/ImageInput.tsx";
+import { GenericDescription } from "@/components/Texts/GenericDescription.tsx";
+import { GenericTitle } from "@/components/Texts/GenericTitle.tsx";
+import { UniqueSet } from "@/lib/UniqueSet.ts";
+import { use, useState } from "react";
 
 const inputs = [
-    {
-        id: 'compare-img1',
-        label: 'Image 1',
-        previewId: 'preview1',
-    },
-    {
-        id: 'compare-img2',
-        label: 'Image 2',
-        previewId: 'preview2',
-    },
+   {
+      id: "compare-img1",
+      label: "Image 1",
+      previewId: "preview1",
+   },
+   {
+      id: "compare-img2",
+      label: "Image 2",
+      previewId: "preview2",
+   },
 ];
 
 /**
@@ -27,156 +29,166 @@ const inputs = [
  * create image inputs for the user to upload images.
  */
 export function ComparePets() {
-    const [statusMessage, setStatusMessage] = useState({
-        message: '',
-        className: '',
-    });
-    const [inputImages, setInputImages] = useState({});
-    // Because we reset the inputImages on new set of images,
-    // we need to keep track of the input IDs to avoid duplicates.
-    const inputsIdsRef = useRef(new Set<string>());
-    const [result, setResult] = useState(null);
+   const { compareAnimals } = use(AnimalActionsContext);
 
-    const compareImages = async () => {
-        if (inputImages.length < 2) {
-            alert('Veuillez sélectionner les deux images à comparer');
-            return;
-        }
+   const [pageState, setPageState] = useState({
+      message: "",
+      className: "",
+      result: null,
+      inputImages: new UniqueSet(),
+      error: new UniqueSet(),
+   });
 
-        try {
-            setStatusMessage({
-                message: '🔍 Comparaison en cours...',
-                className: 'warning',
+   const compareImages = async () => {
+      try {
+         if (pageState.inputImages.size() < 2) {
+            throw new Error(
+               "Veuillez sélectionner les deux images à comparer",
+               {
+                  cause: {
+                     message: "Not enough images selected",
+                     status: 400,
+                  },
+               }
+            );
+         }
+
+         setPageState((prevState) => ({
+            ...prevState,
+            message: "🔍 Comparaison en cours...",
+            className: "warning",
+         }));
+
+         const inputsIds = Array.from(pageState.inputImages.values());
+
+         const response = await compareAnimals([inputsIds[0], inputsIds[1]]);
+
+         if (!response) {
+            throw new Error("Une erreur est survenue lors de la comparaison", {
+               cause: {
+                  message: "An error occurred during comparison",
+                  status: 400,
+               },
             });
+         }
 
-            const inputsIds = Array.from(inputsIdsRef.current.values());
+         setPageState((prevState) => ({
+            ...prevState,
+            result: response,
+            message: "✅ Comparaison réussie!",
+            className: "success",
+         }));
+      } catch (error) {
+         setPageState((prevState) => ({
+            ...prevState,
+            message: "❌ Erreur lors de la comparaison",
+            className: "error",
+         }));
+      }
+   };
 
-            const response = await window.animalIdentifier.compareAnimals([
-                inputImages[inputsIds[0]],
-                inputImages[inputsIds[1]],
-            ]);
+   return (
+      <>
+         <MemoizedControls />
+         <section className="generic-layout compare-pets">
+            <GenericTitle>🔍 Comparaison d'Images</GenericTitle>
+            <GenericDescription>
+               Comparez deux nouvelles images pour voir si elles montrent le
+               même animal.
+            </GenericDescription>
 
-            if (!response) {
-                return setStatusMessage({
-                    message: '❌ Erreur lors de la comparaison',
-                    className: 'error',
-                });
-            }
-            setStatusMessage({
-                message: '✅ Comparaison terminée!',
-                className: 'success',
-            });
-            setResult(response);
-        } catch (error) {
-            console.error('Erreur de comparaison:', error);
-            setStatusMessage({
-                message: '❌ Erreur lors de la comparaison',
-                className: 'error',
-            });
-        }
-    };
+            <GenericGrid className="comparison-container">
+               {inputs.map((input) => {
+                  return (
+                     <GenericCard
+                        key={input.id}
+                        id={`card-${input.id}`}
+                        className={"image-preview-container"}
+                     >
+                        <ImageInput
+                           id={input.id}
+                           label={input.label}
+                           previewId={input.previewId}
+                           setPageState={setPageState}
+                           pageState={pageState}
+                        />
+                     </GenericCard>
+                  );
+               })}
+            </GenericGrid>
 
-    return (
-        <>
-            <MemoizedControls />
-            <section className="generic-layout compare-pets">
-                <GenericTitle>🔍 Comparaison d'Images</GenericTitle>
-                <GenericDescription>
-                    Comparez deux nouvelles images pour voir si elles montrent
-                    le même animal.
-                </GenericDescription>
+            <Button
+               className="comparison__btn "
+               onClick={compareImages}
+               disabled={pageState.inputImages.size() < 2}
+               // disabled={!inputImages.preview1 || !inputImages.preview2}
+            >
+               Comparer les Images
+            </Button>
+            <div className="generic-layout__alert">
+               {pageState.error.size() > 0 && (
+                  <p className={`generic-layout__alert ${pageState.className}`}>
+                     {Array.from(pageState.error.entries()).map(([_, errors]) =>
+                        Array.isArray(errors)
+                           ? errors.map((error: string) => (
+                                <span key={error}>{error}</span>
+                             ))
+                           : null
+                     )}
+                  </p>
+               )}
+               {pageState.message && (
+                  <p className={`generic-layout__alert ${pageState.className}`}>
+                     {pageState.message}
+                  </p>
+               )}
+               {pageState.result && (
+                  <>
+                     <h3>Résultat de la Comparaison:</h3>
+                     <p>
+                        <strong>Verdict:</strong>
+                        {pageState.result.sameAnimal
+                           ? "✅ Même animal"
+                           : "❌ Animaux différents"}
+                     </p>
+                     <p>
+                        <strong>Score de similarité: </strong>
+                        {(pageState.result.similarityScore * 100).toFixed(1)}%
+                     </p>
+                     <p>
+                        <strong>Confiance: </strong>
+                        {(pageState.result.confidence * 100).toFixed(1)}%
+                     </p>
+                     <div
+                        style={{
+                           textAlign: "center",
+                           background: `${
+                              pageState.result.sameAnimal
+                                 ? "#c6f6d5"
+                                 : "#fed7d7"
+                           }`,
+                           color: `${
+                              pageState.result.sameAnimal
+                                 ? "#22543d"
+                                 : "#742a2a"
+                           }`,
+                           padding: "10px",
+                           borderRadius: "5px",
+                           marginTop: "10px",
+                        }}
+                     >
+                        <strong>
+                           {pageState.result.sameAnimal
+                              ? "✅ Ces images semblent montrer le même animal!"
+                              : "❌ Ces images semblent montrer des animaux différents."}
+                        </strong>
+                     </div>
+                  </>
+               )}
 
-                <GenericGrid className="comparison-container">
-                    {inputs.map((input) => {
-                        inputsIdsRef.current.add(input.previewId);
-                        return (
-                            <GenericCard
-                                key={input.id}
-                                id={`card-${input.id}`}
-                                className="image-preview-container"
-                            >
-                                <ImageInput
-                                    id={input.id}
-                                    label={input.label}
-                                    previewId={input.previewId}
-                                    setInputImages={setInputImages}
-                                />
-                            </GenericCard>
-                        );
-                    })}
-                </GenericGrid>
-
-                <Button
-                    className="comparison__btn "
-                    onClick={compareImages}
-                    disabled={inputImages.length < 2}
-                    // disabled={!inputImages.preview1 || !inputImages.preview2}
-                >
-                    Comparer les Images
-                </Button>
-                <div className="generic-layout__alert">
-                    {statusMessage.message && (
-                        <p
-                            className={`generic-layout__alert ${statusMessage.className}`}
-                        >
-                            {statusMessage.message}
-                        </p>
-                    )}
-                    {result && (
-                        <>
-                            <h3>Résultat de la Comparaison:</h3>
-                            <p>
-                                <strong>Verdict:</strong>
-                                {result.sameAnimal
-                                    ? '✅ Même animal'
-                                    : '❌ Animaux différents'}
-                            </p>
-                            <p>
-                                <strong>Score de similarité: </strong>
-                                {(result.similarity * 100).toFixed(1)}%
-                            </p>
-                            <p>
-                                <strong>Confiance: </strong>
-                                {(result.confidence * 100).toFixed(1)}%
-                            </p>
-                            <p>
-                                <strong>Seuil utilisé: </strong>
-                                {(result.details.threshold * 100).toFixed()}%
-                            </p>
-                            <p>
-                                <strong>Comparaison # : </strong>
-                                {result.details.comparisonNumber}
-                            </p>
-                            <div
-                                style={{
-                                    textAlign: 'center',
-                                    background: `${
-                                        result.sameAnimal
-                                            ? '#c6f6d5'
-                                            : '#fed7d7'
-                                    }`,
-                                    color: `${
-                                        result.sameAnimal
-                                            ? '#22543d'
-                                            : '#742a2a'
-                                    }`,
-                                    padding: '10px',
-                                    borderRadius: '5px',
-                                    marginTop: '10px',
-                                }}
-                            >
-                                <strong>
-                                    {result.sameAnimal
-                                        ? '✅ Ces images semblent montrer le même animal!'
-                                        : '❌ Ces images semblent montrer des animaux différents.'}
-                                </strong>
-                            </div>
-                        </>
-                    )}
-
-                    {!result && 'Aucune comparaison effectuée'}
-                </div>
-            </section>
-        </>
-    );
+               {!pageState.result && "Aucune comparaison effectuée"}
+            </div>
+         </section>
+      </>
+   );
 }
