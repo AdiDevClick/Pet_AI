@@ -958,7 +958,7 @@ export async function captureModelArtifacts({
  * > }
  * ```
  */
-export function saveModelAsLocal({
+export function savePairsAsLocal({
    status,
    model,
    config,
@@ -1351,8 +1351,12 @@ export async function loadModelFromData({
       });
 
       if (
-         !Array.isArray(data.siameseModel.weightData) ||
-         !Array.isArray(data.featureExtractor.weightData)
+         !(
+            (typeof data.siameseModel.weightData === "string" ||
+               Array.isArray(data.siameseModel.weightData)) &&
+            (typeof data.featureExtractor.weightData === "string" ||
+               Array.isArray(data.featureExtractor.weightData))
+         )
       ) {
          throw new Error(
             "Le poids du modèle Siamese est manquant ou au mauvais format",
@@ -1370,10 +1374,10 @@ export async function loadModelFromData({
       config.imageSize = data.metadata.imageSize || config.imageSize;
       config.featureSize = data.metadata.featureSize || config.featureSize;
 
-      const siameseWeightData = arrayToArrayBuffer(
+      const siameseWeightData = base64ToArrayBuffer(
          data.siameseModel.weightData
       );
-      const featureWeightData = arrayToArrayBuffer(
+      const featureWeightData = base64ToArrayBuffer(
          data.featureExtractor.weightData
       );
 
@@ -1429,8 +1433,17 @@ export async function loadModelFromData({
  * @param array - The array of numbers to convert.
  * @returns The converted ArrayBuffer.
  */
-function arrayToArrayBuffer(array: number[]): ArrayBuffer {
-   return new Uint8Array(array).buffer;
+function base64ToArrayBuffer(base64: number[] | string): ArrayBuffer {
+   if (typeof base64 === "string") {
+      const binaryString = window.atob(base64);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+         bytes[i] = binaryString.charCodeAt(i);
+      }
+      return bytes.buffer;
+   }
+   return new Uint8Array(base64).buffer;
 }
 
 /**
