@@ -21,9 +21,9 @@ export interface AnimalIdentification {
    resetModel: () => Promise<void>;
    saveModel: () => Promise<void>;
    loadModel: (data: string | object) => Promise<LoadModelFromDataResults>;
-   saveSelectionToLocalStorage: (props?: {
-      silentSave?: boolean;
-   }) => Promise<SaveModelAsLocalResults>;
+   saveSelectionToLocalStorage: (
+      props: SaveSelectionToLocalStorageProps
+   ) => Promise<SaveModelAsLocalResults>;
 }
 
 export type ConfigTypes = {
@@ -234,6 +234,8 @@ export interface SaveModelAsLocalResults extends Record<string, unknown> {
    message?: string;
    error?: StatusTypes["error"];
 }
+// Make sure SaveModelAsLocalResults is used in your codebase.
+// If not used, you can safely remove its declaration to avoid the unused error.
 // export type SaveTrainingPairsResults = Record<string, unknown> & {
 //     trainingPair?: TrainingPair[];
 //     pairArrayForSaving?: PairArrayForSaving[];
@@ -327,6 +329,10 @@ export interface SaveModelToFileResults extends Record<string, unknown> {
    status?: number;
    error?: StatusTypes["error"];
 }
+
+export type SaveSelectionToLocalStorageProps = {
+   silentSave?: boolean;
+};
 
 export interface CreateFeatureHandlerProps {
    weightData: ArrayBuffer;
