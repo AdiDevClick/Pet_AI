@@ -8,8 +8,8 @@ import {
    initialize,
    loadModelFromData,
    loadStorageData,
-   saveModelAsLocal,
    saveModelToFile,
+   savePairsAsLocal,
    trainModel,
 } from "@/hooks/models/modelHookFunctions.ts";
 import type {
@@ -270,7 +270,7 @@ export function useAnimalIdentification(): AnimalIdentification {
     *
     * @description This will create a JSON compatible array
     */
-   const saveModelToLocalStorage = useCallback(
+   const saveSelectionToLocalStorage = useCallback(
       async ({ silentSave = false }) => {
          updateState(
             {
@@ -287,7 +287,7 @@ export function useAnimalIdentification(): AnimalIdentification {
          // then removed properly
          // await wait(100);
 
-         const results = saveModelAsLocal({
+         const results = savePairsAsLocal({
             status: statusRef.current,
             model,
             config: configRef.current,
@@ -354,7 +354,7 @@ export function useAnimalIdentification(): AnimalIdentification {
     */
    const saveModelAsFile = useCallback(
       async ({ name = configRef.current.taskName }) => {
-         const localSaveResult = await saveModelToLocalStorage({
+         const localSaveResult = await saveSelectionToLocalStorage({
             silentSave: true,
          });
 
@@ -722,7 +722,7 @@ export function useAnimalIdentification(): AnimalIdentification {
       saveModelAsFile,
       // findMatches,
       resetModel,
-      saveModelToLocalStorage,
+      saveSelectionToLocalStorage,
       loadModel,
    };
 }
