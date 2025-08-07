@@ -25,15 +25,16 @@ Object.freeze(defaultState);
  *
  * @returns An object containing the file content, any error, and the results of the function call.
  */
-export function useUploadAFile<K, T extends Record<string, unknown>>({
+export function useUploadAFile<F extends (data: any) => Promise<any>>({
    exploreFiles,
    functionToCall,
-}: UploadAFileTypes<K, T>): UploadAFile<T> {
+}: UploadAFileTypes<F>): UploadAFile<F> {
    const [reader, _] = useState<FileReader>(new FileReader());
    const [uploadInput, setUploadInput] = useState<HTMLInputElement>(
       document.createElement("input")
    );
-   const [fileState, setFileState] = useState<FileState<T>>(defaultState);
+   const [fileState, setFileState] =
+      useState<FileState<Awaited<ReturnType<F>>>>(defaultState);
 
    /**
     * Calls the provided function with the file content.
@@ -41,7 +42,7 @@ export function useUploadAFile<K, T extends Record<string, unknown>>({
     * @param data - The data to be passed to the function should be parsed.
     */
    const callThisFunction = useCallback(
-      async (data: K) => {
+      async (data: Parameters<F>[0]) => {
          if (functionToCall && data) {
             const results = await functionToCall(data);
             setFileState((prev) => ({
@@ -143,7 +144,7 @@ export function useUploadAFile<K, T extends Record<string, unknown>>({
     */
    useEffect(() => {
       if (fileState.fileContent) {
-         callThisFunction(fileState.fileContent as K);
+         callThisFunction(fileState.fileContent);
       }
    }, [fileState.fileContent]);
 

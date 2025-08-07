@@ -1,18 +1,18 @@
 import type { defaultState } from "@/components/Controls/Controls.tsx";
 
-export interface UploadAFileTypes<K, T> {
+export interface UploadAFileTypes<F extends (data: any) => Promise<any>> {
    exploreFiles: {
       state: boolean;
-      data: K | null;
+      data: Parameters<F>[0] | null;
    };
-   functionToCall: (data: K) => Promise<T>;
+   functionToCall: F;
 }
 
-export interface UploadAFile<T extends Record<string, unknown>> {
-   fileContent: FileState<T>["fileContent"];
-   fileError: FileState<T>["error"];
-   fileResults: FileState<T>["results"];
-}
+export type UploadAFile<F extends (data: any) => Promise<any>> = {
+   fileContent: Parameters<F>[0];
+   fileError: FileState<Awaited<ReturnType<F>>>["error"];
+   fileResults: Awaited<ReturnType<F>> | null;
+};
 
 export type DefaultState = typeof defaultState;
 
