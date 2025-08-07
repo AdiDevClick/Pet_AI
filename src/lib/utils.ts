@@ -1,9 +1,10 @@
-import { clsx, type ClassValue } from 'clsx';
-import type { Dispatch, SetStateAction } from 'react';
-import { twMerge } from 'tailwind-merge';
+import type { CustomError } from "@/mainTypes.ts";
+import { clsx, type ClassValue } from "clsx";
+import type { Dispatch, SetStateAction } from "react";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-    return twMerge(clsx(inputs));
+   return twMerge(clsx(inputs));
 }
 
 /**
@@ -12,49 +13,91 @@ export function cn(...inputs: ClassValue[]) {
  * @param duration - La durée de l'attente
  * @param message - Message à retourner dans la promesse si besoin
  */
-export function wait(duration: number, message = '') {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve(message);
-        }, duration);
-    });
+export function wait(duration: number, message = "") {
+   return new Promise((resolve) => {
+      setTimeout(() => {
+         resolve(message);
+      }, duration);
+   });
 }
 /**
  * Update the state with new values.
  * @description This function merges the new state object.
  */
 export function updateState<K extends object, T extends Partial<K>>(
-    newState: T,
-    setter: Dispatch<SetStateAction<K>>
+   newState: T,
+   setter: Dispatch<SetStateAction<K>>
 ) {
-    setter((prev: K) => {
-        return Object.entries(newState).reduce(
-            (acc, [key, value]) => {
-                const k = key as keyof K;
-                // The preview key is not an array
-                // we simply assign the new value
-                if (!Array.isArray(prev[k])) {
-                    return {
-                        ...acc,
-                        [k]: value,
-                    };
-                }
-                // If the previous value is an array
-                // We spread it
-                if (Array.isArray(value)) {
-                    return {
-                        ...acc,
-                        [k]: [...prev[k], ...value],
-                    };
-                }
-                // If the new value is not an array
-                // We simply push it to the array
-                return {
-                    ...acc,
-                    [k]: [...prev[k], value],
-                };
-            },
-            { ...prev }
-        );
-    });
+   setter((prev: K) => {
+      return Object.entries(newState).reduce(
+         (acc, [key, value]) => {
+            const k = key as keyof K;
+            // The preview key is not an array
+            // we simply assign the new value
+            if (!Array.isArray(prev[k])) {
+               return {
+                  ...acc,
+                  [k]: value,
+               };
+            }
+            // If the previous value is an array
+            // We spread it
+            if (Array.isArray(value)) {
+               return {
+                  ...acc,
+                  [k]: [...prev[k], ...value],
+               };
+            }
+            // If the new value is not an array
+            // We simply push it to the array
+            return {
+               ...acc,
+               [k]: [...prev[k], value],
+            };
+         },
+         { ...prev }
+      );
+   });
+}
+
+/**
+ * Create a generic error object from an error.
+ *
+ * @description This function creates a generic error object
+ * that can be used to handle errors in a consistent way.
+ *
+ * It extracts the message and status from the error object.
+ * If the error is a CustomError, it uses its cause properties.
+ * If not, it uses the error message and a default status of 500.
+ * @param error - The error object to convert.
+ *
+ * @returns An object containing the error message and status.
+ * @example
+ *
+ * > ```ts
+ * > const error = new Error("Something went wrong");
+ * > const genericError = genericErrorObject(error);
+ * > console.log(genericError);
+ *
+ * > **Output:**
+ *
+ * > ```ts
+ * > {
+ * >   error: {
+ * >     message: "Something went wrong",
+ * >     status: 500
+ * >   }
+ * > }
+ *  ```
+ * @see CustomError
+ */
+export function genericErrorObject(error: unknown, additionalInfo = {}) {
+   return {
+      error: {
+         message:
+            (error as CustomError).cause?.message || (error as Error).message,
+         status: (error as CustomError).cause?.status || 500,
+         ...additionalInfo,
+      },
+   };
 }
