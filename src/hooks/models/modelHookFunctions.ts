@@ -1070,6 +1070,7 @@ export async function saveModelToFile({
       const featureArtifacts = await captureModelArtifacts({
          modelTosave: model.featureExtractor!,
       });
+
       if (!siameseArtifacts || !featureArtifacts) {
          throw new Error("Échec de la sauvegarde des artefacts du modèle", {
             cause: {
@@ -1155,33 +1156,12 @@ function createCompleteDataStructure({
             weightData: arrayBufferToBase64(
                siameseArtifacts.weightData as ArrayBuffer
             ),
-            // weightData: Array.from(
-            //     new Uint8Array(siameseArtifacts.weightData)
-            // ),
-            // weightData: btoa(
-            //     String.fromCharCode(
-            //         ...new Uint8Array(
-            //             siameseArtifacts.weightData as ArrayBuffer
-            //         )
-            //     )
-            // ),
             ...siameseProperties,
          },
          featureExtractor: {
             weightData: arrayBufferToBase64(
                featureArtifacts.weightData as ArrayBuffer
             ),
-
-            // weightData: Array.from(
-            //     new Uint8Array(featureArtifacts.weightData)
-            // ),
-            // weightData: btoa(
-            //     String.fromCharCode(
-            //         ...new Uint8Array(
-            //             featureArtifacts.weightData as ArrayBuffer
-            //         )
-            //     )
-            // ),
             ...featureProperties,
          },
       };
@@ -1197,7 +1177,7 @@ function createCompleteDataStructure({
  * @param buffer - The ArrayBuffer to convert.
  * @returns The Base64 string representation of the ArrayBuffer.
  */
-function arrayBufferToBase64(buffer: ArrayBuffer): string {
+function arrayBufferToBase64(buffer: ArrayBuffer): Base64URLString {
    let binary = "";
    const bytes = new Uint8Array(buffer);
    const chunkSize = 0x8000; // 32k
@@ -1213,10 +1193,12 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
 /**
  * Returns a record of properties from the item based on the provided configuration variable.
  *
- * @param item - The item from which to create properties.
  * @description This function creates properties from the item based on the provided configuration variable.
  * It filters the item's properties to include only those that are present in the config variable.
+ *
  * @param configVariable - The configuration variable that determines which properties to include.
+ * @param item - The item from which to create properties.
+ *
  * @returns A record containing the filtered properties.
  */
 function createPropertiesFromItem({
@@ -1327,7 +1309,6 @@ export function checkIfModelsFound({
    siameseModel,
    featureExtractor,
 }: CheckIfModelsFoundProps) {
-   console.log(siameseModel, featureExtractor);
    if (!siameseModel || !featureExtractor) {
       throw new Error("Modèles non trouvés", {
          cause: {
@@ -1338,12 +1319,23 @@ export function checkIfModelsFound({
    }
 }
 
+/**
+ * Load a model from the provided data and configuration.
+ *
+ * @description This function loads a model from the provided data,
+ * configures it with the given settings, and returns the loaded model.
+ *
+ * @param data - The data containing the model artifacts and metadata.
+ * @param config - The configuration object for the model, including task name and image size.
+ *
+ * @returns The loaded model, a status code and a message.
+ */
 export async function loadModelFromData({
    data,
    config,
 }: LoadModelFromDataProps): Promise<LoadModelFromDataResults> {
    try {
-      // Restaurer les métadonnées si disponibles
+      // Check if the data contains the necessaries
       if (!("metadata" in data)) {
          throw new Error("Aucune métadonnée trouvée dans les données", {
             cause: {
@@ -1353,24 +1345,39 @@ export async function loadModelFromData({
          });
       }
 
-      // Vérifier la structure des données
       checkIfModelsFound({
          siameseModel: data.siameseModel,
          featureExtractor: data.featureExtractor,
       });
 
+      if (
+         !Array.isArray(data.siameseModel.weightData) ||
+         !Array.isArray(data.featureExtractor.weightData)
+      ) {
+         throw new Error(
+            "Le poids du modèle Siamese est manquant ou au mauvais format",
+            {
+               cause: {
+                  status: 500,
+                  message: "Siamese model weightData missing or invalid format",
+               },
+            }
+         );
+      }
+
+      // We can then recreate the config object and datas
       config.taskName = data.metadata.taskName || config.taskName;
       config.imageSize = data.metadata.imageSize || config.imageSize;
       config.featureSize = data.metadata.featureSize || config.featureSize;
 
-      const siameseWeightData = base64ToArrayBuffer(
+      const siameseWeightData = arrayToArrayBuffer(
          data.siameseModel.weightData
       );
-      const featureWeightData = base64ToArrayBuffer(
+      const featureWeightData = arrayToArrayBuffer(
          data.featureExtractor.weightData
       );
 
-      // Créer des IOHandlers personnalisés pour le chargement
+      // Recreate IO handlers for the models
       const featureHandler = createFeatureHandler({
          weightData: featureWeightData,
          data: data.featureExtractor,
@@ -1381,6 +1388,15 @@ export async function loadModelFromData({
          data: data.siameseModel,
          metadata: data.metadata,
       });
+
+      if (!featureHandler || !siameseHandler) {
+         throw new Error("Feature handler creation failed", {
+            cause: {
+               status: 500,
+               message: "Feature handler is undefined",
+            },
+         });
+      }
 
       const featureExtractor = await tf.loadLayersModel(featureHandler);
       const siameseModel = await tf.loadLayersModel(siameseHandler);
@@ -1406,15 +1422,15 @@ export async function loadModelFromData({
 }
 
 /**
- * Converts a Base64 string to an ArrayBuffer.
+ * Converts an array of numbers to an ArrayBuffer.
  *
- * @description This is used to convert the weight data from Base64 to ArrayBuffer format.
+ * @description This is used to convert the weight data from an array of numbers to ArrayBuffer format.
  *
- * @param base64 - The Base64 string to convert.
+ * @param array - The array of numbers to convert.
  * @returns The converted ArrayBuffer.
  */
-function base64ToArrayBuffer(base64: number[]): ArrayBuffer {
-   return new Uint8Array(base64).buffer;
+function arrayToArrayBuffer(array: number[]): ArrayBuffer {
+   return new Uint8Array(array).buffer;
 }
 
 /**
