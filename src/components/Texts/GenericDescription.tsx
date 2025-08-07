@@ -1,19 +1,19 @@
-import { HTMLProps, ReactNode } from 'react';
+import type { HTMLProps, ReactNode } from "react";
 
 export function GenericDescription<T extends HTMLProps<HTMLParagraphElement>>({
-    children,
-    ...props
+   children,
+   ...props
 }: {
-    children: ReactNode;
+   children: ReactNode;
 } & T) {
-    return (
-        <p
-            {...props}
-            className={`generic-layout__description ${
-                props.className ? props.className : ''
-            }`}
-        >
-            {children}
-        </p>
-    );
+   return (
+      <p
+         {...props}
+         className={`generic-layout__description ${
+            props.className ? props.className : ""
+         }`}
+      >
+         {children}
+      </p>
+   );
 }
