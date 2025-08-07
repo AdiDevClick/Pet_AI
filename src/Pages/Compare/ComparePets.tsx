@@ -98,23 +98,21 @@ export function ComparePets() {
             </GenericDescription>
 
             <GenericGrid className="comparison-container">
-               {inputs.map((input) => {
-                  return (
-                     <GenericCard
-                        key={input.id}
-                        id={`card-${input.id}`}
-                        className={"image-preview-container"}
-                     >
-                        <ImageInput
-                           id={input.id}
-                           label={input.label}
-                           previewId={input.previewId}
-                           setPageState={setPageState}
-                           pageState={pageState}
-                        />
-                     </GenericCard>
-                  );
-               })}
+               {inputs.map((input) => (
+                  <GenericCard
+                     key={input.id}
+                     id={`card-${input.id}`}
+                     className={"image-preview-container"}
+                  >
+                     <ImageInput
+                        id={input.id}
+                        label={input.label}
+                        previewId={input.previewId}
+                        setPageState={setPageState}
+                        pageState={pageState}
+                     />
+                  </GenericCard>
+               ))}
             </GenericGrid>
 
             <Button
