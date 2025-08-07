@@ -48,6 +48,7 @@ export function ImageInput({ setPageState, pageState, previewId, ...props }) {
 
          setPageState((prev) => ({
             ...prev,
+            // Clear previous errors for this input
             error: prev.error.has(inputRef.current.id)
                ? prev.error.clone().delete(inputRef.current.id)
                : prev.error,
@@ -55,8 +56,6 @@ export function ImageInput({ setPageState, pageState, previewId, ...props }) {
                .clone()
                .set(inputRef.current.id, image),
          }));
-
-         // Clear previous errors for this input
       } else {
          target.classList.remove("filled");
          imagePreviewRef.current.removeAttribute("style");
