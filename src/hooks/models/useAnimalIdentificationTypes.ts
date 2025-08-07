@@ -20,7 +20,7 @@ export interface AnimalIdentification {
    // findMatches,
    resetModel: () => Promise<void>;
    saveModel: () => Promise<void>;
-   loadModel: (modelJSONData: string) => Promise<ModelTypes>;
+   loadModel: (data: string | object) => Promise<LoadModelFromDataResults>;
 }
 
 export type ConfigTypes = {
@@ -254,8 +254,8 @@ export type SaveModelArtifactsProps = {
 // export type SaveAsFileResults = SaveModelAsLocalResults;
 
 export type CheckIfModelsFoundProps = {
-   siameseModel: ModelTypes["siameseModel"];
-   featureExtractor: ModelTypes["featureExtractor"];
+   siameseModel: ModelTypes["siameseModel"] | ArtifactProperties;
+   featureExtractor: ModelTypes["featureExtractor"] | ArtifactProperties;
 };
 
 export type CreateCompleteDataStructureProps = {
@@ -276,7 +276,7 @@ export type MetadataProperties = {
 >;
 
 export type ArtifactProperties = {
-   weightData: string;
+   weightData: number[] | Base64URLString | Uint8Array;
 } & Pick<
    tf.io.ModelArtifacts,
    (typeof ARTIFACTS_PROPERTIES_FROM_ARTIFACTS)[number]
@@ -326,8 +326,9 @@ export interface SaveModelToFileResults extends Record<string, unknown> {
 }
 
 export interface CreateFeatureHandlerProps {
-   featureArtifacts: MetadataProperties & ArtifactProperties;
-   data: CreateCompleteDataStructureResults;
+   weightData: ArrayBuffer;
+   data: ArtifactProperties;
+   metadata?: MetadataProperties | object;
 }
 
 export type LoadModelFromDataProps = {
