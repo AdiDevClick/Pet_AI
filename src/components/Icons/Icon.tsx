@@ -1,5 +1,5 @@
-import type { IconPropsTypes } from '@/components/Social/socialTypes.ts';
-import { useDynamicSVGImport } from '@/hooks/imports/svgs/useDynamicSVGImport';
+import type { IconPropsTypes } from "@/components/Social/socialTypes.ts";
+import { useDynamicSVGImport } from "@/hooks/imports/svgs/useDynamicSVGImport.ts";
 
 /**
  * Renders an SVG icon.
@@ -11,12 +11,12 @@ import { useDynamicSVGImport } from '@/hooks/imports/svgs/useDynamicSVGImport';
  * @param props - Additional properties to pass to the SVG element.
  */
 export function Icon({ icon, ...props }: IconPropsTypes) {
-    const { SvgIcon, error } = useDynamicSVGImport({ icon });
-    if (error) {
-        return <div>Can't load the icon</div>;
-    }
-    if (SvgIcon) {
-        return <SvgIcon className="social__icon" {...props} />;
-    }
-    return <div>Loading icon...</div>;
+   const { SvgIcon, error } = useDynamicSVGImport({ icon });
+   if (error) {
+      return <div>Can't load the icon</div>;
+   }
+   if (SvgIcon) {
+      return <SvgIcon className="social__icon" {...props} />;
+   }
+   return <div>Loading icon...</div>;
 }
