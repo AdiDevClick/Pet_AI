@@ -1,7 +1,7 @@
 import { defaultState } from "@/components/Controls/Controls.tsx";
 import type {
+   GenericButtonsProps,
    LoadModelTypes,
-   TrainModelPropsTypes,
 } from "@/components/Controls/controlsTypes";
 import { MODEL_LOADER_ID } from "@/configs/toaster.config.ts";
 import { updateState, wait } from "@/lib/utils.ts";
@@ -65,16 +65,24 @@ export async function saveModel({ e, ...functionProps }) {
    }
 }
 
-export async function saveData({ e }) {
+/**
+ * Saves the current data selection to local storage.
+ *
+ * @description It will trigger a toaster notification on success or failure.
+ * It will save the current data selection to local storage.
+ *
+ * @param e - The Mouse Event object.
+ * @param functionProps - Object containing functions and App context to save data selection.
+ *
+ * @returns
+ */
+export async function saveDataSelection({
+   e,
+   ...functionProps
+}: GenericButtonsProps) {
    e.preventDefault();
 
-   try {
-      await window.animalIdentifier.saveTrainingPairs();
-      alert("💾 Données sauvegardées avec succès!");
-   } catch (error) {
-      console.error("Erreur de sauvegarde:", error);
-      alert("❌ Erreur lors de la sauvegarde des données");
-   }
+   await functionProps.saveSelectionToLocalStorage();
 }
 
 export async function loadDefaultDataArray({ e }) {
@@ -255,10 +263,7 @@ export async function validateAllImages({ e }) {
  * @param e - The Mouse Event object.
  * @param functionProps - Object containing functions and App context to start model training.
  */
-export async function trainModel({
-   e,
-   ...functionProps
-}: TrainModelPropsTypes) {
+export async function trainModel({ e, ...functionProps }: GenericButtonsProps) {
    e.preventDefault();
    functionProps.startModelTraining();
 }
