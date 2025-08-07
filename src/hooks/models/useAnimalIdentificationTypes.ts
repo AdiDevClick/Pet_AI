@@ -16,7 +16,7 @@ export interface AnimalIdentification {
       sameAnimal: boolean
    ) => Promise<void>;
    startModelTraining: () => Promise<void>;
-   compareAnimals: (image1: string, image2: string) => Promise<void>;
+   compareAnimals: (imagesArray: HTMLImageElement[]) => Promise<void>;
    // findMatches,
    resetModel: () => Promise<void>;
    saveModel: () => Promise<void>;
