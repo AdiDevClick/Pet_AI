@@ -56,6 +56,7 @@ export const MemoizedControls = memo(function Controls({
       exploreFiles: buttonState.upload,
       functionToCall: contextActions.loadModel,
    });
+
    // Assign all contexts and setState to functionProps
    // This will be used in all buttons functions
    Object.assign(functionProps, {
