@@ -22,6 +22,7 @@ Object.freeze(defaultState);
  * @param exploreFiles.state - Boolean indicating if the file upload is active.
  * @param exploreFiles.data - The data to be uploaded, if any.
  * @param functionToCall - The function to call with the file content.
+ *
  * @returns An object containing the file content, any error, and the results of the function call.
  */
 export function useUploadAFile<K, T extends Record<string, unknown>>({
@@ -55,8 +56,11 @@ export function useUploadAFile<K, T extends Record<string, unknown>>({
    /**
     * Handles the file reading process.
     *
+    * @description This reads the file content and parses it as JSON.
+    *
     * @param e - The progress event from the FileReader.
-    * @throws Will throw an error if the file content is not a valid JSON string.
+    * @throws Will throw an error if the file content is not a valid string
+    * or if it cannot be parsed as JSON.
     */
    const onLoad = useCallback(
       (e: ProgressEvent<FileReader>) => {
@@ -97,11 +101,6 @@ export function useUploadAFile<K, T extends Record<string, unknown>>({
    const onChange = useCallback(
       (e: Event) => {
          const target = e.target as HTMLInputElement;
-         // if (!target.files || target.files.length === 0) {
-         //    setFileState({ ...defaultState, fileCancelled: true });
-         //    uploadInput.remove();
-         //    return;
-         // }
          setFileState((prev) => ({
             ...prev,
             file: target.files && target.files[0],
@@ -111,7 +110,10 @@ export function useUploadAFile<K, T extends Record<string, unknown>>({
    );
 
    /**
-    * This sets the upload input to be clicked when the upload state is true.
+    * Handles the file input creation
+    *
+    * @description This sets the upload input to be clicked
+    * right after the upload state is true.
     */
    useEffect(() => {
       if (exploreFiles.state && !exploreFiles.data) {
@@ -146,7 +148,8 @@ export function useUploadAFile<K, T extends Record<string, unknown>>({
    }, [fileState.fileContent]);
 
    /**
-    * This resets the upload state and file content when results are available.
+    * This resets the upload state and
+    * file content when results are available.
     */
    useEffect(() => {
       if (fileState.results) {
