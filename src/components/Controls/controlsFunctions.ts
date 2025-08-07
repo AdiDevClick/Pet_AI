@@ -119,6 +119,16 @@ export async function loadThisModel({ data, callFunc }: LoadModelTypes) {
    };
 }
 
+/**
+ * Opens the file explorer dialog.
+ *
+ * @description This function will first reset the button state
+ * to ensure the button remains clickable.
+ * It will then set the button state to indicate that the upload is in progress.
+ *
+ * @param e - The event object.
+ * @param functionProps - The function properties including context and state.
+ */
 export async function openFileExplorer({
    e,
    ...functionProps
@@ -128,10 +138,6 @@ export async function openFileExplorer({
    functionProps.setButtonState(defaultState);
 
    setTimeout(() => {
-      // if (
-      //    functionProps.buttonState.id !== element.id ||
-      //    !functionProps.buttonState.upload.state
-      // ) {
       updateState(
          {
             ...defaultState,
@@ -140,8 +146,6 @@ export async function openFileExplorer({
          },
          functionProps.setButtonState
       );
-      // return;
-      // }
    }, 0);
 }
 
