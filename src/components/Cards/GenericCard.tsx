@@ -1,17 +1,17 @@
-import { HTMLAttributes, ReactNode } from 'react';
+import type { HTMLAttributes, ReactNode } from "react";
 
 export function GenericCard<T extends HTMLAttributes<HTMLDivElement>>({
-    children,
-    ...props
+   children,
+   ...props
 }: {
-    children: ReactNode;
+   children: ReactNode;
 } & T) {
-    return (
-        <div
-            {...props}
-            className={`card ${props.className ? props.className : ''}`}
-        >
-            {children}
-        </div>
-    );
+   return (
+      <div
+         {...props}
+         className={`card ${props.className ? props.className : ""}`}
+      >
+         {children}
+      </div>
+   );
 }

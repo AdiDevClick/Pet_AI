@@ -1,20 +1,20 @@
-import { HTMLAttributes, ReactNode } from 'react';
-import '@css/generic-grid.scss';
+import "@css/generic-grid.scss";
+import type { HTMLAttributes, ReactNode } from "react";
 
 export function GenericGrid<T extends HTMLAttributes<HTMLDivElement>>({
-    children,
-    ...props
+   children,
+   ...props
 }: {
-    children: ReactNode;
+   children: ReactNode;
 } & T) {
-    return (
-        <div
-            {...props}
-            className={`generic-grid_container ${
-                props.className ? props.className : ''
-            }`}
-        >
-            {children}
-        </div>
-    );
+   return (
+      <div
+         {...props}
+         className={`generic-grid_container ${
+            props.className ? props.className : ""
+         }`}
+      >
+         {children}
+      </div>
+   );
 }
