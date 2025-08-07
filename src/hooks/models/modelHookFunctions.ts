@@ -829,7 +829,6 @@ export async function compareImages({
       img1.dispose();
       img2.dispose();
       prediction.dispose();
-
       const score = similarity[0];
       return {
          sameAnimal: score > config.predictionThreshold,
