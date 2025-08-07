@@ -1,3 +1,4 @@
+import * as tf from "@tensorflow/tfjs";
 import { MODEL_LOADER_ID } from "@/configs/toaster.config.ts";
 import {
    addTrainingPairToModel,
@@ -415,10 +416,10 @@ export function useAnimalIdentification(): AnimalIdentification {
     * @description This will only accept parsed JSON data.
     * It will update the model state with the loaded model data.
     *
-    * @param modelJSONData - The JSON data of the model to be loaded.
+    * @param data - The data of the model to be loaded.
     * @returns The loaded model data with the status.
     */
-   const loadModel = useCallback(async (modelJSONData: string) => {
+   const loadModel = useCallback(async (data: string | object) => {
       updateState(
          {
             loadingState: {
@@ -429,31 +430,32 @@ export function useAnimalIdentification(): AnimalIdentification {
          },
          setStatus
       );
+      const parsedData = typeof data === "string" ? JSON.parse(data) : data;
+
       const results = await loadModelFromData({
-         data: modelJSONData,
+         data: parsedData,
          config: configRef.current,
       });
 
-      if (results) {
-         setModel((prev) => ({
-            ...prev,
-            siameseModel: results.siameseModel!,
-            isInitialized: results.status === 200,
-            featureExtractor: results.featureExtractor!,
-         }));
-         checkForErrorAndUpdateState({
-            results,
-            setStatus,
-            newValues: {
-               loadingState: {
-                  message: "Chargement du modèle terminé",
-                  isLoading: "done",
-                  type: "loading",
-               },
+      setModel((prev) => ({
+         ...prev,
+         siameseModel: results.siameseModel as tf.LayersModel,
+         featureExtractor: results.featureExtractor as tf.LayersModel,
+         isInitialized: results.status === 200,
+      }));
+
+      checkForErrorAndUpdateState({
+         results: { ...results },
+         setStatus,
+         newValues: {
+            loadingState: {
+               message: "Chargement du modèle terminé",
+               isLoading: "done",
+               type: "loading",
             },
-         });
-         return results;
-      }
+         },
+      });
+      return results;
    }, []);
 
    /**
