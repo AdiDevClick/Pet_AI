@@ -4,7 +4,7 @@ import {
    openFileExplorer,
    predictAllImages,
    resetSystem,
-   saveData,
+   saveDataSelection,
    saveModel,
    trainModel,
    validateAllImages,
@@ -100,10 +100,11 @@ export const clickableButtons = [
    } as const,
    {
       id: "controls-button-7",
-      label: "💾 Sauvegarder les données",
+      label: "💾 Sauvegarder les comparaisons",
       className: "primary",
       functions: {
-         onClick: (e: MouseEvent<HTMLButtonElement>) => saveData({ e }),
+         onClick: (e: MouseEvent<HTMLButtonElement>) =>
+            saveDataSelection({ e, ...functionProps }),
       },
    } as const,
    {
