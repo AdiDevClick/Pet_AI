@@ -3,9 +3,11 @@ import { useAnimalIdentification } from "@/hooks/models/useAnimalIdentification.
 import type { OnlyMethods } from "@/types/utilsTypes.ts";
 import { createContext, useMemo } from "react";
 
+/** Only methods from useAnimalIdentification */
 export const AnimalActionsContext = createContext<
    OnlyMethods<ReturnType<typeof useAnimalIdentification>, true>
 >(null!);
+/** Only state from useAnimalIdentification */
 export const AnimalStateContext = createContext<
    OnlyMethods<ReturnType<typeof useAnimalIdentification>, false>
 >(null!);
