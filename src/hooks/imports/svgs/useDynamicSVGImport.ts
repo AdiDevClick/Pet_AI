@@ -19,7 +19,12 @@ export function useDynamicSVGImport({
       ComponentType<React.SVGProps<SVGSVGElement>>
    >(null!);
    const [error, setError] = useState("");
-   console.log(icons);
+
+   /**
+    * Dynamically imports the SVG icon based on the provided path.
+    *
+    * @description This uses the `import.meta.glob` to find the icon file and imports it.
+    */
    useEffect(() => {
       const importIcon = async () => {
          try {
