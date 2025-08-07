@@ -21,6 +21,9 @@ export interface AnimalIdentification {
    resetModel: () => Promise<void>;
    saveModel: () => Promise<void>;
    loadModel: (data: string | object) => Promise<LoadModelFromDataResults>;
+   saveSelectionToLocalStorage: (props?: {
+      silentSave?: boolean;
+   }) => Promise<SaveModelAsLocalResults>;
 }
 
 export type ConfigTypes = {
