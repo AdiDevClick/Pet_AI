@@ -32,7 +32,7 @@ export type ControlsStateTypes<E = ControlsErrorType> = {
    upload: { state: boolean; data: null };
 };
 
-export type TrainModelPropsTypes = {
+export type GenericButtonsProps = {
    e: MouseEvent<HTMLButtonElement>;
 } & ControlsFunctionPropsTypes;
 
