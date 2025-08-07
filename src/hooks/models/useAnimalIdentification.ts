@@ -19,6 +19,7 @@ import type {
    ConfigTypes,
    ModelTypes,
    PairArrayForSaving,
+   SaveSelectionToLocalStorageProps,
    StatusTypes,
    TrainingPair,
 } from "@/hooks/models/useAnimalIdentificationTypes.ts";
@@ -152,11 +153,6 @@ export function useAnimalIdentification(): AnimalIdentification {
          initializeModel,
          // onEpochEnd will update the state on each epoch end
          onEpochEnd: (epoch, logs) => {
-            console.log(
-               `Epoch ${epoch + 1}: loss=${logs.loss?.toFixed(
-                  4
-               )}, accuracy=${logs.acc?.toFixed(4)}`
-            );
             updateState(
                {
                   trainEpochCount: epoch + 1,
@@ -271,7 +267,7 @@ export function useAnimalIdentification(): AnimalIdentification {
     * @description This will create a JSON compatible array
     */
    const saveSelectionToLocalStorage = useCallback(
-      async ({ silentSave = false }) => {
+      async ({ silentSave = false }: SaveSelectionToLocalStorageProps) => {
          updateState(
             {
                loadingState: {
