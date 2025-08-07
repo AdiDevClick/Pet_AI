@@ -38,7 +38,6 @@ export function ImageInput({ setPageState, pageState, previewId, ...props }) {
             }));
             return;
          }
-
          // Add image preview to the card
          const image = new Image();
          image.src = URL.createObjectURL(file);
@@ -54,6 +53,7 @@ export function ImageInput({ setPageState, pageState, previewId, ...props }) {
                : prev.error,
             inputImages: prev.inputImages
                .clone()
+               .delete(inputRef.current.id)
                .set(inputRef.current.id, image),
          }));
       } else {
