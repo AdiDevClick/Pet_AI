@@ -101,7 +101,7 @@ export function useAnimalIdentification(): AnimalIdentification {
             checkForErrorAndUpdateState({
                results,
                setStatus,
-               newValues: {
+               successValues: {
                   siameseModelInitialized: true,
                   featureExtractorInitialized: true,
                   loadingState: {
@@ -173,7 +173,7 @@ export function useAnimalIdentification(): AnimalIdentification {
             setStatus,
          });
       }
-   }, [model, statusRef.current]);
+   }, [model]);
 
    /**
     * Compares two images to identify if
@@ -211,7 +211,7 @@ export function useAnimalIdentification(): AnimalIdentification {
             checkForErrorAndUpdateState({
                results,
                setStatus,
-               newValues: {
+               successValues: {
                   comparisonCount: statusRef.current.comparisonCount + 1,
                   ...results,
                   loadingState: {
@@ -263,7 +263,7 @@ export function useAnimalIdentification(): AnimalIdentification {
             setStatus
          );
       }
-   }, [model.isInitialized, statusRef.current.trainingPairs]);
+   }, [model]);
 
    /**
     * Saves the current model localy as Local Storage.
@@ -300,7 +300,7 @@ export function useAnimalIdentification(): AnimalIdentification {
             checkForErrorAndUpdateState({
                results,
                setStatus,
-               newValues: {
+               successValues: {
                   loadingState: {
                      message: "Sauvegarde locale effectuée",
                      isLoading: "done",
@@ -312,7 +312,7 @@ export function useAnimalIdentification(): AnimalIdentification {
 
          return results;
       },
-      [model, statusRef.current]
+      [model]
    );
 
    /**
@@ -384,7 +384,7 @@ export function useAnimalIdentification(): AnimalIdentification {
             checkForErrorAndUpdateState({
                results,
                setStatus,
-               newValues: {
+               successValues: {
                   loadingState: {
                      message: "Préparation du modèle terminée",
                      isLoading: "done",
@@ -453,7 +453,7 @@ export function useAnimalIdentification(): AnimalIdentification {
       checkForErrorAndUpdateState({
          results: { ...results },
          setStatus,
-         newValues: {
+         successValues: {
             loadingState: {
                message: "Chargement du modèle terminé",
                isLoading: "done",
@@ -502,7 +502,7 @@ export function useAnimalIdentification(): AnimalIdentification {
             checkForErrorAndUpdateState({
                results: pair,
                setStatus,
-               newValues: {
+               successValues: {
                   trainingPairs:
                      "trainingPair" in pair
                         ? (pair.trainingPair as TrainingPair[])
@@ -550,7 +550,7 @@ export function useAnimalIdentification(): AnimalIdentification {
          checkForErrorAndUpdateState({
             results: { ...results, localStorageDataLoaded: true },
             setStatus,
-            newValues: {
+            successValues: {
                loadingState: {
                   message: "Données image chargées",
                   isLoading: "done",
@@ -713,7 +713,6 @@ export function useAnimalIdentification(): AnimalIdentification {
       );
    }, [status.trainingPairs]);
 
-   // console.log('JE RERENDER LE HOOK USEANIMALIDENTIFICATION');
    return {
       /** State */
       isInitialized: model.isInitialized,
