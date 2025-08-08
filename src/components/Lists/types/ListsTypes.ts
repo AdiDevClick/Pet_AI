@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
+import type { ReactElement, ReactNode } from "react";
 
 export type GenericListProps<T> = {
    items: T[];
-   children: (item: T, index: number) => ReactNode;
+   children: ReactElement | ((item: T, index: number) => ReactNode);
 };
