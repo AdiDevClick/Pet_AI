@@ -41,23 +41,23 @@ export function ComparePets() {
 
    const compareImages = async () => {
       try {
-         if (pageState.inputImages.size() < 2) {
-            throw new Error(
-               "Veuillez sélectionner les deux images à comparer",
-               {
-                  cause: {
-                     message: "Not enough images selected",
-                     status: 400,
-                  },
-               }
-            );
-         }
+         // if (pageState.inputImages.size() < 2) {
+         //    throw new Error(
+         //       "Veuillez sélectionner les deux images à comparer",
+         //       {
+         //          cause: {
+         //             message: "Not enough images selected",
+         //             status: 400,
+         //          },
+         //       }
+         //    );
+         // }
 
-         setPageState((prevState) => ({
-            ...prevState,
-            message: "🔍 Comparaison en cours...",
-            className: "warning",
-         }));
+         // setPageState((prevState) => ({
+         //    ...prevState,
+         //    message: "🔍 Comparaison en cours...",
+         //    className: "warning",
+         // }));
 
          const inputsIds = Array.from(pageState.inputImages.values());
 
@@ -75,7 +75,7 @@ export function ComparePets() {
          setPageState((prevState) => ({
             ...prevState,
             result: response,
-            message: "✅ Comparaison réussie!",
+            // message: "✅ Comparaison réussie!",
             className: "success",
          }));
       } catch (error) {
@@ -109,7 +109,6 @@ export function ComparePets() {
                         label={input.label}
                         previewId={input.previewId}
                         setPageState={setPageState}
-                        pageState={pageState}
                      />
                   </GenericCard>
                ))}
@@ -119,7 +118,6 @@ export function ComparePets() {
                className="comparison__btn "
                onClick={compareImages}
                disabled={pageState.inputImages.size() < 2}
-               // disabled={!inputImages.preview1 || !inputImages.preview2}
             >
                Comparer les Images
             </Button>
