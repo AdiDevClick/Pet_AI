@@ -312,7 +312,7 @@ export type CheckForErrorAndUpdateStateProps<
 > = {
    results: T;
    setStatus: Dispatch<SetStateAction<StatusTypes>>;
-   newValues?: Partial<StatusTypes>;
+   successValues?: Partial<StatusTypes>;
 };
 
 export type SaveModelToFileProps = {
