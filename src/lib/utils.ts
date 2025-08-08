@@ -127,7 +127,7 @@ export function genericErrorObject(error: unknown, additionalInfo = {}) {
 }
 
 /**
- * Checks the validity of a file.
+ * Checks the file's validity.
  * @param file File to verify.
  * @returns An array of errors, empty if the file is valid.
  */
