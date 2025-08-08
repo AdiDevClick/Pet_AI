@@ -628,8 +628,8 @@ export function initialize({
  * @param model - The model object containing the Siamese model and its initialization status.
  * @param status - The current `Status` State of the model, including training pairs and loading state.
  * @param config - The configuration object for the model, including training parameters.
- * @param setStatus - Setter for the `Status` State of the model.
  * @param initializeModel - A function to initialize the model if it is not already initialized.
+ * @param onEpochEnd - A callback function to be called at the end of each epoch.
  */
 export async function trainModel({
    status,
@@ -1235,7 +1235,7 @@ export async function checkForErrorAndUpdateState<
 >({
    results,
    setStatus,
-   newValues = {},
+   successValues = {},
 }: CheckForErrorAndUpdateStateProps<T>): Promise<void> {
    if ("error" in results) {
       // Ensure the loader can be displayed
@@ -1252,7 +1252,7 @@ export async function checkForErrorAndUpdateState<
    updateState(
       {
          ...results,
-         ...newValues,
+         ...successValues,
       },
       setStatus
    );
