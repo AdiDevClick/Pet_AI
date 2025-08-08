@@ -29,7 +29,7 @@ export const initialComparePageState = {
    result: null,
    inputImages: new UniqueSet<string, HTMLImageElement>(),
    error: new UniqueSet<string, string[]>(),
-} as const;
+};
 
 /**
  * Compare two images of pets to see if they depict the same animal.
@@ -105,7 +105,7 @@ export function ComparePets() {
             <GenericGrid className="comparison-container">
                <GenericList items={inputs}>
                   <GenericCard className={"image-preview-container"}>
-                     <ImageInput setPageState={setPageState} />
+                     <ImageInput setter={setPageState} state={pageState} />
                   </GenericCard>
                </GenericList>
             </GenericGrid>
