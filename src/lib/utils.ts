@@ -1,3 +1,9 @@
+import {
+   ACCEPTED_FILE_MIME_TYPES,
+   FILE_MIME_NOT_ACCEPTED_ERROR,
+   FILE_SIZE_LIMIT_EXCEEDED_ERROR,
+   MAX_FILE_SIZE,
+} from "@/configs/file.config.ts";
 import { UniqueSet } from "@/lib/UniqueSet.ts";
 import type { CustomError } from "@/mainTypes.ts";
 import { clsx, type ClassValue } from "clsx";
@@ -118,4 +124,23 @@ export function genericErrorObject(error: unknown, additionalInfo = {}) {
          ...additionalInfo,
       },
    };
+}
+
+/**
+ * Checks the validity of a file.
+ * @param file File to verify.
+ * @returns An array of errors, empty if the file is valid.
+ */
+export function verifyFile(file: File) {
+   const errors: string[] = [];
+
+   if (file.size > MAX_FILE_SIZE) {
+      errors.push(FILE_SIZE_LIMIT_EXCEEDED_ERROR);
+   }
+
+   if (!ACCEPTED_FILE_MIME_TYPES.includes(file.type)) {
+      errors.push(FILE_MIME_NOT_ACCEPTED_ERROR);
+   }
+
+   return errors;
 }
