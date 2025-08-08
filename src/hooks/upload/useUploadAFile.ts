@@ -2,7 +2,7 @@ import type {
    FileState,
    UploadAFile,
    UploadAFileTypes,
-} from "@/hooks/upload/uploadTypes.ts";
+} from "@/hooks/upload/types/uploadTypes";
 import type { CustomError } from "@/mainTypes.ts";
 import { useCallback, useEffect, useState } from "react";
 

@@ -9,7 +9,7 @@ import {
    trainModel,
    validateAllImages,
 } from "@/components/Controls/controlsFunctions.ts";
-import type { ControlsFunctionPropsTypes } from "@/components/Controls/controlsTypes.ts";
+import type { ControlsFunctionPropsTypes } from "@/components/Controls/types/controlsTypes";
 import type { MouseEvent } from "react";
 
 /**

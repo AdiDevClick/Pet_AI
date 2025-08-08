@@ -3,12 +3,12 @@ import {
    withAnimalModelContext,
 } from "@/api/context/animalContext/AnimalModelContext.tsx";
 import { AlertDialogButton } from "@/components/Alerts/AlertDialogButton";
-import type { AlertDialogButtonProps } from "@/components/Alerts/alertsTypes.ts";
+import type { AlertDialogButtonProps } from "@/components/Alerts/types/alertsTypes";
 import { Button } from "@/components/Buttons/Button";
 import type {
    ControlsPropsTypes,
    ControlsStateTypes,
-} from "@/components/Controls/controlsTypes.ts";
+} from "@/components/Controls/types/controlsTypes";
 import { clickableButtons, functionProps } from "@/configs/controls.config.ts";
 import { useDownloadFileFromData } from "@/hooks/download/useDownloadFileFromData.ts";
 import { useUploadAFile } from "@/hooks/upload/useUploadAFile.ts";

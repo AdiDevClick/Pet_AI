@@ -1,4 +1,4 @@
-import type { AnimalModelProviderProps } from "@/api/context/animalContext/animalContextTypes.ts";
+import type { AnimalModelProviderProps } from "@/api/context/animalContext/types/animalContextTypes";
 import { useAnimalIdentification } from "@/hooks/models/useAnimalIdentification.ts";
 import type { OnlyMethods } from "@/types/utilsTypes.ts";
 import { createContext, useMemo } from "react";

@@ -1,4 +1,4 @@
-import type { ControlsStateTypes } from "@/components/Controls/controlsTypes.ts";
+import type { ControlsStateTypes } from "@/components/Controls/types/controlsTypes";
 import type { clickableButtons } from "@/configs/controls.config.ts";
 import type { AlertDialogProps } from "@radix-ui/react-alert-dialog";
 import type { ReactNode } from "react";

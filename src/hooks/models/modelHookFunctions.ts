@@ -36,7 +36,7 @@ import type {
    TrainingPair,
    TrainModelProps,
    TrainModelResults,
-} from "@/hooks/models/useAnimalIdentificationTypes.ts";
+} from "@/hooks/models/types/useAnimalIdentificationTypes";
 import {
    ARTIFACTS_PROPERTIES_FROM_ARTIFACTS,
    METADATA_PROPERTIES_FROM_CONFIG,

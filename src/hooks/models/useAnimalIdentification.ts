@@ -22,7 +22,7 @@ import type {
    SaveSelectionToLocalStorageProps,
    StatusTypes,
    TrainingPair,
-} from "@/hooks/models/useAnimalIdentificationTypes.ts";
+} from "@/hooks/models/types/useAnimalIdentificationTypes";
 import { updateState, wait } from "@/lib/utils.ts";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { toast } from "sonner";

@@ -1,4 +1,4 @@
-import type { DownloadFileFromDataProps } from "@/hooks/download/useDownloadFileFromDataTypes.ts";
+import type { DownloadFileFromDataProps } from "@/hooks/download/types/useDownloadFileFromDataTypes";
 import { useEffect, useState } from "react";
 
 /**

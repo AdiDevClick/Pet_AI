@@ -1,4 +1,4 @@
-import type { UseDynamicSVGImportTypes } from "@/hooks/imports/svgs/useDynamicSVGImportTypes";
+import type { UseDynamicSVGImportTypes } from "@/hooks/imports/svgs/types/useDynamicSVGImportTypes";
 import { useEffect, useState, type ComponentType } from "react";
 
 const icons = import.meta.glob("/src/assets/icons/*.svg", {

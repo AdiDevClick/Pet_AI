@@ -2,7 +2,7 @@ import { defaultState } from "@/components/Controls/Controls.tsx";
 import type {
    GenericButtonsProps,
    LoadModelTypes,
-} from "@/components/Controls/controlsTypes";
+} from "@/components/Controls/types/controlsTypes";
 import { MODEL_LOADER_ID } from "@/configs/toaster.config.ts";
 import { updateState, wait } from "@/lib/utils.ts";
 import type { CustomError } from "@/mainTypes.ts";

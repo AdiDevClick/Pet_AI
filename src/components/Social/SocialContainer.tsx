@@ -1,7 +1,7 @@
-import { Icon } from '@/components/Icons/Icon.tsx';
-import type { SocialContainerPropsTypes } from '@/components/Social/socialTypes.ts';
-import { svgs } from '@/configs/social.config.ts';
-import '@css/social.scss';
+import { Icon } from "@/components/Icons/Icon.tsx";
+import type { SocialContainerPropsTypes } from "@/components/Social/types/socialTypes";
+import { svgs } from "@/configs/social.config.ts";
+import "@css/social.scss";
 
 /**
  * Renders a list of SVG icons with links.
@@ -15,23 +15,23 @@ import '@css/social.scss';
  * @param props - Additional properties to pass to the container.
  */
 export function SocialContainer({
-    icons = svgs,
-    ...props
+   icons = svgs,
+   ...props
 }: SocialContainerPropsTypes) {
-    return (
-        <div {...props} className={`social ${props.className}`}>
-            {icons.map((icon, index) => (
-                <a
-                    key={icon.name}
-                    href={icon.url}
-                    className="social__link"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title={icon.name}
-                >
-                    <Icon key={icon.name + index} icon={icon} />
-                </a>
-            ))}
-        </div>
-    );
+   return (
+      <div {...props} className={`social ${props.className}`}>
+         {icons.map((icon, index) => (
+            <a
+               key={icon.name}
+               href={icon.url}
+               className="social__link"
+               target="_blank"
+               rel="noopener noreferrer"
+               title={icon.name}
+            >
+               <Icon key={icon.name + index} icon={icon} />
+            </a>
+         ))}
+      </div>
+   );
 }

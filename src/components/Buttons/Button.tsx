@@ -1,4 +1,4 @@
-import type { ButtonProps } from "@/components/Buttons/buttonTypes.ts";
+import type { ButtonProps } from "@/components/Buttons/types/buttonTypes";
 import "@css/button.scss";
 
 /**
