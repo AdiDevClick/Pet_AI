@@ -173,7 +173,7 @@ export function useAnimalIdentification(): AnimalIdentification {
             setStatus,
          });
       }
-   }, [model]);
+   }, [model, statusRef.current]);
 
    /**
     * Compares two images to identify if
@@ -226,7 +226,11 @@ export function useAnimalIdentification(): AnimalIdentification {
          }
          return results;
       },
-      [model]
+      [
+         model,
+         statusRef.current.comparisonCount,
+         statusRef.current.loadingState.isLoading,
+      ]
    );
 
    // Réinitialiser le modèle
@@ -308,7 +312,7 @@ export function useAnimalIdentification(): AnimalIdentification {
 
          return results;
       },
-      [model]
+      [model, statusRef.current]
    );
 
    /**
@@ -403,7 +407,13 @@ export function useAnimalIdentification(): AnimalIdentification {
 
          return results;
       },
-      [model.featureExtractor, model.siameseModel, status, model.isInitialized]
+      [
+         model.featureExtractor,
+         model.siameseModel,
+         status,
+         model.isInitialized,
+         statusRef.current,
+      ]
    );
 
    /**
