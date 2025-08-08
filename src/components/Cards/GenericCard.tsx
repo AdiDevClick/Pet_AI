@@ -1,17 +1,69 @@
-import type { HTMLAttributes, ReactNode } from "react";
+import type { GenericCardProps } from "@/components/Cards/types/CardTypes.ts";
+import { cloneElement, isValidElement } from "react";
 
-export function GenericCard<T extends HTMLAttributes<HTMLDivElement>>({
+/**
+ * A reusable card component
+ *
+ * @description
+ * If used with GenericList, this component will automatically
+ * receive the `item` and `index` props for each card.
+ * It will act as a normal Component otherwise.
+ *
+ * @typeParam T - The type of the item to display (generic, can be any object or value).
+ * @param children
+ *   The content to display inside the card.
+ *   **If it is a React element, it will automatically receive
+ *   the `item` and `index` props**.
+ * @param item
+ *   (Optional) The current item from the list (automatically injected by GenericList).
+ * @param index
+ *   (Optional) The current index from the list (automatically injected by GenericList).
+ * @param ...props
+ *   Any other HTML props for the root div.
+ *
+ * @example
+ * > **Usage with GenericList**
+ * > ```tsx
+ * > <GenericList items={data}>
+ * >  <GenericCard className="my-card" />
+ * > </GenericList>
+ * > ```
+ *
+ * > **Direct usage**
+ * > ```tsx
+ * > <GenericCard
+ * >     item={{ id: 1, label: "Example" }}
+ * >     index={0}
+ * >   >
+ * >   <div>My content</div>
+ * > </GenericCard>
+ * ```
+ */
+export function GenericCard<T>({
    children,
+   item,
+   index,
    ...props
-}: {
-   children: ReactNode;
-} & T) {
+}: GenericCardProps<T>) {
+   let cardId;
+
+   if (item !== null) {
+      cardId =
+         typeof item === "object" && "id" in item ? item.id : Math.random();
+   }
+
    return (
       <div
+         id={`card-${cardId}`}
          {...props}
-         className={`card ${props.className ? props.className : ""}`}
+         className={`card ${props.className ?? ""}`}
       >
-         {children}
+         {isValidElement(children)
+            ? cloneElement(children, { item, index } as {
+                 item?: T;
+                 index?: number;
+              })
+            : children}
       </div>
    );
 }
