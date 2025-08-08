@@ -1,3 +1,4 @@
+import { UniqueSet } from "@/lib/UniqueSet.ts";
 import type { CustomError } from "@/mainTypes.ts";
 import { clsx, type ClassValue } from "clsx";
 import type { Dispatch, SetStateAction } from "react";
@@ -24,17 +25,34 @@ export function wait(duration: number, message = "") {
  * Update the state with new values.
  * @description This function merges the new state object.
  */
-export function updateState<K extends object, T extends Partial<K>>(
-   newState: T,
+export function updateState<K extends object>(
+   newState: {
+      [P in keyof K]?: K[P] | ((prev: K[P]) => K[P]);
+   },
    setter: Dispatch<SetStateAction<K>>
 ) {
    setter((prev: K) => {
       return Object.entries(newState).reduce(
          (acc, [key, value]) => {
             const k = key as keyof K;
+            const prevValue = prev[k];
+
+            // If it's a Set, Map, UniqueSet and the value is a function
+            // We clone the previous value and apply the function
+            if (
+               typeof prevValue === "object" &&
+               prevValue instanceof UniqueSet &&
+               typeof value === "function"
+            ) {
+               const clonedPrevValue = prevValue.clone();
+               return {
+                  ...acc,
+                  [k]: value(clonedPrevValue),
+               };
+            }
             // The preview key is not an array
             // we simply assign the new value
-            if (!Array.isArray(prev[k])) {
+            if (!Array.isArray(prevValue)) {
                return {
                   ...acc,
                   [k]: value,
@@ -45,14 +63,14 @@ export function updateState<K extends object, T extends Partial<K>>(
             if (Array.isArray(value)) {
                return {
                   ...acc,
-                  [k]: [...prev[k], ...value],
+                  [k]: [...prevValue, ...value],
                };
             }
             // If the new value is not an array
             // We simply push it to the array
             return {
                ...acc,
-               [k]: [...prev[k], value],
+               [k]: [...prevValue, value],
             };
          },
          { ...prev }
