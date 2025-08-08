@@ -1,12 +1,17 @@
-import type { PageState } from "@/Pages/Compare/types/CompareTypes.ts";
+import type { Dispatch, HTMLProps, SetStateAction } from "react";
+import type { UniqueSet } from "@/lib/UniqueSet.ts";
 
-export type ImageInputProps = {
+export type ImageInputProps<
+   T extends {
+      error: UniqueSet<string, string[]>;
+      inputImages: UniqueSet<string, HTMLImageElement>;
+   }
+> = {
    item?: {
       id: string;
       label: string;
-      previewId: string;
    };
    index?: number;
-   setPageState: React.Dispatch<React.SetStateAction<PageState>>;
-   [key: string]: any;
-};
+   setter: Dispatch<SetStateAction<T>>;
+   state: T;
+} & HTMLProps<HTMLDivElement>;
