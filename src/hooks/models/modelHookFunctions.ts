@@ -697,7 +697,6 @@ export async function trainModel({
 
       const xs1 = tf.concat(images1 as tf.Tensor4D[]);
       const xs2 = tf.concat(images2 as tf.Tensor4D[]);
-
       const ys = tf.tensor1d(labels, "float32");
 
       if (!model.siameseModel) {
@@ -722,9 +721,16 @@ export async function trainModel({
          },
       });
 
+      // Clean up tensors
       xs1.dispose();
       xs2.dispose();
       ys.dispose();
+      images1.forEach((image) => {
+         if (image instanceof tf.Tensor) image.dispose();
+      });
+      images2.forEach((image) => {
+         if (image instanceof tf.Tensor) image.dispose();
+      });
 
       return {
          loadingState: {
