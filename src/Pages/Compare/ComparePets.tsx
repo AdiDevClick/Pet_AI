@@ -4,23 +4,32 @@ import { GenericCard } from "@/components/Cards/GenericCard.tsx";
 import { MemoizedControls } from "@/components/Controls/Controls.tsx";
 import { GenericGrid } from "@/components/Grid/GenericGrid.tsx";
 import { ImageInput } from "@/components/Inputs/ImageInput.tsx";
+import { GenericList } from "@/components/Lists/GenericList.tsx";
 import { GenericDescription } from "@/components/Texts/GenericDescription.tsx";
 import { GenericTitle } from "@/components/Texts/GenericTitle.tsx";
 import { UniqueSet } from "@/lib/UniqueSet.ts";
+import type { PageState } from "@/Pages/Compare/types/CompareTypes.ts";
 import { use, useState } from "react";
 
 const inputs = [
    {
       id: "compare-img1",
       label: "Image 1",
-      previewId: "preview1",
+      // previewId: "preview1",
    },
    {
       id: "compare-img2",
       label: "Image 2",
-      previewId: "preview2",
+      // previewId: "preview2",
    },
 ];
+export const initialComparePageState = {
+   message: "",
+   className: "",
+   result: null,
+   inputImages: new UniqueSet<string, HTMLImageElement>(),
+   error: new UniqueSet<string, string[]>(),
+} as const;
 
 /**
  * Compare two images of pets to see if they depict the same animal.
@@ -31,13 +40,9 @@ const inputs = [
 export function ComparePets() {
    const { compareAnimals } = use(AnimalActionsContext);
 
-   const [pageState, setPageState] = useState({
-      message: "",
-      className: "",
-      result: null,
-      inputImages: new UniqueSet(),
-      error: new UniqueSet(),
-   });
+   const [pageState, setPageState] = useState<PageState>(
+      initialComparePageState
+   );
 
    const compareImages = async () => {
       try {
@@ -86,7 +91,7 @@ export function ComparePets() {
          }));
       }
    };
-
+   console.log([...pageState.error.entries()]);
    return (
       <>
          <MemoizedControls />
@@ -98,20 +103,11 @@ export function ComparePets() {
             </GenericDescription>
 
             <GenericGrid className="comparison-container">
-               {inputs.map((input) => (
-                  <GenericCard
-                     key={input.id}
-                     id={`card-${input.id}`}
-                     className={"image-preview-container"}
-                  >
-                     <ImageInput
-                        id={input.id}
-                        label={input.label}
-                        previewId={input.previewId}
-                        setPageState={setPageState}
-                     />
+               <GenericList items={inputs}>
+                  <GenericCard className={"image-preview-container"}>
+                     <ImageInput setPageState={setPageState} />
                   </GenericCard>
-               ))}
+               </GenericList>
             </GenericGrid>
 
             <Button
@@ -127,7 +123,7 @@ export function ComparePets() {
                      {Array.from(pageState.error.entries()).map(([_, errors]) =>
                         Array.isArray(errors)
                            ? errors.map((error: string) => (
-                                <span key={error}>{error}</span>
+                                <span key={error + Math.random()}>{error}</span>
                              ))
                            : null
                      )}
