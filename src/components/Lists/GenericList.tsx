@@ -1,5 +1,5 @@
 import type { GenericListProps } from "@/components/Lists/types/ListsTypes.ts";
-import { cloneElement, isValidElement } from "react";
+import { cloneElement, Fragment, isValidElement } from "react";
 
 /**
  * A generic list component that will map over its items list
@@ -36,18 +36,24 @@ export function GenericList<T>({ items, children }: GenericListProps<T>) {
             if (!item) {
                return null;
             }
-            return typeof children === "function"
-               ? children(item, index)
-               : isValidElement(children)
-               ? cloneElement(children, {
-                    key:
-                       item && typeof item === "object" && "id" in item
-                          ? String((item as { id: string | number }).id)
-                          : index,
-                    item,
-                    index,
-                 })
-               : null;
+
+            let itemId =
+               typeof item === "object" && "id" in item
+                  ? item.id
+                  : index * Math.random();
+
+            return (
+               <Fragment key={String(itemId)}>
+                  {typeof children === "function"
+                     ? children(item, index)
+                     : isValidElement(children)
+                     ? cloneElement(children, {
+                          item,
+                          index,
+                       } as { item?: T; index?: number })
+                     : null}
+               </Fragment>
+            );
          })}
       </>
    );
