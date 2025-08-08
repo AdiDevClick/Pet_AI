@@ -8,7 +8,7 @@ import {
    MAX_FILE_SIZE,
 } from "@/configs/file.config.ts";
 
-export function ImageInput({ setPageState, pageState, previewId, ...props }) {
+export function ImageInput({ setPageState, previewId, ...props }) {
    const imagePreviewRef = useRef<HTMLDivElement>(null!);
    const inputRef = useRef<HTMLInputElement>(null!);
 
