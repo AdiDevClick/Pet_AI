@@ -1,4 +1,4 @@
-import type { ListProps } from "@/components/Cards/types/CardTypes.ts";
+import type { GenericListProps } from "@/components/Lists/types/ListsTypes.ts";
 import { cloneElement, isValidElement } from "react";
 
 /**
@@ -29,7 +29,7 @@ import { cloneElement, isValidElement } from "react";
  * > </GenericList>
  * ```
  */
-export function GenericList<T>({ items, children }: ListProps<T>) {
+export function GenericList<T>({ items, children }: GenericListProps<T>) {
    return (
       <>
          {items.map((item, index) => {
