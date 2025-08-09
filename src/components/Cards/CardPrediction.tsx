@@ -1,20 +1,19 @@
-import type { HTMLAttributes } from "react";
+import { useId, type HTMLAttributes } from "react";
 
 export function CardPrediction<T extends HTMLAttributes<HTMLDivElement>>({
    showPrediction,
    prediction,
    animalName = "les mêmes animaux",
-   image,
 }: {
    animalName?: string;
    showPrediction: boolean;
    prediction: { sameAnimal: boolean; confidence: number } | null;
-   image: { id: string; url: string; description: string };
 } & T) {
+   const id = useId();
    return (
       <>
          {showPrediction && prediction && (
-            <div className="prediction-result" id={`prediction-${image.id}`}>
+            <div className="prediction-result" id={`prediction-${id}`}>
                <strong>🔮 Prédiction IA:</strong>
                <br />
                {prediction.sameAnimal
