@@ -63,7 +63,7 @@ export function TrainingCard({
       <GenericCard className={className} id={`card-${image.id}`}>
          <GenericFigure
             ref={imageRef}
-            item={image}
+            {...image}
             className="card__description"
          />
          <div className="card__actions">
