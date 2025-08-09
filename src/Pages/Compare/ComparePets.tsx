@@ -15,21 +15,19 @@ const inputs = [
    {
       id: "compare-img1",
       label: "Image 1",
-      // previewId: "preview1",
    },
    {
       id: "compare-img2",
       label: "Image 2",
-      // previewId: "preview2",
    },
 ];
 export const initialComparePageState = {
    message: "",
    className: "",
-   result: null,
+   results: null,
    inputImages: new UniqueSet<string, HTMLImageElement>(),
    error: new UniqueSet<string, string[]>(),
-};
+} as const;
 
 /**
  * Compare two images of pets to see if they depict the same animal.
@@ -68,7 +66,7 @@ export function ComparePets() {
 
          const response = await compareAnimals([inputsIds[0], inputsIds[1]]);
 
-         if (!response) {
+         if (!response || "error" in response) {
             throw new Error("Une erreur est survenue lors de la comparaison", {
                cause: {
                   message: "An error occurred during comparison",
@@ -79,7 +77,7 @@ export function ComparePets() {
 
          setPageState((prevState) => ({
             ...prevState,
-            result: response,
+            results: response,
             // message: "✅ Comparaison réussie!",
             className: "success",
          }));
@@ -134,33 +132,33 @@ export function ComparePets() {
                      {pageState.message}
                   </p>
                )}
-               {pageState.result && (
+               {pageState.results && (
                   <>
                      <h3>Résultat de la Comparaison:</h3>
                      <p>
                         <strong>Verdict:</strong>
-                        {pageState.result.sameAnimal
+                        {pageState.results.sameAnimal
                            ? "✅ Même animal"
                            : "❌ Animaux différents"}
                      </p>
                      <p>
                         <strong>Score de similarité: </strong>
-                        {(pageState.result.similarityScore * 100).toFixed(1)}%
+                        {(pageState.results.similarityScore * 100).toFixed(1)}%
                      </p>
                      <p>
                         <strong>Confiance: </strong>
-                        {(pageState.result.confidence * 100).toFixed(1)}%
+                        {(pageState.results.confidence * 100).toFixed(1)}%
                      </p>
                      <div
                         style={{
                            textAlign: "center",
                            background: `${
-                              pageState.result.sameAnimal
+                              pageState.results.sameAnimal
                                  ? "#c6f6d5"
                                  : "#fed7d7"
                            }`,
                            color: `${
-                              pageState.result.sameAnimal
+                              pageState.results.sameAnimal
                                  ? "#22543d"
                                  : "#742a2a"
                            }`,
@@ -170,7 +168,7 @@ export function ComparePets() {
                         }}
                      >
                         <strong>
-                           {pageState.result.sameAnimal
+                           {pageState.results.sameAnimal
                               ? "✅ Ces images semblent montrer le même animal!"
                               : "❌ Ces images semblent montrer des animaux différents."}
                         </strong>
@@ -178,7 +176,7 @@ export function ComparePets() {
                   </>
                )}
 
-               {!pageState.result && "Aucune comparaison effectuée"}
+               {!pageState.results && "Aucune comparaison effectuée"}
             </div>
          </section>
       </>
