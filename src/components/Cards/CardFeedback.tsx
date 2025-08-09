@@ -1,29 +1,27 @@
-import { HTMLAttributes } from 'react';
+import { useId, type HTMLAttributes } from "react";
 
 export function CardFeedback<T extends HTMLAttributes<HTMLDivElement>>({
-    isCorrect,
-    image,
-    animalName = 'Même animal',
+   isCorrect,
+   animalName = "Même animal",
 }: {
-    isCorrect: boolean | null;
-    image: { id: string; url: string; description: string };
-    animalName?: string;
+   isCorrect: boolean | null;
+   animalName?: string;
 } & T) {
-    return (
-        <>
-            {isCorrect !== null && (
-                <div
-                    className="card__feedback"
-                    id={`feedback-${image.id}`}
-                    style={{ color: isCorrect ? 'green' : 'red' }}
-                >
-                    {/* {isCorrect ? '✅ Bonne réponse!' : '❌ Mauvaise réponse'} */}
-                    <br />
-                    <small>
-                        Votre choix : {isCorrect ? animalName : 'Autre animal'}
-                    </small>
-                </div>
-            )}
-        </>
-    );
+   const id = useId();
+   return (
+      <>
+         {isCorrect !== null && (
+            <div
+               className="card__feedback"
+               id={`feedback-${id}`}
+               style={{ color: isCorrect ? "green" : "red" }}
+            >
+               <br />
+               <small>
+                  Votre choix : {isCorrect ? animalName : "Autre animal"}
+               </small>
+            </div>
+         )}
+      </>
+   );
 }
