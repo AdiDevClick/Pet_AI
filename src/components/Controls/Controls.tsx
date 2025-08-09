@@ -3,14 +3,14 @@ import {
    withAnimalModelContext,
 } from "@/api/context/animalContext/AnimalModelContext.tsx";
 import { AlertDialogButton } from "@/components/Alerts/AlertDialogButton";
-import type { AlertDialogButtonProps } from "@/components/Alerts/types/alertsTypes";
 import { Button } from "@/components/Buttons/Button";
 import type {
    ControlsPropsTypes,
    ControlsStateTypes,
 } from "@/components/Controls/types/controlsTypes";
+import { GenericList } from "@/components/Lists/GenericList.tsx";
 import { clickableButtons, functionProps } from "@/configs/controls.config.ts";
-import { useDownloadFileFromData } from "@/hooks/download/useDownloadFileFromData.ts";
+import { useFileDownloadHandler } from "@/hooks/download/useFileDownloadHandler";
 import { useUploadAFile } from "@/hooks/upload/useUploadAFile.ts";
 import type { contextTypes } from "@/mainTypes.ts";
 import "@css/controls.scss";
@@ -39,16 +39,17 @@ Object.freeze(defaultState);
 export const MemoizedControls = memo(function Controls({
    buttons = clickableButtons,
 }: ControlsPropsTypes) {
-   const [buttonState, setButtonState] =
+   // Default state for the controls
+   const [buttonState, setButtonsState] =
       useState<ControlsStateTypes>(defaultState);
 
    // Grab all contexts functions and properties
    const context: contextTypes = useOutletContext();
    const contextActions = use(AnimalActionsContext);
 
-   useDownloadFileFromData({
+   useFileDownloadHandler({
       data: buttonState.download.data,
-      setState: setButtonState,
+      setState: setButtonsState,
       fileName: "Animal.json",
    });
 
@@ -57,18 +58,18 @@ export const MemoizedControls = memo(function Controls({
       functionToCall: contextActions.loadModel,
    });
 
-   // Assign all contexts and setState to functionProps
+   // Assigns all contexts and setState to functionProps
    // This will be used in all buttons functions
    Object.assign(functionProps, {
       ...context,
-      setButtonState,
+      setButtonsState,
       buttonState,
       ...contextActions,
    });
 
    useEffect(() => {
       if (fileResults) {
-         setButtonState(defaultState);
+         setButtonsState(defaultState);
       }
    }, [fileResults]);
 
@@ -78,7 +79,7 @@ export const MemoizedControls = memo(function Controls({
     */
    useEffect(() => {
       if (fileError) {
-         setButtonState((prev) => ({
+         setButtonsState((prev) => ({
             ...prev,
             upload: { state: false, data: null },
             openModal: true,
@@ -88,37 +89,16 @@ export const MemoizedControls = memo(function Controls({
    }, [fileError]);
    return (
       <section className="controls">
-         {buttons.map((button, index) => (
+         <GenericList items={buttons}>
             <AlertDialogButton
-               key={`alert-${index}`}
-               open={
-                  buttonState.openModal &&
-                  (buttonState.id === button.id ||
-                     buttonState.id === `retry-${button.id}`)
-               }
-               onOpenChange={() => setButtonState(defaultState)}
-               context={
-                  ("context" in button && button.context?.error
-                     ? {
-                          ...button.context.error,
-                          ...buttonState.error,
-                          id: `retry-${button.id}`,
-                          functions: button.functions,
-                       }
-                     : {
-                          ...buttonState.error,
-                       }) as AlertDialogButtonProps["context"]
-               }
+               clickedButtonId={buttonState.id}
+               error={buttonState.error}
+               open={buttonState.openModal}
+               onOpenChange={() => setButtonsState(defaultState)}
             >
-               <Button
-                  id={button.id}
-                  className={button.className}
-                  {...button.functions}
-               >
-                  {button.label}
-               </Button>
+               <Button />
             </AlertDialogButton>
-         ))}
+         </GenericList>
       </section>
    );
 });
