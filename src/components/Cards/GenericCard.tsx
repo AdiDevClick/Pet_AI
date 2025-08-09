@@ -59,7 +59,7 @@ export function GenericCard<T>({
          className={`card ${props.className ?? ""}`}
       >
          {isValidElement(children)
-            ? cloneElement(children, { item, index } as {
+            ? cloneElement(children, { ...item, index } as {
                  item?: T;
                  index?: number;
               })
