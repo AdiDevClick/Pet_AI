@@ -41,7 +41,7 @@ function createImageCard(lastId, animalData) {
 }
 
 export const MemoizedTrainModel = memo(function TrainModel() {
-   const { isOnLoad, count } = useOutletContext();
+   const { appRouterContext } = useOutletContext();
 
    const animalName = "Chat";
 
@@ -53,7 +53,7 @@ export const MemoizedTrainModel = memo(function TrainModel() {
          {/* <AnimalModelProvider value="state"> */}
          <Status />
          {/* </AnimalModelProvider> */}
-         {(isOnLoad || count > 0) && (
+         {(appRouterContext.isOnLoad || appRouterContext.count > 0) && (
             <>
                {onlyPositive &&
                   shuffledAnimals.map((animalA, indexA) =>
@@ -75,7 +75,7 @@ export const MemoizedTrainModel = memo(function TrainModel() {
                                  },
                               ]}
                               animalName={animalName}
-                              isOnLoad={isOnLoad}
+                              isOnLoad={appRouterContext.isOnLoad}
                            />
                         );
                      })
@@ -88,7 +88,7 @@ export const MemoizedTrainModel = memo(function TrainModel() {
                            nextIndex = index - 10;
                         return (
                            <MemoizedTrainingTwoCards
-                              key={`${count}-${item.id}-${nextIndex}`}
+                              key={`${appRouterContext.count}-${item.id}-${nextIndex}`}
                               animals={[
                                  {
                                     ...item,
