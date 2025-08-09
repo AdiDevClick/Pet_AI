@@ -11,7 +11,7 @@ export function TrainingCard({
    image,
    animalName,
 }: {
-   image: { id: string; url: string; description: string };
+   image: { id: string; image: string; description: string };
    animalName: string;
 }) {
    const [isCorrect, setIsCorrect] = useState<boolean>(null!);
@@ -63,7 +63,7 @@ export function TrainingCard({
       <GenericCard className={className} id={`card-${image.id}`}>
          <GenericFigure
             ref={imageRef}
-            image={image}
+            item={image}
             className="card__description"
          />
          <div className="card__actions">
