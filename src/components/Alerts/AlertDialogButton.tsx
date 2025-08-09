@@ -11,42 +11,67 @@ import {
    AlertDialogTitle,
    AlertDialogTrigger,
 } from "@/components/ui/alert-dialog.tsx";
+import { cloneElement, isValidElement } from "react";
 
 /**
  * Modal dialog button component.
  *
  * @description This component renders an alert dialog button
  * that can be used to trigger actions with confirmation.
+ * It understands the button type passed to it and can extract properties like context.
+ * It only manages the opening logic to avoid opening other modals.
  *
  * @param children - The button or element that triggers the alert dialog.
- * @param context - Optional context object containing properties like `title`, `error`, and `functions`.
- * @param props - Additional properties for the AlertDialog component.
+ * @param error - Any error object that might contain error information.
+ * ideally, it should include `message` and `title` properties.
+ * @param open - Boolean indicating if the dialog should be open.
+ * @param clickedButtonId - The ID of the button that was clicked
+ * to prevent multiple dialogs from opening.
+ * @param onOpenChange - Callback function to handle open state changes.
+ * @param props - Additional properties including button properties from GenericList.
  */
-export function AlertDialogButton({
+export function AlertDialogButton<T, E = unknown>({
    children,
+   open,
+   clickedButtonId,
+   error,
+   onOpenChange,
    ...props
-}: AlertDialogButtonProps) {
+}: AlertDialogButtonProps<T, E>) {
+   const { id, context, ...rest } = props;
+   const newContext = { ...context?.error, ...error };
+
    return (
-      <AlertDialog {...props}>
-         <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
+      <AlertDialog
+         open={
+            open &&
+            (clickedButtonId === id || clickedButtonId === `retry-${id}`)
+         }
+         onOpenChange={onOpenChange}
+      >
+         <AlertDialogTrigger asChild>
+            {isValidElement(children)
+               ? cloneElement(children, { id, ...rest })
+               : children}
+         </AlertDialogTrigger>
          <AlertDialogOverlay />
          <AlertDialogContent>
             <AlertDialogHeader>
                <AlertDialogTitle>
-                  {props.context?.title || "Titre par défaut"}
+                  {newContext?.title || "Titre par défaut"}
                </AlertDialogTitle>
                <AlertDialogDescription>
-                  {props.context?.message || "Message par défaut"}
+                  {newContext?.message || "Message par défaut"}
                </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-               {props.context?.cancelable && (
+               {newContext?.cancelable && (
                   <>
                      <AlertDialogCancel
-                        id={props.context.id}
-                        {...props.context.functions}
+                        id={`retry-${id}`}
+                        onClick={rest.onClick}
                      >
-                        {props.context.retryButtonText}
+                        {newContext.retryButtonText}
                      </AlertDialogCancel>
                      <AlertDialogCancel>Annuler</AlertDialogCancel>
                   </>
