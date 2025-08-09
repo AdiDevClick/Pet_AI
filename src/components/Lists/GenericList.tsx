@@ -1,4 +1,7 @@
-import type { GenericListProps } from "@/components/Lists/types/ListsTypes.ts";
+import type {
+   GenericList,
+   GenericListProps,
+} from "@/components/Lists/types/ListsTypes.ts";
 import { cloneElement, Fragment, isValidElement } from "react";
 
 /**
@@ -29,7 +32,11 @@ import { cloneElement, Fragment, isValidElement } from "react";
  * > </GenericList>
  * ```
  */
-export function GenericList<T>({ items, children }: GenericListProps<T>) {
+
+export function GenericList<T>({
+   items,
+   children,
+}: GenericListProps<T>): GenericList<T> {
    return (
       <>
          {items.map((item, index) => {
@@ -48,9 +55,9 @@ export function GenericList<T>({ items, children }: GenericListProps<T>) {
                      ? children(item, index)
                      : isValidElement(children)
                      ? cloneElement(children, {
-                          item,
+                          ...item,
                           index,
-                       } as { item?: T; index?: number })
+                       })
                      : null}
                </Fragment>
             );
