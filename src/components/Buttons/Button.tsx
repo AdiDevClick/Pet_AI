@@ -22,7 +22,7 @@ export function Button<T>({
          className={`btn ${props.className ? props.className : ""}`}
          type={type}
       >
-         {children}
+         {props.label || children}
       </button>
    );
 }
