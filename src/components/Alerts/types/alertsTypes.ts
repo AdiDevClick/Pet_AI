@@ -1,19 +1,44 @@
-import type { ControlsStateTypes } from "@/components/Controls/types/controlsTypes";
-import type { clickableButtons } from "@/configs/controls.config.ts";
 import type { AlertDialogProps } from "@radix-ui/react-alert-dialog";
-import type { ReactNode } from "react";
+import type { MouseEventHandler, ReactNode } from "react";
 
-type AllButtons = (typeof clickableButtons)[number];
-type ButtonFunctions = AllButtons extends { functions: infer F } ? F : never;
-type ButtonError = AllButtons extends { context?: { error?: infer E } }
-   ? E
-   : unknown;
+// Generic type that truly understands and merges with the button type
+// Minimal context error shape supported by the dialog UI
+export type AlertDialogContextError = {
+   cancelable?: boolean;
+   retryButtonText?: string;
+   title?: string;
+   message?: string;
+};
 
-export interface AlertDialogButtonProps extends AlertDialogProps {
+// Ensures we always understand an optional `context.error` with the supported keys,
+// even if the provided button type T doesn't declare it.
+export type WithAlertContext = {
+   context?: {
+      error?: AlertDialogContextError;
+   };
+};
+
+// Extract onClick type from T when present, but only keep it when compatible
+// with React's HTMLButtonElement handler. Otherwise, fall back to never.
+export type ExtractOnClick<T> = T extends { onClick: infer F }
+   ? F extends MouseEventHandler<HTMLButtonElement>
+      ? F
+      : never
+   : never;
+
+// Generic props for AlertDialogButton
+// T => item/button type coming from GenericList items
+// E => external error type (e.g., ControlsErrorType)
+export type AlertDialogButtonProps<T, E = unknown> = {
    children: ReactNode;
-   context?: Partial<ButtonError> &
-      ControlsStateTypes["error"] & {
-         id?: string;
-         functions?: ButtonFunctions;
-      };
-}
+   open: boolean;
+   clickedButtonId: string | null;
+   error: E;
+   // Accept both Radix signature and a zero-arg handler (commonly used)
+   onOpenChange?: AlertDialogProps["onOpenChange"] | (() => void);
+   id?: string;
+   // If T supplies a compatible onClick, we keep it; otherwise allow the standard handler
+   onClick?: ExtractOnClick<T> | MouseEventHandler<HTMLButtonElement>;
+} & Partial<T> &
+   WithAlertContext &
+   Omit<AlertDialogProps, "open" | "onOpenChange">;
