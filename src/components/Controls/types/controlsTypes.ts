@@ -20,7 +20,7 @@ export interface ControlsFunctionPropsTypes
    extends contextTypes,
       ControlsStateTypes,
       OnlyMethods<ReturnType<typeof useAnimalIdentification>, true> {
-   setButtonState: Dispatch<SetStateAction<ControlsStateTypes>>;
+   setButtonsState: Dispatch<SetStateAction<ControlsStateTypes>>;
 }
 
 export type ControlsStateTypes<E = ControlsErrorType> = {
