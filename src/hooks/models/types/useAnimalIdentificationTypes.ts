@@ -10,13 +10,11 @@ export interface AnimalIdentification {
    model: ModelTypes;
    status: StatusTypes;
    isInitialized: ModelTypes["isInitialized"];
-   addTrainingPair: (
-      image1: string,
-      image2: string,
-      sameAnimal: boolean
-   ) => Promise<void>;
+   addTrainingPair: (props: AddTrainingPairCallBackProps) => Promise<void>;
    startModelTraining: () => Promise<void>;
-   compareAnimals: (imagesArray: HTMLImageElement[]) => Promise<void>;
+   compareAnimals: (
+      imagesArray: HTMLImageElement[]
+   ) => Promise<CompareImagesResults>;
    // findMatches,
    resetModel: () => Promise<void>;
    saveModel: () => Promise<void>;
@@ -119,10 +117,10 @@ export type AddTrainingPairToModelProps = {
    isInitialized: ModelTypes["isInitialized"];
 };
 
-export type AddTrainingPairCallBackProps = { count: number } & Exclude<
-   AddTrainingPairToModelProps,
-   "isInitialized | config"
->;
+export interface AddTrainingPairCallBackProps
+   extends Pick<AddTrainingPairToModelProps, "imgArray" | "isSameAnimal"> {
+   count: number;
+}
 
 export type TrainingPair = {
    image1: PreprocessImageResults;
