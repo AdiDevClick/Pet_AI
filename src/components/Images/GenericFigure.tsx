@@ -1,32 +1,31 @@
-import { useId, type HTMLAttributes, type Ref } from 'react';
+import type { GenericFigureProps } from "@/components/Images/types/imagesTypes.ts";
+import { useId } from "react";
 
-export function GenericFigure<T extends HTMLAttributes<HTMLDivElement>>({
-    image,
-    ref,
-    ...props
-}: {
-    image: {
-        url: string;
-        description: string;
-        id: string;
-    };
-    ref?: Ref<HTMLImageElement>;
-} & T) {
-    const id = useId();
+/**
+ * Generic figure component for displaying
+ * an image with a description.
+ *
+ * @param ref - The ref to the image element.
+ * @param item - The item containing image data and description.
+ * @param props - Additional HTML attributes for the figure element.
+ */
+export function GenericFigure(props: GenericFigureProps) {
+   const { ref, image, description, className, ...rest } = props;
+   const id = useId();
 
-    return (
-        <figure {...props} className={'generic-layout-figure'}>
-            <img
-                ref={ref}
-                id={`figure-${id}`}
-                src={image.image}
-                alt={`Image ${image.description}`}
-                crossOrigin={'anonymous'}
-                className={'figure__image'}
-            />
-            <figcaption className={`figure__caption ${props.className || ''}`}>
-                {image.description}
-            </figcaption>
-        </figure>
-    );
+   return (
+      <figure {...rest} className={"generic-layout-figure"}>
+         <img
+            ref={ref}
+            id={`figure-${id}`}
+            src={image}
+            alt={`Image ${description}`}
+            crossOrigin={"anonymous"}
+            className={"figure__image"}
+         />
+         <figcaption className={`figure__caption ${className || ""}`}>
+            {description}
+         </figcaption>
+      </figure>
+   );
 }
