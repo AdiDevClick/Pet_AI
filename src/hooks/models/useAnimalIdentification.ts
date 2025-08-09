@@ -233,6 +233,56 @@ export function useAnimalIdentification(): AnimalIdentification {
       ]
    );
 
+   const compareAllAnimals = useCallback(
+      async (imagesArray: CompareImagesProps["imageArray"]) => {
+         if (statusRef.current.loadingState.isLoading !== "training") {
+            updateState(
+               {
+                  loadingState: {
+                     message: "Comparaison de toutes les images...",
+                     isLoading: "comparison",
+                     type: "comparison",
+                  },
+               },
+               setStatus
+            );
+         }
+
+         // Avoid the first lag
+         if (statusRef.current.comparisonCount === 0) await wait(100);
+
+         const results = await Promise.all(
+            imagesArray.map((image, index) =>
+               compareAnimals([image, imagesArray[index + 1]])
+            )
+         );
+
+         if (results) {
+            checkForErrorAndUpdateState({
+               results,
+               setStatus,
+               successValues: {
+                  comparisonCount: statusRef.current.comparisonCount + 1,
+                  ...results,
+                  loadingState: {
+                     message: `Comparaison ${
+                        statusRef.current.comparisonCount + 1
+                     } terminée`,
+                     isLoading: "done",
+                     type: "comparison",
+                  },
+               },
+            });
+         }
+         return results;
+      },
+      [
+         model,
+         statusRef.current.comparisonCount,
+         statusRef.current.loadingState.isLoading,
+      ]
+   );
+
    // Réinitialiser le modèle
    const resetModel = useCallback(() => {
       if (!model.isInitialized) return false;
@@ -728,6 +778,7 @@ export function useAnimalIdentification(): AnimalIdentification {
       // findMatches,
       resetModel,
       saveSelectionToLocalStorage,
+      compareAllAnimals,
       loadModel,
    };
 }
