@@ -31,64 +31,54 @@ export const clickableButtons = [
       id: "controls-button-0",
       label: "🔄 Nouvelles Images",
       className: "primary",
-      functions: {
-         onClick: (e: MouseEvent<HTMLButtonElement>) =>
-            loadNewImages({ e, ...functionProps }),
-      },
+      onClick: (e: MouseEvent<HTMLButtonElement>) =>
+         loadNewImages({ e, ...functionProps }),
    } as const,
    {
       id: "controls-button-1",
       label: "🗑️ Réinitialiser",
       className: "danger",
-      functions: {
-         onClick: (e: MouseEvent<HTMLButtonElement>) =>
-            resetSystem({ e, ...functionProps }),
-      },
+      onClick: (e: MouseEvent<HTMLButtonElement>) =>
+         resetSystem({ e, ...functionProps }),
    } as const,
    {
       id: "controls-button-2",
       label: "✅ Valider toutes les Images",
       className: "success",
-      functions: {
-         onClick: (e: MouseEvent<HTMLButtonElement>) =>
-            validateAllImages({ e, ...functionProps }),
-      },
+      onClick: (e: MouseEvent<HTMLButtonElement>) =>
+         validateAllImages({ e, ...functionProps }),
    } as const,
    {
       id: "controls-button-3",
       label: "🔮 Prédire Tout",
       className: "success",
-      functions: {
-         onClick: (e: MouseEvent<HTMLButtonElement>) =>
-            predictAllImages({ e, ...functionProps }),
-      },
+      onClick: (e: MouseEvent<HTMLButtonElement>) =>
+         predictAllImages({ e, ...functionProps }),
    },
    {
       id: "controls-button-4",
       label: "🔧 Entraîner le Modèle",
       className: "success",
-      functions: {
-         onClick: (e: MouseEvent<HTMLButtonElement>) =>
-            trainModel({ e, ...functionProps }),
-      },
+
+      onClick: (e: MouseEvent<HTMLButtonElement>) =>
+         trainModel({ e, ...functionProps }),
    } as const,
    {
       id: "controls-button-5",
       label: "💾 Sauvegarder le modèle",
       className: "primary",
-      functions: {
-         onClick: (e: MouseEvent<HTMLButtonElement>) =>
-            saveModel({ e, ...functionProps }),
-      },
+
+      onClick: (e: MouseEvent<HTMLButtonElement>) =>
+         saveModel({ e, ...functionProps }),
    } as const,
    {
       id: "controls-button-6",
       label: "📂 Charger le modèle",
       className: "primary",
-      functions: {
-         onClick: (e: MouseEvent<HTMLButtonElement>) =>
-            openFileExplorer({ e, ...functionProps }),
-      },
+
+      onClick: (e: MouseEvent<HTMLButtonElement>) =>
+         openFileExplorer({ e, ...functionProps }),
+
       context: {
          error: {
             cancelable: true,
@@ -102,18 +92,16 @@ export const clickableButtons = [
       id: "controls-button-7",
       label: "💾 Sauvegarder les comparaisons",
       className: "primary",
-      functions: {
-         onClick: (e: MouseEvent<HTMLButtonElement>) =>
-            saveDataSelection({ e, ...functionProps }),
-      },
+
+      onClick: (e: MouseEvent<HTMLButtonElement>) =>
+         saveDataSelection({ e, ...functionProps }),
    } as const,
    {
       id: "controls-button-8",
       label: "📂 Charger les données de comparaison par défaut",
       className: "primary",
-      functions: {
-         onClick: (e: MouseEvent<HTMLButtonElement>) =>
-            loadDefaultDataArray({ e }),
-      },
+
+      onClick: (e: MouseEvent<HTMLButtonElement>) =>
+         loadDefaultDataArray({ e }),
    } as const,
 ];
