@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
  * @param setState - Function to update the state after the download.
  * @param fileName - Optional name for the downloaded file, defaults to 'download.json'.
  */
-export function useDownloadFileFromData<T extends Record<string, unknown>>({
+export function useFileDownloadHandler<T extends Record<string, unknown>>({
    data,
    setState,
    fileName = "download.json",
