@@ -7,111 +7,154 @@ import {
    memo,
    use,
    useCallback,
-   useRef,
+   useMemo,
    useState,
    type HTMLAttributes,
    type MouseEvent,
-   type ReactNode,
 } from "react";
 import "@css/card.scss";
 import { AnimalActionsContext } from "@/api/context/animalContext/AnimalModelContext.tsx";
+import { GenericList } from "@/components/Lists/GenericList.tsx";
+import { UniqueSet } from "@/lib/UniqueSet.ts";
+import type {
+   TrainingTwoCardsProps,
+   TrainingTwoCardsState,
+} from "@/components/Cards/types/CardTypes.ts";
+import { makeTrainingButtons } from "@/configs/training.config.ts";
 
+const initialState = {
+   results: {
+      sameAnimal: false,
+      confidence: 0,
+   },
+   isCorrect: null!,
+   showPrediction: false,
+   imagesShown: new UniqueSet<string, HTMLImageElement>(),
+} as const;
+
+/**
+ * Comparing two animal images.
+ *
+ * @param animals Array of animal objects to be compared.
+ * @param isOnLoad Indicates if the app is in loading state.
+ * This is used in the AddTrainingPair in order to avoid a lag
+ * when adding new training pairs for the first time
+ */
 export const MemoizedTrainingTwoCards = memo(function TrainingTwoCards<
    T extends HTMLAttributes<HTMLDivElement>
->({
-   animals,
-   isOnLoad,
-}: {
-   children: ReactNode;
-} & T) {
-   const previewImgsRef = useRef(new Map()).current;
-   const [isCorrect, setIsCorrect] = useState<boolean>(null!);
-   const [showPrediction, setShowPrediction] = useState(false);
-   const [prediction, setPrediction] = useState<{
-      sameAnimal: boolean;
-      confidence: number;
-   }>(null!);
+>({ animals, isOnLoad }: TrainingTwoCardsProps<T>) {
+   // Local state
+   const [state, setState] = useState<TrainingTwoCardsState>(initialState);
+
+   // Context
    const { compareAnimals, addTrainingPair } = use(AnimalActionsContext);
 
-   let className = "";
+   /**
+    * Handle user results for the image comparison.
+    *
+    * @param e Click event
+    * @param selectedCorrect Indicates if the selected images are of the same animal
+    */
+   const handleUserResults = useCallback(
+      async (e: MouseEvent<HTMLButtonElement>, selectedCorrect: boolean) => {
+         e.preventDefault();
+         setState((prev) => ({ ...prev, isCorrect: selectedCorrect }));
 
-   if (isCorrect) {
-      className = "selected-correct";
-   }
-   if (isCorrect === false) {
-      className = "selected-incorrect";
-   }
+         if (state.imagesShown.size() === 2) {
+            const entries = Array.from(state.imagesShown.values());
 
-   const handleUserResults = async (
-      e: MouseEvent<HTMLButtonElement>,
-      selectedCorrect: boolean
-   ) => {
-      e.preventDefault();
-      setIsCorrect(selectedCorrect);
+            addTrainingPair({
+               imgArray: entries,
+               isSameAnimal: selectedCorrect,
+               count: isOnLoad ? 1 : 0,
+            });
+         }
+      },
+      [addTrainingPair, isOnLoad, state.imagesShown]
+   );
 
-      if (previewImgsRef.size === 2) {
-         const entries = Array.from(previewImgsRef.values());
+   /**
+    * Handle the prediction of the selected images.
+    *
+    * @param e Click event
+    */
+   const handlePredict = useCallback(
+      async (e: MouseEvent<HTMLButtonElement>) => {
+         e.preventDefault();
+         if (state.imagesShown.size() === 2) {
+            const entries = Array.from(state.imagesShown.values());
+            const result = await compareAnimals(entries);
 
-         addTrainingPair({
-            imgArray: entries,
-            isSameAnimal: selectedCorrect,
-            count: isOnLoad,
-         });
-      }
-   };
+            setState((prev) => ({
+               ...prev,
+               results: result,
+               showPrediction: true,
+            }));
+         }
+      },
+      [compareAnimals, state.imagesShown]
+   );
 
-   const handlePredict = async (e: MouseEvent<HTMLButtonElement>) => {
-      e.preventDefault();
-      if (previewImgsRef.size === 2) {
-         const entries = Array.from(previewImgsRef.values());
-         const result = await compareAnimals(entries);
-         setPrediction(result);
-         setShowPrediction(true);
-      }
-   };
-
+   /**
+    * Callback function to handle image references.
+    *
+    * @description This will add the image element
+    * to the UniqueSet().
+    *
+    * @param element The HTMLImageElement reference
+    */
    const onImageRef = useCallback((element: HTMLImageElement) => {
       if (element) {
-         previewImgsRef.set(element.id, element);
+         setState((prev) => ({
+            ...prev,
+            imagesShown: prev.imagesShown.clone().set(element.id, element),
+         }));
       }
    }, []);
 
+   // Build buttons from config and UI maps over it
+   const trainingButtons = useMemo(
+      () =>
+         makeTrainingButtons({
+            onUserResults: handleUserResults,
+            onPredict: handlePredict,
+         }),
+      [handleUserResults, handlePredict]
+   );
+
    return (
-      <GenericCard className={className}>
-         {/* <GenericCard className={className} id={`card-${images.id}`}> */}
+      <GenericCard className={checkUserSelection(state.isCorrect)}>
          <div className="card__image-choice">
-            {animals.map((animal) => (
-               <GenericFigure
-                  ref={onImageRef}
-                  key={animal.id}
-                  image={animal}
-                  className="card__description"
-               />
-            ))}
+            <GenericList items={animals}>
+               <GenericFigure ref={onImageRef} className="card__description" />
+            </GenericList>
          </div>
          <div className="card__actions">
-            <Button
-               className="success"
-               onClick={(e) => handleUserResults(e, true)}
-            >
-               ✓ Correct
-            </Button>
-            <Button
-               className="danger"
-               onClick={(e) => handleUserResults(e, false)}
-            >
-               ✗ Incorrect
-            </Button>
-            <Button className="primary" onClick={handlePredict}>
-               🔮 Prédire
-            </Button>
+            <GenericList items={trainingButtons}>
+               <Button />
+            </GenericList>
          </div>
-         <CardFeedback isCorrect={isCorrect} image={animals} />
+         <CardFeedback isCorrect={state.isCorrect} />
          <CardPrediction
-            showPrediction={showPrediction}
-            prediction={prediction}
-            image={animals}
+            showPrediction={state.showPrediction}
+            prediction={"error" in state.results ? null : state.results}
          />
       </GenericCard>
    );
 });
+
+/**
+ * Checks the user's selection state.
+ *
+ * @param isCorrect A boolean indicating the user's selection
+ * @returns The className representing the user's selection
+ */
+function checkUserSelection(isCorrect: boolean): string {
+   if (isCorrect === false) {
+      return "selected-incorrect";
+   }
+   if (isCorrect) {
+      return "selected-correct";
+   }
+   return "";
+}
