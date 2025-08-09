@@ -8,19 +8,13 @@ import { updateState, wait } from "@/lib/utils.ts";
 import type { CustomError } from "@/mainTypes.ts";
 import { toast } from "sonner";
 
-export function loadNewImages({
-   setPredictionsCount,
-   isOnLoad,
-   setIsOnLoad,
-   setCount,
-   count,
-   e,
-}) {
+export function loadNewImages({ e, ...functionProps }) {
    e.preventDefault();
-   if (isOnLoad) setIsOnLoad(!isOnLoad);
-   if (count > 10) setCount(1);
-   setCount((prev) => prev + 1);
-   setPredictionsCount(0);
+   functionProps.setAppRouterContext((prev) => ({
+      ...prev,
+      count: prev.count > 10 ? 1 : prev.count + 1,
+      isOnLoad: prev.isOnLoad ? !prev.isOnLoad : prev.isOnLoad,
+   }));
 }
 
 export async function saveModel({ e, ...functionProps }) {
@@ -40,7 +34,7 @@ export async function saveModel({ e, ...functionProps }) {
             },
          });
       }
-      functionProps.setButtonState((prev) => ({
+      functionProps.setButtonsState((prev) => ({
          ...prev,
          download: { state: true, data: result.modelData },
          id: element.id,
@@ -108,9 +102,9 @@ export async function loadDefaultDataArray({ e }) {
  * It expects the file to be a valid JSON containing the model data.
  *
  * @param e - The event object.
- * @param setButtonState - Function to set the button state.
+ * @param setButtonsState - Function to set the button state.
  *
- * @trigger The `setButtonState` setter with error and button id.
+ * @trigger The `setButtonsState` setter with error and button id.
  */
 export async function loadThisModel({ data, callFunc }: LoadModelTypes) {
    const success = await callFunc(data);
@@ -135,7 +129,7 @@ export async function openFileExplorer({
 }: LoadModelTypes) {
    e.preventDefault();
    const element = e.target as HTMLElement;
-   functionProps.setButtonState(defaultState);
+   functionProps.setButtonsState(defaultState);
 
    setTimeout(() => {
       updateState(
@@ -144,7 +138,7 @@ export async function openFileExplorer({
             id: element.id,
             upload: { state: true, data: null },
          },
-         functionProps.setButtonState
+         functionProps.setButtonsState
       );
    }, 0);
 }
@@ -152,20 +146,15 @@ export async function openFileExplorer({
 export async function resetSystem({ e, ...functionProps }) {
    e.preventDefault();
    loadNewImages({ e, ...functionProps });
-   functionProps.setResetSystem(true);
+   functionProps.appRouterContext((prev) => ({
+      ...prev,
+      resetSystem: true,
+   }));
 }
 
-export async function predictAllImages({
-   e,
-   predictionsCount,
-   setPredictionsCount,
-}) {
+export async function predictAllImages({ e, ...functionProps }) {
    e.preventDefault();
-   if (!window.imageClassifier || !window.imageClassifier.model) {
-      alert("⚠️ Le modèle n'est pas encore prêt!");
-      return;
-   }
-
+   console.log(functionProps);
    const images = document.querySelectorAll(".image-card img");
    predictionsCount = 0;
 
