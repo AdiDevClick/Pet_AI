@@ -24,6 +24,7 @@ export const MemoizedTrainModel = memo(function TrainModel() {
    const shuffleId = useId();
    let countRef = useRef(0).current;
 
+   // A simple shuffle for the animals array
    const shuffledAnimalsMemo = useMemo(
       () => [...animals].sort(() => 0.5 - Math.random()),
       [animals, displayNewImages]
