@@ -25,5 +25,7 @@ export type AnimalItem = {
 export type TrainingTwoCardsProps<T extends HTMLAttributes<HTMLDivElement>> = {
    animals: AnimalItem[];
    isOnLoad?: boolean;
+   shouldPredict?: boolean;
+   onPredictionEnd?: () => void | Promise<void>;
    children?: ReactNode;
 } & T;
