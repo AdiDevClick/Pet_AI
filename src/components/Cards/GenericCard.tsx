@@ -41,25 +41,20 @@ import { cloneElement, isValidElement } from "react";
  */
 export function GenericCard<T>({
    children,
-   item,
+   className,
    index,
    ...props
 }: GenericCardProps<T>) {
    let cardId;
 
-   if (item !== null) {
-      cardId =
-         typeof item === "object" && "id" in item ? item.id : Math.random();
+   if (typeof props === "object") {
+      cardId = "id" in props ? props.id : Math.random();
    }
 
    return (
-      <div
-         id={`card-${cardId}`}
-         {...props}
-         className={`card ${props.className ?? ""}`}
-      >
+      <div id={`card-${cardId}`} className={`card ${className ?? ""}`}>
          {isValidElement(children)
-            ? cloneElement(children, { ...item, index } as {
+            ? cloneElement(children, { ...props, index } as {
                  item?: T;
                  index?: number;
               })
