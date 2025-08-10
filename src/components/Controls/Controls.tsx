@@ -12,7 +12,7 @@ import { GenericList } from "@/components/Lists/GenericList.tsx";
 import { clickableButtons, functionProps } from "@/configs/controls.config.ts";
 import { useFileDownloadHandler } from "@/hooks/download/useFileDownloadHandler";
 import { useUploadAFile } from "@/hooks/upload/useUploadAFile.ts";
-import type { contextTypes } from "@/mainTypes.ts";
+import type { ContextTypes } from "@/mainTypes.ts";
 import "@css/controls.scss";
 import { memo, use, useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
@@ -44,7 +44,7 @@ export const MemoizedControls = memo(function Controls({
       useState<ControlsStateTypes>(defaultState);
 
    // Grab all contexts functions and properties
-   const context: contextTypes = useOutletContext();
+   const context: ContextTypes = useOutletContext();
    const contextActions = use(AnimalActionsContext);
 
    useFileDownloadHandler({
