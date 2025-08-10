@@ -4,11 +4,14 @@ import { GenericCard } from "@/components/Cards/GenericCard.tsx";
 import { MemoizedControls } from "@/components/Controls/Controls.tsx";
 import { GenericGrid } from "@/components/Grid/GenericGrid.tsx";
 import { ImageInput } from "@/components/Inputs/ImageInput.tsx";
-import { GenericList } from "@/components/Lists/GenericList.tsx";
+import { ListMapper } from "@/components/Lists/ListMapper.tsx";
 import { GenericDescription } from "@/components/Texts/GenericDescription.tsx";
 import { GenericTitle } from "@/components/Texts/GenericTitle.tsx";
 import { UniqueSet } from "@/lib/UniqueSet.ts";
-import type { PageState } from "@/Pages/Compare/types/CompareTypes.ts";
+import type {
+   CompareResult,
+   PageState,
+} from "@/Pages/Compare/types/CompareTypes.ts";
 import { use, useState } from "react";
 
 const inputs = [
@@ -21,13 +24,14 @@ const inputs = [
       label: "Image 2",
    },
 ];
+
 export const initialComparePageState = {
    message: "",
    className: "",
-   results: null,
+   results: null! as CompareResult,
    inputImages: new UniqueSet<string, HTMLImageElement>(),
    error: new UniqueSet<string, string[]>(),
-} as const;
+};
 
 /**
  * Compare two images of pets to see if they depict the same animal.
@@ -89,7 +93,7 @@ export function ComparePets() {
          }));
       }
    };
-   console.log([...pageState.error.entries()]);
+
    return (
       <>
          <MemoizedControls />
@@ -101,11 +105,11 @@ export function ComparePets() {
             </GenericDescription>
 
             <GenericGrid className="comparison-container">
-               <GenericList items={inputs}>
+               <ListMapper items={inputs}>
                   <GenericCard className={"image-preview-container"}>
                      <ImageInput setter={setPageState} state={pageState} />
                   </GenericCard>
-               </GenericList>
+               </ListMapper>
             </GenericGrid>
 
             <Button

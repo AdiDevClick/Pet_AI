@@ -8,7 +8,7 @@ import type {
    ControlsPropsTypes,
    ControlsStateTypes,
 } from "@/components/Controls/types/controlsTypes";
-import { GenericList } from "@/components/Lists/GenericList.tsx";
+import { ListMapper } from "@/components/Lists/ListMapper.tsx";
 import { clickableButtons, functionProps } from "@/configs/controls.config.ts";
 import { useFileDownloadHandler } from "@/hooks/download/useFileDownloadHandler";
 import { useUploadAFile } from "@/hooks/upload/useUploadAFile.ts";
@@ -89,7 +89,7 @@ export const MemoizedControls = memo(function Controls({
    }, [fileError]);
    return (
       <section className="controls">
-         <GenericList items={buttons}>
+         <ListMapper items={buttons}>
             <AlertDialogButton
                clickedButtonId={buttonState.id}
                error={buttonState.error}
@@ -98,7 +98,7 @@ export const MemoizedControls = memo(function Controls({
             >
                <Button />
             </AlertDialogButton>
-         </GenericList>
+         </ListMapper>
       </section>
    );
 });

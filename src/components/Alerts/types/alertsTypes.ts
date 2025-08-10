@@ -27,7 +27,7 @@ export type ExtractOnClick<T> = T extends { onClick: infer F }
    : never;
 
 // Generic props for AlertDialogButton
-// T => item/button type coming from GenericList items
+// T => item/button type coming from ListMapper items
 // E => external error type (e.g., ControlsErrorType)
 export type AlertDialogButtonProps<T, E = unknown> = {
    children: ReactNode;

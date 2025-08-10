@@ -16,13 +16,13 @@ import {
 } from "react";
 import "@css/card.scss";
 import { AnimalActionsContext } from "@/api/context/animalContext/AnimalModelContext.tsx";
-import { GenericList } from "@/components/Lists/GenericList.tsx";
 import { UniqueSet } from "@/lib/UniqueSet.ts";
 import type {
    TrainingTwoCardsProps,
    TrainingTwoCardsState,
 } from "@/components/Cards/types/CardTypes.ts";
 import { makeTrainingButtons } from "@/configs/training.config.ts";
+import { ListMapper } from "@/components/Lists/ListMapper.tsx";
 
 const initialState = {
    results: {
@@ -152,14 +152,14 @@ export const MemoizedTrainingTwoCards = memo(function TrainingTwoCards<
    return (
       <GenericCard className={checkUserSelection(state.isCorrect)}>
          <div className="card__image-choice">
-            <GenericList items={animals}>
+            <ListMapper items={animals}>
                <GenericFigure ref={onImageRef} className="card__description" />
-            </GenericList>
+            </ListMapper>
          </div>
          <div className="card__actions">
-            <GenericList items={trainingButtons}>
+            <ListMapper items={trainingButtons}>
                <Button />
-            </GenericList>
+            </ListMapper>
          </div>
          <CardFeedback isCorrect={state.isCorrect} />
          <CardPrediction

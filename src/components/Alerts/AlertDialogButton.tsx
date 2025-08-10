@@ -28,7 +28,7 @@ import { cloneElement, isValidElement } from "react";
  * @param clickedButtonId - The ID of the button that was clicked
  * to prevent multiple dialogs from opening.
  * @param onOpenChange - Callback function to handle open state changes.
- * @param props - Additional properties including button properties from GenericList.
+ * @param props - Additional properties including button properties from ListMapper.
  */
 export function AlertDialogButton<T, E = unknown>({
    children,

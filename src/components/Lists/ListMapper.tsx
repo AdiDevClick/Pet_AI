@@ -1,6 +1,6 @@
 import type {
-   GenericList,
-   GenericListProps,
+   ListMapper,
+   ListMapperProps,
 } from "@/components/Lists/types/ListsTypes.ts";
 import { cloneElement, Fragment, isValidElement } from "react";
 
@@ -18,25 +18,25 @@ import { cloneElement, Fragment, isValidElement } from "react";
  *
  * > **Use with a function for custom logic :**
  * > ```tsx
- * > <GenericList items={myItems}>
+ * > <ListMapper items={myItems}>
  * >    {(item, index) => (
  * >       // My custom logic here
  * >       <MyListItem key={item.id} item={item} index={index} />
  * >    )}
- * > </GenericList>
+ * > </ListMapper>
  *
  * > **Use with a children**
  * > ```tsx
- * > <GenericList items={myItems}>
+ * > <ListMapper items={myItems}>
  * >    <MyListItem /> // { item, index } props will be passed automatically
- * > </GenericList>
+ * > </ListMapper>
  * ```
  */
 
-export function GenericList<T>({
+export function ListMapper<T>({
    items,
    children,
-}: GenericListProps<T>): GenericList<T> {
+}: ListMapperProps<T>): ListMapper<T> {
    return (
       <>
          {items.map((item, index) => {

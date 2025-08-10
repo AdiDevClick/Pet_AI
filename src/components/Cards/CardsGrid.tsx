@@ -20,9 +20,9 @@ export function CardsGrid({
             />
          ))}
          {/* <GenericGrid>
-            <GenericList items={images}>
+            <ListMapper items={images}>
                <TrainingCard image={item} animalName={animalName} />
-            </GenericList>
+            </ListMapper>
          </GenericGrid> */}
       </GenericGrid>
    );

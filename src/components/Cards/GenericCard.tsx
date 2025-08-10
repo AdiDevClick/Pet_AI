@@ -5,7 +5,7 @@ import { cloneElement, isValidElement } from "react";
  * A reusable card component
  *
  * @description
- * If used with GenericList, this component will automatically
+ * If used with ListMapper, this component will automatically
  * receive the `item` and `index` props for each card.
  * It will act as a normal Component otherwise.
  *
@@ -15,18 +15,18 @@ import { cloneElement, isValidElement } from "react";
  *   **If it is a React element, it will automatically receive
  *   the `item` and `index` props**.
  * @param item
- *   (Optional) The current item from the list (automatically injected by GenericList).
+ *   (Optional) The current item from the list (automatically injected by ListMapper).
  * @param index
- *   (Optional) The current index from the list (automatically injected by GenericList).
+ *   (Optional) The current index from the list (automatically injected by ListMapper).
  * @param ...props
  *   Any other HTML props for the root div.
  *
  * @example
- * > **Usage with GenericList**
+ * > **Usage with ListMapper**
  * > ```tsx
- * > <GenericList items={data}>
+ * > <ListMapper items={data}>
  * >  <GenericCard className="my-card" />
- * > </GenericList>
+ * > </ListMapper>
  * > ```
  *
  * > **Direct usage**

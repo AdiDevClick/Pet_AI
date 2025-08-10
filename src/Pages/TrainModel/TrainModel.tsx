@@ -5,8 +5,8 @@ import { MemoizedTrainingTwoCards } from "@/components/Cards/TrainingTwoCards.ts
 import { useLoaderData, useOutletContext } from "react-router-dom";
 import { memo, useCallback, useEffect, useId, useMemo, useRef } from "react";
 import { MemoizedControls } from "@/components/Controls/Controls.tsx";
-import { GenericList } from "@/components/Lists/GenericList";
 import type { ContextTypes } from "@/mainTypes.ts";
+import { ListMapper } from "@/components/Lists/ListMapper.tsx";
 
 /**
  * Training Page for comparing and training animal images.
@@ -62,7 +62,7 @@ export const MemoizedTrainModel = memo(function TrainModel() {
          <Status />
          {(isOnLoad || count > 0) && (
             <>
-               <GenericList items={shuffledAnimalsMemo}>
+               <ListMapper items={shuffledAnimalsMemo}>
                   {(pair, idx) => (
                      <MemoizedTrainingTwoCards
                         key={`${shuffleId}-${pair[0].id}-${pair[1].id}-${idx}`}
@@ -72,7 +72,7 @@ export const MemoizedTrainModel = memo(function TrainModel() {
                         onPredictionEnd={incrementCount}
                      />
                   )}
-               </GenericList>
+               </ListMapper>
                {/* <CardsGrid
                         key={count}
                         images={shuffledAnimals}
