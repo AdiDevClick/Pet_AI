@@ -208,16 +208,17 @@ export function useAnimalIdentification(): AnimalIdentification {
          });
 
          if (results) {
+            // Useful in the event of a huge predict task
+            await wait(100);
+
             checkForErrorAndUpdateState({
                results,
                setStatus,
                successValues: {
-                  comparisonCount: statusRef.current.comparisonCount + 1,
+                  comparisonCount: (statusRef.current.comparisonCount += 1),
                   ...results,
                   loadingState: {
-                     message: `Comparaison ${
-                        statusRef.current.comparisonCount + 1
-                     } terminée`,
+                     message: `Comparaison ${(statusRef.current.comparisonCount += 1)} terminée`,
                      isLoading: "done",
                      type: "comparison",
                   },
