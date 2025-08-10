@@ -1,16 +1,12 @@
-export type contextTypes = {
-   accuracy: number;
-   isOnLoad: boolean;
-   setIsOnLoad: (value: boolean) => void;
-   predictionsCount: number;
-   setPredictionsCount: (value: number) => void;
-   trainingCount: number;
-   setTrainingCount: (value: number) => void;
-   setCount: (value: number) => void;
-   count: number;
-   setResetSystem: (value: boolean) => void;
-   resetSystem: boolean;
+import type { Dispatch, SetStateAction } from "react";
+import type { initialAppRouterState } from "@/main.tsx";
+
+export type AppRouterState = typeof initialAppRouterState;
+
+export type ContextTypes = AppRouterState & {
+   setAppRouterContext: Dispatch<SetStateAction<AppRouterState>>;
 };
+
 export type CustomError = {
    cause?: {
       message?: string;
