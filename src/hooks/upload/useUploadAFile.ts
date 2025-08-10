@@ -25,7 +25,7 @@ Object.freeze(defaultState);
  *
  * @returns An object containing the file content, any error, and the results of the function call.
  */
-export function useUploadAFile<F extends (data: any) => Promise<any>>({
+export function useUploadAFile<F extends (data: unknown) => Promise<unknown>>({
    exploreFiles,
    functionToCall,
 }: UploadAFileTypes<F>): UploadAFile<F> {
@@ -47,7 +47,7 @@ export function useUploadAFile<F extends (data: any) => Promise<any>>({
             const results = await functionToCall(data);
             setFileState((prev) => ({
                ...prev,
-               results,
+               results: results as Awaited<ReturnType<F>>,
             }));
          }
       },

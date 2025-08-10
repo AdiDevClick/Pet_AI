@@ -1,6 +1,8 @@
 import type { defaultState } from "@/components/Controls/Controls.tsx";
 
-export interface UploadAFileTypes<F extends (data: any) => Promise<any>> {
+export interface UploadAFileTypes<
+   F extends (data: unknown) => Promise<unknown>
+> {
    exploreFiles: {
       state: boolean;
       data: Parameters<F>[0] | null;
