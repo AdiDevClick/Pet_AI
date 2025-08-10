@@ -11,16 +11,16 @@ import {
 import { GenericTitle } from "@/components/Texts/GenericTitle.tsx";
 import { useOutletContext } from "react-router-dom";
 import { AnimalStateContext } from "@/api/context/animalContext/AnimalModelContext.tsx";
+import type { ContextTypes } from "@/mainTypes.ts";
 
 export function Status() {
-   const { appRouterContext } = useOutletContext();
+   const { resetSystem } = useOutletContext<ContextTypes>();
    const { isInitialized, status } = use(AnimalStateContext);
-
    const contextPropsMemo = useMemo(
       () => ({
-         resetSystem: appRouterContext.resetSystem,
+         resetSystem,
       }),
-      [appRouterContext.resetSystem, isInitialized, status]
+      [resetSystem, isInitialized, status]
    );
 
    const microOutDivRef = useRef<HTMLDivElement>(null!);
