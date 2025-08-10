@@ -24,7 +24,7 @@ export const MemoizedTrainModel = memo(function TrainModel() {
    const shuffleId = useId();
    let countRef = useRef(0).current;
 
-   const shuffledAnimals = useMemo(
+   const shuffledAnimalsMemo = useMemo(
       () => [...animals].sort(() => 0.5 - Math.random()),
       [animals, displayNewImages]
    );
@@ -38,15 +38,17 @@ export const MemoizedTrainModel = memo(function TrainModel() {
     * after the last image has been predicted.
     */
    const incrementCount = useCallback(() => {
-      if (!predictAllImages || countRef >= shuffledAnimals.length) return;
+      if (!predictAllImages || countRef >= shuffledAnimalsMemo.length) return;
       const next = ++countRef;
 
-      if (next >= shuffledAnimals.length) {
+      if (next >= shuffledAnimalsMemo.length) {
          setAppRouterContext((prev) => ({ ...prev, predictAllImages: false }));
       }
-   }, [shuffledAnimals.length, countRef, predictAllImages]);
+   }, [shuffledAnimalsMemo.length, countRef, predictAllImages]);
 
-   /** Resets countRef if a prediction is started */
+   /**
+    * Resets countRef if a prediction is started
+    */
    useEffect(() => {
       if (predictAllImages) {
          countRef = 0;
@@ -60,7 +62,7 @@ export const MemoizedTrainModel = memo(function TrainModel() {
          <Status />
          {(isOnLoad || count > 0) && (
             <>
-               <GenericList items={shuffledAnimals}>
+               <GenericList items={shuffledAnimalsMemo}>
                   {(pair, idx) => (
                      <MemoizedTrainingTwoCards
                         key={`${shuffleId}-${pair[0].id}-${pair[1].id}-${idx}`}
