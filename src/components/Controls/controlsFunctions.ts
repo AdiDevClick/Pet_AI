@@ -1,23 +1,22 @@
 import { defaultState } from "@/components/Controls/Controls.tsx";
-import type {
-   GenericButtonsProps,
-   LoadModelTypes,
-} from "@/components/Controls/types/controlsTypes";
+import type { ControlsTypes } from "@/components/Controls/types/controlsTypes";
 import { MODEL_LOADER_ID } from "@/configs/toaster.config.ts";
 import { updateState, wait } from "@/lib/utils.ts";
 import type { CustomError } from "@/mainTypes.ts";
 import { toast } from "sonner";
 
-export function loadNewImages({ e, ...functionProps }) {
+export function loadNewImages({ e, ...functionProps }: ControlsTypes) {
    e.preventDefault();
+
    functionProps.setAppRouterContext((prev) => ({
       ...prev,
       count: prev.count > 10 ? 1 : prev.count + 1,
       isOnLoad: prev.isOnLoad ? !prev.isOnLoad : prev.isOnLoad,
+      displayNewImages: !prev.displayNewImages,
    }));
 }
 
-export async function saveModel({ e, ...functionProps }) {
+export async function saveModel({ e, ...functionProps }: ControlsTypes) {
    e.preventDefault();
    const element = e.target;
    try {
@@ -73,7 +72,7 @@ export async function saveModel({ e, ...functionProps }) {
 export async function saveDataSelection({
    e,
    ...functionProps
-}: GenericButtonsProps) {
+}: ControlsTypes) {
    e.preventDefault();
 
    await functionProps.saveSelectionToLocalStorage();
@@ -95,25 +94,6 @@ export async function loadDefaultDataArray({ e }) {
 }
 
 /**
- * Loads the AI model from a file.
- * It will trigger a toaster notification on success or failure.
- *
- * @description This function reads a JSON file and loads the AI model from it.
- * It expects the file to be a valid JSON containing the model data.
- *
- * @param e - The event object.
- * @param setButtonsState - Function to set the button state.
- *
- * @trigger The `setButtonsState` setter with error and button id.
- */
-export async function loadThisModel({ data, callFunc }: LoadModelTypes) {
-   const success = await callFunc(data);
-   return await {
-      ...success,
-   };
-}
-
-/**
  * Opens the file explorer dialog.
  *
  * @description This function will first reset the button state
@@ -123,10 +103,7 @@ export async function loadThisModel({ data, callFunc }: LoadModelTypes) {
  * @param e - The event object.
  * @param functionProps - The function properties including context and state.
  */
-export async function openFileExplorer({
-   e,
-   ...functionProps
-}: LoadModelTypes) {
+export async function openFileExplorer({ e, ...functionProps }: ControlsTypes) {
    e.preventDefault();
    const element = e.target as HTMLElement;
    functionProps.setButtonsState(defaultState);
@@ -143,79 +120,93 @@ export async function openFileExplorer({
    }, 0);
 }
 
-export async function resetSystem({ e, ...functionProps }) {
+export async function resetSystem({ e, ...functionProps }: ControlsTypes) {
    e.preventDefault();
    loadNewImages({ e, ...functionProps });
-   functionProps.appRouterContext((prev) => ({
+   functionProps.setAppRouterContext((prev) => ({
       ...prev,
       resetSystem: true,
    }));
 }
 
-export async function predictAllImages({ e, ...functionProps }) {
+export async function predictAllImages({ e, ...functionProps }: ControlsTypes) {
    e.preventDefault();
-   console.log(functionProps);
-   const images = document.querySelectorAll(".image-card img");
-   predictionsCount = 0;
 
-   for (let img of images) {
-      if (img.complete) {
-         const prediction = await window.imageClassifier.predict(img);
-         if (prediction) {
-            const imageId = img.closest(".image-card").id.replace("card-", "");
-            const predictionElement = document.getElementById(
-               `prediction-${imageId}`
-            );
+   functionProps.setAppRouterContext((prev) => ({
+      ...prev,
+      predictAllImages: true,
+   }));
 
-            predictionElement.innerHTML = `
-                            <strong>🔮 Prédiction IA:</strong><br>
-                            ${
-                               prediction.prediction === "correct"
-                                  ? "✅ Chat détecté"
-                                  : "❌ Pas un chat"
-                            }<br>
-                            <small>Confiance: ${(
-                               prediction.confidence * 100
-                            ).toFixed(1)}%</small>
-                        `;
-            predictionElement.style.display = "block";
-            setPredictionsCount((prevCount) => prevCount + 1);
-         }
-      }
-   }
+   // const images = document.querySelectorAll(".image-card img");
+   // predictionsCount = 0;
+
+   // for (let img of images) {
+   //    if (img.complete) {
+   //       const prediction = await window.imageClassifier.predict(img);
+   //       if (prediction) {
+   //          const imageId = img.closest(".image-card").id.replace("card-", "");
+   //          const predictionElement = document.getElementById(
+   //             `prediction-${imageId}`
+   //          );
+
+   //          predictionElement.innerHTML = `
+   //                          <strong>🔮 Prédiction IA:</strong><br>
+   //                          ${
+   //                             prediction.prediction === "correct"
+   //                                ? "✅ Chat détecté"
+   //                                : "❌ Pas un chat"
+   //                          }<br>
+   //                          <small>Confiance: ${(
+   //                             prediction.confidence * 100
+   //                          ).toFixed(1)}%</small>
+   //                      `;
+   //          predictionElement.style.display = "block";
+   //          setPredictionsCount((prevCount) => prevCount + 1);
+   //       }
+   //    }
+   // }
 
    // updateStats();
 }
-export async function validateAllImages({ e }) {
+export async function validateAllImages({
+   e,
+   ...functionProps
+}: ControlsTypes) {
    e.preventDefault();
-   let count = 0;
-   const comparisons = document.querySelectorAll(".card__image-choice");
-   await Promise.all(
-      Array.from(comparisons).map(async (comparison) => {
-         const images = comparison.querySelectorAll("img");
-         if (images.length === 2) {
-            const image1 = images[0];
-            const image2 = images[1];
-            if (image1.complete && image2.complete) {
-               await window.animalIdentifier.addTrainingPair(
-                  [image1, image2],
-                  true
-               );
-               count++;
-               // const predictionElement = document.getElementById(
-               //     `prediction-${image1.id}`
-               // );
-               // predictionElement.innerHTML = `
-               //     <strong>🔮 Prédiction IA:</strong><br>
-               //     ✅ Images validées<br>
-               //     <small>Confiance: 100%</small>
-               // `;
-               // predictionElement.style.display = 'block';
-            }
-         }
-      })
-   );
-   alert(`✅ Toutes les images(${count}) ont été validées!`);
+
+   functionProps.setAppRouterContext((prev) => ({
+      ...prev,
+      validateAllImages: true,
+   }));
+
+   // let count = 0;
+   // const comparisons = document.querySelectorAll(".card__image-choice");
+   // await Promise.all(
+   //    Array.from(comparisons).map(async (comparison) => {
+   //       const images = comparison.querySelectorAll("img");
+   //       if (images.length === 2) {
+   //          const image1 = images[0];
+   //          const image2 = images[1];
+   //          if (image1.complete && image2.complete) {
+   //             await window.animalIdentifier.addTrainingPair(
+   //                [image1, image2],
+   //                true
+   //             );
+   //             count++;
+   //             // const predictionElement = document.getElementById(
+   //             //     `prediction-${image1.id}`
+   //             // );
+   //             // predictionElement.innerHTML = `
+   //             //     <strong>🔮 Prédiction IA:</strong><br>
+   //             //     ✅ Images validées<br>
+   //             //     <small>Confiance: 100%</small>
+   //             // `;
+   //             // predictionElement.style.display = 'block';
+   //          }
+   //       }
+   //    })
+   // );
+   // alert(`✅ Toutes les images(${count}) ont été validées!`);
    // for (let img of images) {
    //     if (img.complete) {
    //         const prediction = await window.imageClassifier.predict(img);
@@ -256,7 +247,7 @@ export async function validateAllImages({ e }) {
  * @param e - The Mouse Event object.
  * @param functionProps - Object containing functions and App context to start model training.
  */
-export async function trainModel({ e, ...functionProps }: GenericButtonsProps) {
+export async function trainModel({ e, ...functionProps }: ControlsTypes) {
    e.preventDefault();
    functionProps.startModelTraining();
 }
