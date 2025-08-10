@@ -93,7 +93,6 @@ export function ComparePets() {
          }));
       }
    };
-
    return (
       <>
          <MemoizedControls />
