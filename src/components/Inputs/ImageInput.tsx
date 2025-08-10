@@ -23,12 +23,12 @@ export function ImageInput<
       error: UniqueSet<string, string[]>;
       inputImages: UniqueSet<string, HTMLImageElement>;
    }
->({ item, index, setter, state, ...props }: ImageInputProps<T>) {
+>({ index, setter, state, ...props }: ImageInputProps<T>) {
    const imagePreviewRef = useRef<HTMLDivElement>(null!);
    const inputRef = useRef<HTMLInputElement>(null!);
 
-   const inputId = `image-upload-${item?.id ?? ""}`;
-   const inputLabel = item?.label ?? "Ajoutez votre image";
+   const inputId = `image-upload-${props?.id ?? ""}`;
+   const inputLabel = props?.label ?? "Ajoutez votre image";
 
    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
       const target = event.target;
@@ -60,7 +60,6 @@ export function ImageInput<
          // Add image preview to the card
          target.classList.add("filled");
          imagePreviewRef.current.style.backgroundImage = `url(${image.src})`;
-
          updateState(
             {
                error: (prev) => prev.delete(inputRef.current.id),
