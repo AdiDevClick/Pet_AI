@@ -48,7 +48,6 @@ export function GenericList<T>({
                typeof item === "object" && "id" in item
                   ? item.id
                   : index * Math.random();
-
             return (
                <Fragment key={String(itemId)}>
                   {typeof children === "function"
