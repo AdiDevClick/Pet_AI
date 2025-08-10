@@ -1,10 +1,10 @@
 import type { clickableButtons } from "@/configs/controls.config.ts";
 import type { useAnimalIdentification } from "@/hooks/models/useAnimalIdentification.ts";
-import type { contextTypes } from "@/mainTypes.ts";
+import type { ContextTypes } from "@/mainTypes.ts";
 import type { OnlyMethods } from "@/types/utilsTypes.ts";
 import type { Dispatch, MouseEvent, SetStateAction } from "react";
 
-export type LoadModelTypes = {
+export type ControlsTypes = {
    e: MouseEvent<HTMLButtonElement>;
 } & ControlsFunctionPropsTypes;
 
@@ -17,7 +17,7 @@ export type ControlsErrorType = {
 } | null;
 
 export interface ControlsFunctionPropsTypes
-   extends contextTypes,
+   extends ContextTypes,
       ControlsStateTypes,
       OnlyMethods<ReturnType<typeof useAnimalIdentification>, true> {
    setButtonsState: Dispatch<SetStateAction<ControlsStateTypes>>;
