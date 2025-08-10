@@ -2,65 +2,67 @@ import MemoizedTasks from "@/components/Tasks/Tasks.tsx";
 import { Status } from "@/components/Status/Status.tsx";
 import { Instructions } from "@/components/Instructions/Instructions.tsx";
 import { MemoizedTrainingTwoCards } from "@/components/Cards/TrainingTwoCards.tsx";
-import originalAnimals from "@/data/animals.json";
-import { useOutletContext } from "react-router-dom";
-import { memo } from "react";
+import { useLoaderData, useOutletContext } from "react-router-dom";
+import { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import { MemoizedControls } from "@/components/Controls/Controls.tsx";
 import { GenericList } from "@/components/Lists/GenericList";
-
-const onlyPositive = false;
-const allShuffled = true;
-let animals = [];
-
-if (allShuffled) animals = originalAnimals;
-if (onlyPositive) animals = originalAnimals.slice(32, 33);
-
-animals.forEach((animalData) => {
-   let count = animals.length;
-   if (animalData.images && animalData.images.length > 1) {
-      animalData.images.forEach((image, index) => {
-         if (index === 0) return;
-         count += 1;
-         animals.push(
-            createImageCard(count, {
-               ...animalData,
-               images: [image],
-            })
-         );
-      });
-   }
-});
-
-Object.freeze(animals);
-
-function createImageCard(lastId, animalData) {
-   return {
-      ...animalData,
-      id: lastId,
-   };
-}
+import type { ContextTypes } from "@/mainTypes.ts";
 
 export const MemoizedTrainModel = memo(function TrainModel() {
-   const { appRouterContext } = useOutletContext();
+   const {
+      predictAllImages,
+      isOnLoad,
+      count,
+      displayNewImages,
+      onlyPositive,
+      allShuffled,
+      setAppRouterContext,
+   } = useOutletContext<ContextTypes>();
 
-   const animalName = "Chat";
+   const { animals } = useLoaderData();
+   let countRef = useRef(0).current;
 
-   const shuffledAnimals = [...animals].sort(() => 0.5 - Math.random());
+   const shuffledAnimals = useMemo(
+      () => [...animals].sort(() => 0.5 - Math.random()),
+      [animals, displayNewImages]
+   );
+
+   /**
+    * Increments the countRef.
+    * This is used to track how many images
+    * have been predicted.
+    *
+    * @description It will reset the predictionAllImages flag
+    * after the last image has been predicted.
+    */
+   const incrementCount = useCallback(() => {
+      if (!predictAllImages || countRef >= shuffledAnimals.length) return;
+      const next = ++countRef;
+
+      if (next >= shuffledAnimals.length) {
+         setAppRouterContext((prev) => ({ ...prev, predictAllImages: false }));
+      }
+   }, [shuffledAnimals.length, countRef, predictAllImages]);
+
+   /** Resets countRef if a prediction is started */
+   useEffect(() => {
+      if (predictAllImages) {
+         countRef = 0;
+      }
+   }, [predictAllImages]);
+
    return (
       <>
          <MemoizedTasks>chats</MemoizedTasks>
          <MemoizedControls />
-         {/* <AnimalModelProvider value="state"> */}
          <Status />
-         {/* </AnimalModelProvider> */}
-         {(appRouterContext.isOnLoad || appRouterContext.count > 0) && (
+         {(isOnLoad || count > 0) && (
             <>
                {onlyPositive &&
                   shuffledAnimals.map((animalA, indexA) =>
                      shuffledAnimals.map((animalB, indexB) => {
                         // Ne pas comparer une image à elle-même
                         if (indexA >= indexB) return null;
-
                         return (
                            <MemoizedTrainingTwoCards
                               key={`${animalA.id}-${animalB.id}-${indexA}-${indexB}`}
@@ -74,8 +76,7 @@ export const MemoizedTrainModel = memo(function TrainModel() {
                                     image: animalB.images[0],
                                  },
                               ]}
-                              animalName={animalName}
-                              isOnLoad={appRouterContext.isOnLoad}
+                              isOnLoad={isOnLoad}
                            />
                         );
                      })
@@ -88,7 +89,7 @@ export const MemoizedTrainModel = memo(function TrainModel() {
                            nextIndex = index - 10;
                         return (
                            <MemoizedTrainingTwoCards
-                              key={`${appRouterContext.count}-${item.id}-${nextIndex}`}
+                              key={`${item.id}-${nextIndex}`}
                               animals={[
                                  {
                                     ...item,
@@ -100,7 +101,9 @@ export const MemoizedTrainModel = memo(function TrainModel() {
                                        ?.images[0],
                                  },
                               ]}
-                              animalName={animalName}
+                              isOnLoad={isOnLoad}
+                              shouldPredict={predictAllImages}
+                              onPredictionEnd={incrementCount}
                            />
                         );
                      }}
