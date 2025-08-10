@@ -1,7 +1,12 @@
 import '@css/header.scss';
 import { NavLink } from 'react-router-dom';
+import type { ReactNode } from 'react';
 
-export function Header({ children }) {
+type HeaderProps = {
+    children?: ReactNode;
+};
+
+export function Header({ children }: HeaderProps) {
     return (
         <header className="header">
             <h1>🤖 Classificateur d'Images IA</h1>
