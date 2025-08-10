@@ -7,7 +7,9 @@ import {
    memo,
    use,
    useCallback,
+   useEffect,
    useMemo,
+   useRef,
    useState,
    type HTMLAttributes,
    type MouseEvent,
@@ -42,9 +44,16 @@ const initialState = {
  */
 export const MemoizedTrainingTwoCards = memo(function TrainingTwoCards<
    T extends HTMLAttributes<HTMLDivElement>
->({ animals, isOnLoad }: TrainingTwoCardsProps<T>) {
+>({
+   animals,
+   isOnLoad,
+   shouldPredict,
+   onPredictionEnd,
+}: TrainingTwoCardsProps<T>) {
    // Local state
    const [state, setState] = useState<TrainingTwoCardsState>(initialState);
+   // Ensure we count at most once per prediction wave
+   const countedRef = useRef(false);
 
    // Context
    const { compareAnimals, addTrainingPair } = use(AnimalActionsContext);
@@ -79,11 +88,21 @@ export const MemoizedTrainingTwoCards = memo(function TrainingTwoCards<
     * @param e Click event
     */
    const handlePredict = useCallback(
-      async (e: MouseEvent<HTMLButtonElement>) => {
-         e.preventDefault();
+      async (e: MouseEvent<HTMLButtonElement> | null) => {
+         e?.preventDefault();
          if (state.imagesShown.size() === 2) {
             const entries = Array.from(state.imagesShown.values());
             const result = await compareAnimals(entries);
+
+            if (
+               shouldPredict &&
+               result &&
+               !countedRef.current &&
+               onPredictionEnd
+            ) {
+               await onPredictionEnd();
+               countedRef.current = true;
+            }
 
             setState((prev) => ({
                ...prev,
@@ -92,7 +111,7 @@ export const MemoizedTrainingTwoCards = memo(function TrainingTwoCards<
             }));
          }
       },
-      [compareAnimals, state.imagesShown]
+      [compareAnimals, state.imagesShown, shouldPredict]
    );
 
    /**
@@ -121,6 +140,17 @@ export const MemoizedTrainingTwoCards = memo(function TrainingTwoCards<
          }),
       [handleUserResults, handlePredict]
    );
+
+   /**
+    * Will call a prediction
+    * if the app/parent is asking for it
+    */
+   useEffect(() => {
+      if (shouldPredict && state.imagesShown.size() === 2) {
+         countedRef.current = false;
+         handlePredict(null);
+      }
+   }, [shouldPredict, state.imagesShown]);
 
    return (
       <GenericCard className={checkUserSelection(state.isCorrect)}>
