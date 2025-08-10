@@ -48,18 +48,17 @@ export function GenericList<T>({
                typeof item === "object" && "id" in item
                   ? item.id
                   : index * Math.random();
-            return (
+
+            return typeof children === "function" ? (
+               children(item, index)
+            ) : isValidElement(children) ? (
                <Fragment key={String(itemId)}>
-                  {typeof children === "function"
-                     ? children(item, index)
-                     : isValidElement(children)
-                     ? cloneElement(children, {
-                          ...item,
-                          index,
-                       })
-                     : null}
+                  {cloneElement(children, {
+                     ...item,
+                     index,
+                  })}
                </Fragment>
-            );
+            ) : null;
          })}
       </>
    );
