@@ -22,20 +22,26 @@ import { Toaster } from "@/components/ui/sonner.tsx";
 import MemoizedScrollTop from "@/components/Buttons/ScrollTop.tsx";
 import type { AppRouterState, ContextTypes } from "@/mainTypes.ts";
 
-const onlyPositive = false;
-const allShuffled = true;
-
 type SourceAnimal = {
    id: string | number;
    images: string[];
    description: string;
 };
 
-function buildAnimals() {
-   let base: SourceAnimal[] = [];
-   if (allShuffled) base = originalAnimals;
-   if (onlyPositive) base = originalAnimals.slice(32, 33);
+function buildAnimals(
+   originalArr,
+   onlyPositive,
+   sliceStart = null,
+   sliceEnd = null
+) {
+   let base: SourceAnimal[] = originalArr;
+
+   if (onlyPositive) {
+      base = originalArr.slice(sliceStart, sliceEnd);
+   }
+
    const result: SourceAnimal[] = [...base];
+
    base.forEach((animalData: SourceAnimal) => {
       let count = result.length;
       if (animalData.images && animalData.images.length > 1) {
@@ -55,7 +61,75 @@ function buildAnimals() {
    return result;
 }
 
-const animals = buildAnimals();
+const onlyPositive = false;
+const allShuffled = true;
+
+const builtAnimals = buildAnimals(originalAnimals, onlyPositive, 0, 1);
+
+function buildAnimalsPairs(shuffledAnimals) {
+   const pairs = [];
+   shuffledAnimals.forEach((animalA, indexA) => {
+      shuffledAnimals.forEach((animalB, indexB) => {
+         if (indexA >= indexB) return;
+         pairs.push([
+            { ...animalA, image: animalA.images[0] },
+            { ...animalB, image: animalB.images[0] },
+         ]);
+      });
+   });
+   return pairs;
+}
+
+function buildSequentialPairs(array) {
+   const pairs = [];
+   if (array.length > 1) {
+      pairs.push([
+         {
+            ...array[array.length - 1],
+            image: array[array.length - 1].images[0],
+         },
+         { ...array[0], image: array[0].images[0] },
+      ]);
+   }
+   for (let i = 0; i < array.length - 1; i++) {
+      pairs.push([
+         { ...array[i], image: array[i].images[0] },
+         { ...array[i + 1], image: array[i + 1].images[0] },
+      ]);
+   }
+   return pairs;
+}
+
+function buildRandomSingleUsePairs(array) {
+   // On clone et mélange le tableau
+   const shuffled = [...array];
+   for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+   }
+   // On crée les paires
+   const pairs = [];
+   for (let k = 0; k < shuffled.length - 1; k += 2) {
+      pairs.push([
+         { ...shuffled[k], image: shuffled[k].images[0] },
+         { ...shuffled[k + 1], image: shuffled[k + 1].images[0] },
+      ]);
+   }
+   // Si nombre impair, dernière image seule (optionnel)
+   // if (shuffled.length % 2 === 1) {
+   //    pairs.push([
+   //       {
+   //          ...shuffled[shuffled.length - 1],
+   //          image: shuffled[shuffled.length - 1].images[0],
+   //       },
+   //    ]);
+   // }
+   return pairs;
+}
+
+const animals = onlyPositive
+   ? buildAnimalsPairs(builtAnimals)
+   : buildRandomSingleUsePairs(builtAnimals);
 
 const router = createBrowserRouter(
    [
