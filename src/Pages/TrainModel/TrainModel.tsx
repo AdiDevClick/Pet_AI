@@ -3,23 +3,25 @@ import { Status } from "@/components/Status/Status.tsx";
 import { Instructions } from "@/components/Instructions/Instructions.tsx";
 import { MemoizedTrainingTwoCards } from "@/components/Cards/TrainingTwoCards.tsx";
 import { useLoaderData, useOutletContext } from "react-router-dom";
-import { memo, useCallback, useEffect, useMemo, useRef } from "react";
+import { memo, useCallback, useEffect, useId, useMemo, useRef } from "react";
 import { MemoizedControls } from "@/components/Controls/Controls.tsx";
 import { GenericList } from "@/components/Lists/GenericList";
 import type { ContextTypes } from "@/mainTypes.ts";
 
+/**
+ * Training Page for comparing and training animal images.
+ */
 export const MemoizedTrainModel = memo(function TrainModel() {
    const {
       predictAllImages,
       isOnLoad,
       count,
       displayNewImages,
-      onlyPositive,
-      allShuffled,
       setAppRouterContext,
    } = useOutletContext<ContextTypes>();
 
    const { animals } = useLoaderData();
+   const shuffleId = useId();
    let countRef = useRef(0).current;
 
    const shuffledAnimals = useMemo(
@@ -58,57 +60,17 @@ export const MemoizedTrainModel = memo(function TrainModel() {
          <Status />
          {(isOnLoad || count > 0) && (
             <>
-               {onlyPositive &&
-                  shuffledAnimals.map((animalA, indexA) =>
-                     shuffledAnimals.map((animalB, indexB) => {
-                        // Ne pas comparer une image à elle-même
-                        if (indexA >= indexB) return null;
-                        return (
-                           <MemoizedTrainingTwoCards
-                              key={`${animalA.id}-${animalB.id}-${indexA}-${indexB}`}
-                              animals={[
-                                 {
-                                    ...animalA,
-                                    image: animalA.images[0],
-                                 },
-                                 {
-                                    ...animalB,
-                                    image: animalB.images[0],
-                                 },
-                              ]}
-                              isOnLoad={isOnLoad}
-                           />
-                        );
-                     })
+               <GenericList items={shuffledAnimals}>
+                  {(pair, idx) => (
+                     <MemoizedTrainingTwoCards
+                        key={`${shuffleId}-${pair[0].id}-${pair[1].id}-${idx}`}
+                        animals={pair}
+                        isOnLoad={isOnLoad}
+                        shouldPredict={predictAllImages}
+                        onPredictionEnd={incrementCount}
+                     />
                   )}
-               {allShuffled && (
-                  <GenericList items={shuffledAnimals}>
-                     {(item, index) => {
-                        let nextIndex = index + 1;
-                        if (nextIndex >= shuffledAnimals.length)
-                           nextIndex = index - 10;
-                        return (
-                           <MemoizedTrainingTwoCards
-                              key={`${item.id}-${nextIndex}`}
-                              animals={[
-                                 {
-                                    ...item,
-                                    image: item.images[0],
-                                 },
-                                 {
-                                    ...shuffledAnimals[nextIndex],
-                                    image: shuffledAnimals[nextIndex]
-                                       ?.images[0],
-                                 },
-                              ]}
-                              isOnLoad={isOnLoad}
-                              shouldPredict={predictAllImages}
-                              onPredictionEnd={incrementCount}
-                           />
-                        );
-                     }}
-                  </GenericList>
-               )}
+               </GenericList>
                {/* <CardsGrid
                         key={count}
                         images={shuffledAnimals}
