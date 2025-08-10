@@ -56,6 +56,7 @@ export const MemoizedTrainingTwoCards = memo(function TrainingTwoCards<
    const countedRef = useRef(false);
    // Context
    const { compareAnimals, addTrainingPair } = use(AnimalActionsContext);
+
    /**
     * Handle user results for the image comparison.
     *
