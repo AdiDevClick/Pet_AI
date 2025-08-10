@@ -54,10 +54,8 @@ export const MemoizedTrainingTwoCards = memo(function TrainingTwoCards<
    const [state, setState] = useState<TrainingTwoCardsState>(initialState);
    // Ensure we count at most once per prediction wave
    const countedRef = useRef(false);
-
    // Context
    const { compareAnimals, addTrainingPair } = use(AnimalActionsContext);
-
    /**
     * Handle user results for the image comparison.
     *
@@ -93,7 +91,6 @@ export const MemoizedTrainingTwoCards = memo(function TrainingTwoCards<
          if (state.imagesShown.size() === 2) {
             const entries = Array.from(state.imagesShown.values());
             const result = await compareAnimals(entries);
-
             if (
                shouldPredict &&
                result &&
