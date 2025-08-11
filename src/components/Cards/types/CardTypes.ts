@@ -4,6 +4,7 @@ import type { HTMLAttributes, ReactNode } from "react";
 export type GenericCardProps<T = unknown> = {
    children: ReactNode;
    item?: T;
+   error?: UniqueSet<string, string[]>;
    index?: number;
 } & HTMLAttributes<HTMLDivElement>;
 
