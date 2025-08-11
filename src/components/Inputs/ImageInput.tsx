@@ -44,11 +44,8 @@ export function ImageInput<
                {
                   // Clear previous errors for this input
                   // And add new ones
-                  error: (prev) =>
-                     prev
-                        .delete(inputRef.current.id)
-                        .set(inputRef.current.id, errors),
-                  inputImages: (prev) => prev.delete(inputRef.current.id),
+                  error: (prev) => prev.delete(props.id).set(props.id, errors),
+                  inputImages: (prev) => prev.delete(props.id),
                } as Parameters<typeof updateState<T>>[0],
                setter
             );
@@ -62,8 +59,8 @@ export function ImageInput<
          imagePreviewRef.current.style.backgroundImage = `url(${image.src})`;
          updateState(
             {
-               error: (prev) => prev.delete(inputRef.current.id),
-               inputImages: (prev) => prev.set(inputRef.current.id, image),
+               error: (prev) => prev.delete(props.id),
+               inputImages: (prev) => prev.set(props.id, image),
             } as Parameters<typeof updateState<T>>[0],
             setter
          );
