@@ -61,26 +61,26 @@ export const MemoizedTrainModel = memo(function TrainModel() {
          <MemoizedTasks>chats</MemoizedTasks>
          <MemoizedControls />
          <Status />
-         {(isOnLoad || count > 0) && (
-            <>
-               <ListMapper items={shuffledAnimalsMemo}>
-                  {(pair, idx) => (
-                     <MemoizedTrainingTwoCards
-                        key={`${shuffleId}-${pair[0].id}-${pair[1].id}-${idx}`}
-                        animals={pair}
-                        isOnLoad={isOnLoad}
-                        shouldPredict={predictAllImages}
-                        onPredictionEnd={incrementCount}
-                     />
-                  )}
-               </ListMapper>
-               {/* <CardsGrid
+         {/* {(isOnLoad || count > 0) && ( */}
+         <>
+            <ListMapper items={shuffledAnimalsMemo}>
+               {(pair, idx) => (
+                  <MemoizedTrainingTwoCards
+                     key={`${shuffleId}-${pair[0].id}-${pair[1].id}-${idx}`}
+                     animals={pair}
+                     isOnLoad={isOnLoad}
+                     shouldPredict={predictAllImages}
+                     onPredictionEnd={incrementCount}
+                  />
+               )}
+            </ListMapper>
+            {/* <CardsGrid
                         key={count}
                         images={shuffledAnimals}
                         animalName={animalName}
                     /> */}
-            </>
-         )}
+         </>
+         {/* )} */}
          <Instructions />
       </>
    );
