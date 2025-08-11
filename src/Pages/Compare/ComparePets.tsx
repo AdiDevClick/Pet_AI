@@ -96,6 +96,7 @@ export function ComparePets() {
    return (
       <>
          <MemoizedControls />
+
          <section className="generic-layout compare-pets">
             <GenericTitle>🔍 Comparaison d'Images</GenericTitle>
             <GenericDescription>
@@ -105,7 +106,10 @@ export function ComparePets() {
 
             <GenericGrid className="comparison-container">
                <ListMapper items={inputs}>
-                  <GenericCard className={"image-preview-container"}>
+                  <GenericCard
+                     className={"image-preview-container"}
+                     error={pageState.error}
+                  >
                      <ImageInput setter={setPageState} state={pageState} />
                   </GenericCard>
                </ListMapper>
@@ -118,6 +122,7 @@ export function ComparePets() {
             >
                Comparer les Images
             </Button>
+
             <div className="generic-layout__alert">
                {pageState.error.size() > 0 && (
                   <p className={`generic-layout__alert ${pageState.className}`}>
