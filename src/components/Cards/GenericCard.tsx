@@ -43,6 +43,7 @@ export function GenericCard<T>({
    children,
    className,
    index,
+   error,
    ...props
 }: GenericCardProps<T>) {
    let cardId;
@@ -52,7 +53,12 @@ export function GenericCard<T>({
    }
 
    return (
-      <div id={`card-${cardId}`} className={`card ${className ?? ""}`}>
+      <div
+         id={`card-${cardId}`}
+         className={`card ${className ?? ""} ${checkUserSelection(
+            !!error && error.size() > 0 && error.has(props.id)
+         )}`}
+      >
          {isValidElement(children)
             ? cloneElement(children, { ...props, index } as {
                  item?: T;
@@ -61,4 +67,17 @@ export function GenericCard<T>({
             : children}
       </div>
    );
+}
+
+/**
+ * Checks the user's selection state.
+ *
+ * @param isCorrect A boolean indicating the user's selection
+ * @returns The className representing the user's selection
+ */
+function checkUserSelection(isCorrect: boolean): string {
+   if (isCorrect) {
+      return "selected-incorrect";
+   }
+   return "";
 }
